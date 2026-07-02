@@ -1,12 +1,11 @@
 const userModel = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+require("dotenv").config;
 
 const registerUser = async (req, res) => {
   const { name, username, email, password } = req.body;
   try {
-    const hashedPassword = await bcrypt.hash(password, 12);
-
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -19,6 +18,7 @@ const registerUser = async (req, res) => {
         .status(400)
         .json({ message: "Username or email already exists" });
     }
+    const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new userModel({
       name,
       username,
@@ -50,7 +50,7 @@ const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     } else {
-      const token = jwt.sign({ id: user._id }, "sessionkey", {
+      const token = jwt.sign({ id: user._id }, process.env.JWT, {
         expiresIn: "1d",
       });
 
