@@ -51,7 +51,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     } else {
       const token = jwt.sign({ id: user._id }, process.env.JWT, {
-        expiresIn: "1d",
+        expiresIn: "7d",
       });
 
       return res.status(200).json({ message: "Login successful", token });
@@ -60,7 +60,18 @@ const loginUser = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+const getProfile = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user.id).select("-password");
+
+    return res.status(200).json({ user });
+  } catch (err) {
+    return res.status(400).json({ mesage: err.message });
+  }
+};
 module.exports = {
   registerUser,
   loginUser,
+  getProfile,
 };
