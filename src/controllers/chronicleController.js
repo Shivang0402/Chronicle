@@ -49,21 +49,56 @@ const getChronicleById = async (req, res) => {
   try {
     const chronicle = await Chronicle.findById(chronicleId);
     if (!chronicle) {
-      res.status(404).json({ message: "No such chronicle exists." });
+      return res.status(404).json({ message: "No such chronicle exists." });
     } else {
-      if (chronicle.user.toString() == req.user.id) {
+      if (chronicle.user.toString() === req.user.id) {
         res.status(200).json({ chronicle });
       } else {
-        res.status(403).json({
+        return res.status(403).json({
           message: "You are not authorized to access this chronicle.",
         });
       }
     }
   } catch (error) {
-    res.status(500).json({ message: message.error });
+    return res.status(500).json({ message: message.error });
   }
 };
 
-//
+const updateChronicleById = async (req, res) => {
+  const chronicleId = req.params.id;
 
-module.exports = { createChronicle, getChronicles, getChronicleById };
+  try {
+    const chronicle = await Chronicle.findById(chronicleId);
+    if (!chronicle) {
+      return res.status(404).json({ message: "No such chronicle exists." });
+    } else {
+      if (chronicle.user.toString() === req.user.id) {
+        const { title, date, content, mood, tags } = req.body;
+
+        chronicle.title = title;
+        chronicle.date = date;
+        chronicle.content = content;
+        chronicle.mood = mood;
+        chronicle.tags = tags;
+        await chronicle.save();
+        return res.status(200).json({
+          message: "Chronicle updated successfully! \n",
+          chronicle,
+        });
+      } else {
+        return res.status(403).json({
+          message: "You are not authorized to access this chronicle.",
+        });
+      }
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  createChronicle,
+  getChronicles,
+  getChronicleById,
+  updateChronicleById,
+};
