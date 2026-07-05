@@ -96,9 +96,34 @@ const updateChronicleById = async (req, res) => {
   }
 };
 
+const deleteChronicleById = async (req, res) => {
+  const chronicleId = req.params.id;
+
+  try {
+    const chronicle = await Chronicle.findById(chronicleId);
+    if (!chronicle) {
+      return res.status(404).json({ message: "No such chronicle exists." });
+    } else {
+      if (chronicle.user.toString() === req.user.id) {
+        await Chronicle.findByIdAndDelete(chronicleId);
+        return res.status(200).json({
+          message: "Chronicle deleted successfully",
+        });
+      } else {
+        return res.status(403).json({
+          message: "You are not authorized to access this chronicle.",
+        });
+      }
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createChronicle,
   getChronicles,
   getChronicleById,
   updateChronicleById,
+  deleteChronicleById,
 };
