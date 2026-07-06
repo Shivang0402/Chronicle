@@ -1,9 +1,11 @@
-const Chronicle = require("../models/chronicleModel");
+const Chronicle = require("../models/chronicleModel"); // model
 
 const createChronicle = async (req, res) => {
   const { title, date, content, mood, tags } = req.body;
-  if (!content) {
-    return res.status(400).json({ message: "Content cannot be empty!" });
+  if (!content || content.trim() === "" || content.length() < 10) {
+    return res
+      .status(400)
+      .json({ message: "Content must be of atleast 10 charcaters" });
   }
 
   try {
@@ -80,11 +82,18 @@ const updateChronicleById = async (req, res) => {
         chronicle.content = content;
         chronicle.mood = mood;
         chronicle.tags = tags;
-        await chronicle.save();
-        return res.status(200).json({
-          message: "Chronicle updated successfully! \n",
-          chronicle,
-        });
+
+        if (!content || content.trim() === "" || content.length() < 10) {
+          return res
+            .status(400)
+            .json({ message: "Content must be of atleast 10 charcaters" });
+        } else {
+          await chronicle.save();
+          return res.status(200).json({
+            message: "Chronicle updated successfully! \n",
+            chronicle,
+          });
+        }
       } else {
         return res.status(403).json({
           message: "You are not authorized to access this chronicle.",
