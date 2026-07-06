@@ -46,7 +46,6 @@ const getChronicles = async (req, res) => {
 };
 const getChronicleById = async (req, res) => {
   const chronicleId = req.params.id;
-  console.log(chronicleId);
 
   try {
     const chronicle = await Chronicle.findById(chronicleId);
@@ -62,7 +61,7 @@ const getChronicleById = async (req, res) => {
       }
     }
   } catch (error) {
-    return res.status(500).json({ message: message.error });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -129,10 +128,54 @@ const deleteChronicleById = async (req, res) => {
   }
 };
 
+const searchChronicle = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    const chronicle = await Chronicle.find({
+      user: req.user.id,
+      $or: [
+        {
+          content: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+        {
+          title: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+        {
+          tags: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+      ],
+    });
+    if (chronicle) {
+      return res.status(200).json({
+        chronicle,
+      });
+    } else {
+      return res.status(404).json({
+        message: "No chronicle with matching keywords found.",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createChronicle,
   getChronicles,
   getChronicleById,
   updateChronicleById,
   deleteChronicleById,
+  searchChronicle,
 };
