@@ -10,7 +10,7 @@ const { searchChronicle } = require("../controllers/chronicleController");
 
 router.get("/search", authMiddleware, searchChronicle);
 router.post("/", authMiddleware, createChronicle);
-router.get("/getChronicles", authMiddleware, getChronicles);
+router.get("/getchronicles", authMiddleware, getChronicles);
 router.get("/:id", authMiddleware, getChronicleById);
 router.put("/:id", authMiddleware, updateChronicleById);
 router.delete("/:id", authMiddleware, deleteChronicleById);

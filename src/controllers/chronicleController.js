@@ -31,15 +31,30 @@ const createChronicle = async (req, res) => {
 
 const getChronicles = async (req, res) => {
   try {
-    const Chronicles = await Chronicle.find({
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
+    const skip = (page - 1) * limit;
+    const chronicles = await Chronicle.find({
       user: req.user.id,
-    }).sort({
-      date: -1,
+    })
+      .sort({
+        date: -1,
+      })
+      .skip(skip)
+      .limit(limit);
+
+    const totalChronicles = await Chronicle.countDocuments({
+      user: req.user.id,
     });
-    if (Chronicles.length == 0) {
-      return res.status(404).json({ message: "No chronicles created yet." });
-    }
-    return res.status(200).json({ Chronicles });
+
+    const totalPages = Math.ceil(totalChronicles / limit);
+    return res.status(200).json({
+      page,
+      limit,
+      totalChronicles,
+      totalPages,
+      Chronicles,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -154,6 +169,8 @@ const searchChronicle = async (req, res) => {
           },
         },
       ],
+    }).sort({
+      date: -1,
     });
     if (chronicle) {
       return res.status(200).json({
