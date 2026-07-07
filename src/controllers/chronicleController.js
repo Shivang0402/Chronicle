@@ -2,7 +2,7 @@ const Chronicle = require("../models/chronicleModel"); // model
 
 const createChronicle = async (req, res) => {
   const { title, date, content, mood, tags } = req.body;
-  if (!content || content.trim() === "" || content.length() < 10) {
+  if (!content || content.trim() === "" || content.trim().length() < 10) {
     return res
       .status(400)
       .json({ message: "Content must be of atleast 10 charcaters" });
@@ -30,22 +30,44 @@ const createChronicle = async (req, res) => {
 };
 
 const getChronicles = async (req, res) => {
+  const { mood, tags } = req.query;
+  const page = Math.max(Number(req.query.page) || 1, 1);
+  const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
+  const skip = (page - 1) * limit;
+  const filter = { user: req.user.id };
+  // const sortOption = { date: -1 };
+
   try {
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
-    const skip = (page - 1) * limit;
-    const chronicles = await Chronicle.find({
-      user: req.user.id,
-    })
-      .sort({
-        date: -1,
-      })
+    // if (sort == "oldest") {
+    //   sortOption = {
+    //     date: 1,
+    //   };
+    // }
+    if (mood) {
+      filter.mood = {
+        $regex: mood,
+        $options: "i",
+      };
+    }
+    if (tag) {
+      filter.tags = {
+        $regex: tag,
+        $options: "i",
+      };
+    }
+    if (date) {
+      filter.date = {
+        $regex: date,
+        $options: "i",
+      };
+    }
+
+    const chronicles = await Chronicle.find(filter)
+      .sort({ date: -1 })
       .skip(skip)
       .limit(limit);
 
-    const totalChronicles = await Chronicle.countDocuments({
-      user: req.user.id,
-    });
+    const totalChronicles = await Chronicle.countDocuments(filter);
 
     const totalPages = Math.ceil(totalChronicles / limit);
     return res.status(200).json({
@@ -53,7 +75,7 @@ const getChronicles = async (req, res) => {
       limit,
       totalChronicles,
       totalPages,
-      Chronicles,
+      chronicles,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
