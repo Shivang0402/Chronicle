@@ -209,6 +209,15 @@ const searchChronicle = async (req, res) => {
   }
 };
 
+const chronicleStats = (req, res) => {
+  try {
+  } catch (err) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createChronicle,
   getChronicles,
