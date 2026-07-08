@@ -35,14 +35,13 @@ const getChronicles = async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
   const skip = (page - 1) * limit;
   const filter = { user: req.user.id };
-  // const sortOption = { date: -1 };
+  const sortOption = { date: -1 };
 
   try {
-    // if (sort == "oldest") {
-    //   sortOption = {
-    //     date: 1,
-    //   };
-    // }
+    if (sort === "oldest") {
+      sortOption.date = 1;
+    }
+
     if (mood) {
       filter.mood = {
         $regex: mood,
@@ -63,7 +62,7 @@ const getChronicles = async (req, res) => {
     }
 
     const chronicles = await Chronicle.find(filter)
-      .sort({ date: -1 })
+      .sort(sortOption)
       .skip(skip)
       .limit(limit);
 
