@@ -231,7 +231,8 @@ const getChronicleStats = async (req, res) => {
     const year = today.getFullYear();
     const startDate = new Date(year, month, 1);
     const endDate = new Date(year, month + 1, 1);
-
+    const startYear = new Date(year, 0, 1);
+    const endYear = new Date(year + 1, 0, 1);
     const entriesThisMonth = await Chronicle.countDocuments({
       user: req.user.id,
       date: {
@@ -239,11 +240,20 @@ const getChronicleStats = async (req, res) => {
         $lt: endDate,
       },
     });
+
+    const entriesThisYear = await Chronicle.countDocuments({
+      user: req.user.id,
+      date: {
+        $gte: startYear,
+        $lt: endYear,
+      },
+    });
     return res.status(200).json({
       totalChronicles,
       totalWords,
       averageWords,
       entriesThisMonth,
+      entriesThisYear,
     });
   } catch (err) {
     return res.status(500).json({
