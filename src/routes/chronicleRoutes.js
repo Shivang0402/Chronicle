@@ -7,7 +7,9 @@ const { getChronicleById } = require("../controllers/chronicleController");
 const { updateChronicleById } = require("../controllers/chronicleController");
 const { deleteChronicleById } = require("../controllers/chronicleController");
 const { searchChronicle } = require("../controllers/chronicleController");
+const { getChronicleStats } = require("../controllers/chronicleController");
 
+router.get("/getChronicleStats", authMiddleware, getChronicleStats);
 router.get("/search", authMiddleware, searchChronicle);
 router.post("/", authMiddleware, createChronicle);
 router.get("/getchronicles", authMiddleware, getChronicles);
