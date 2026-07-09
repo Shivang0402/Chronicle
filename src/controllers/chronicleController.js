@@ -219,17 +219,31 @@ const getChronicleStats = async (req, res) => {
     const chronicles = await Chronicle.find({
       user: req.user.id,
     });
+
     let totalWords = 0;
     for (const chronicle of chronicles) {
       totalWords += chronicle.content.trim().split(/\s+/).length;
     }
     const averageWords =
       totalChronicles === 0 ? 0 : Math.round(totalWords / totalChronicles);
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 1);
 
+    const entriesThisMonth = await Chronicle.countDocuments({
+      user: req.user.id,
+      date: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    });
     return res.status(200).json({
       totalChronicles,
       totalWords,
       averageWords,
+      entriesThisMonth,
     });
   } catch (err) {
     return res.status(500).json({
