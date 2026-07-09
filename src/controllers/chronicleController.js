@@ -200,7 +200,7 @@ const searchChronicle = async (req, res) => {
       });
     } else {
       return res.status(404).json({
-        message: "No chronicle with matching keywords found.",
+        message: "No chronicle with matching keyword found.",
       });
     }
   } catch (error) {
@@ -226,6 +226,7 @@ const getChronicleStats = async (req, res) => {
     }
     const averageWords =
       totalChronicles === 0 ? 0 : Math.round(totalWords / totalChronicles);
+
     const today = new Date();
     const month = today.getMonth();
     const year = today.getFullYear();
@@ -233,6 +234,7 @@ const getChronicleStats = async (req, res) => {
     const endDate = new Date(year, month + 1, 1);
     const startYear = new Date(year, 0, 1);
     const endYear = new Date(year + 1, 0, 1);
+
     const entriesThisMonth = await Chronicle.countDocuments({
       user: req.user.id,
       date: {
@@ -248,6 +250,23 @@ const getChronicleStats = async (req, res) => {
         $lt: endYear,
       },
     });
+
+    const findchronicles = await Chronicle.find({
+      user: req.user.id,
+    });
+    const moodCount = {};
+
+    for (const chronicle of findchronicles) {
+      const mood = chronicle.mood;
+
+      if (moodCount[mood]) {
+        moodCount[mood]++;
+      } else {
+        moodCount[mood] = 1;
+      }
+    }
+    console.log(moodCount);
+
     return res.status(200).json({
       totalChronicles,
       totalWords,
