@@ -276,6 +276,34 @@ const getChronicleStats = async (req, res) => {
       }
     }
 
+    const chronicle = await Chronicle.find({
+      user: req.user.id,
+    }).sort({ date: 1 });
+
+    let currentStreak = 1;
+    let longestStreak = 1;
+    let oneDay = 24 * 60 * 60 * 1000;
+    const uniqueDates = [];
+
+    for (const entry of chronicle) {
+      const previous = chronicle[i - 1].date.setHours(0, 0, 0, 0);
+      const newDate = chronicle[i].date.setHours(0, 0, 0, 0);
+
+      if (uniqueDates !== newDate) {
+        uniqueDates.push(entry);
+      }
+    }
+
+    for (let i = 1; i < chronicle.length; i++) {
+      const difference = newDate - previous;
+
+      if (difference === oneDay) {
+        currentStreak++;
+      } else {
+        currentStreak = 1;
+      }
+      longestStreak = Math.max(currentStreak, longestStreak);
+    }
     return res.status(200).json({
       totalChronicles,
       totalWords,
@@ -283,6 +311,7 @@ const getChronicleStats = async (req, res) => {
       entriesThisMonth,
       entriesThisYear,
       mostCommonMood,
+      longestStreak,
     });
   } catch (err) {
     return res.status(500).json({
