@@ -265,7 +265,16 @@ const getChronicleStats = async (req, res) => {
         moodCount[mood] = 1;
       }
     }
-    console.log(moodCount);
+
+    let highestCount = 0;
+    let mostCommonMood = "";
+
+    for (const mood in moodCount) {
+      if (moodCount[mood] > highestCount) {
+        highestCount = moodCount[mood];
+        mostCommonMood = mood;
+      }
+    }
 
     return res.status(200).json({
       totalChronicles,
@@ -273,6 +282,7 @@ const getChronicleStats = async (req, res) => {
       averageWords,
       entriesThisMonth,
       entriesThisYear,
+      mostCommonMood,
     });
   } catch (err) {
     return res.status(500).json({
