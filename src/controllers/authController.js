@@ -1,6 +1,10 @@
 const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const {
+  getChroniclesForUser,
+  getStatsForUser,
+} = require("./chronicleController");
 
 const registerUser = async (req, res) => {
   const { name, username, email, password } = req.body;
@@ -113,7 +117,15 @@ const getProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json({ user });
+    const chronicles = await getChroniclesForUser(req.user.id, req.query);
+
+    if (chronicles.error) {
+      return res.status(400).json({ message: chronicles.error });
+    }
+
+    const stats = await getStatsForUser(req.user.id);
+
+    return res.status(200).json({ user, chronicles, stats });
   } catch (err) {
     return res.status(500).json({ message: "Could not load profile" });
   }
