@@ -1,19 +1,44 @@
 const { response } = require("express");
 const Chronicle = require("../models/chronicleModel"); // model
 
+const MIN_CONTENT_LENGTH = 10;
+const MAX_CONTENT_LENGTH = 100000;
+
+const validateContent = (content) => {
+  if (typeof content !== "string") {
+    return { error: "Content must be a string" };
+  }
+
+  const value = content.trim();
+
+  if (value.length < MIN_CONTENT_LENGTH) {
+    return {
+      error: `Content must be at least ${MIN_CONTENT_LENGTH} characters`,
+    };
+  }
+
+  if (value.length > MAX_CONTENT_LENGTH) {
+    return {
+      error: `Content must be at most ${MAX_CONTENT_LENGTH} characters`,
+    };
+  }
+
+  return { value };
+};
+
 const createChronicle = async (req, res) => {
   const { title, date, content, mood, tags } = req.body;
-  if (!content || content.trim() === "" || content.trim().length < 10) {
-    return res
-      .status(400)
-      .json({ message: "Content must be of atleast 10 charcaters" });
+  const validation = validateContent(content);
+
+  if (validation.error) {
+    return res.status(400).json({ message: validation.error });
   }
 
   try {
     const newChronicle = new Chronicle({
       title,
       date,
-      content,
+      content: validation.value,
       mood,
       tags,
       user: req.user.id,
@@ -112,24 +137,23 @@ const updateChronicleById = async (req, res) => {
     } else {
       if (chronicle.user.toString() === req.user.id) {
         const { title, date, content, mood, tags } = req.body;
+        const validation = validateContent(content);
+
+        if (validation.error) {
+          return res.status(400).json({ message: validation.error });
+        }
 
         chronicle.title = title;
         chronicle.date = date;
-        chronicle.content = content;
+        chronicle.content = validation.value;
         chronicle.mood = mood;
         chronicle.tags = tags;
 
-        if (!content || content.trim() === "" || content.length() < 10) {
-          return res
-            .status(400)
-            .json({ message: "Content must be of atleast 10 charcaters" });
-        } else {
-          await chronicle.save();
-          return res.status(200).json({
-            message: "Chronicle updated successfully! \n",
-            chronicle,
-          });
-        }
+        await chronicle.save();
+        return res.status(200).json({
+          message: "Chronicle updated successfully! \n",
+          chronicle,
+        });
       } else {
         return res.status(403).json({
           message: "You are not authorized to access this chronicle.",
