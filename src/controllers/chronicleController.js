@@ -1,4 +1,3 @@
-const { response } = require("express");
 const Chronicle = require("../models/chronicleModel"); // model
 
 const MIN_CONTENT_LENGTH = 10;
@@ -26,6 +25,8 @@ const validateContent = (content) => {
   return { value };
 };
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const createChronicle = async (req, res) => {
   const { title, date, content, mood, tags } = req.body;
   const validation = validateContent(content);
@@ -46,7 +47,7 @@ const createChronicle = async (req, res) => {
 
     await newChronicle.save();
 
-    return res.status(200).json({
+    return res.status(201).json({
       message: "Chronicle created successfully",
       chronicle: newChronicle,
     });
@@ -61,22 +62,18 @@ const getChronicles = async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
   const skip = (page - 1) * limit;
   const filter = { user: req.user.id };
-  const sortOption = { date: -1 };
+  const sortOption = { date: req.query.sort === "oldest" ? 1 : -1 };
 
   try {
-    if (sortOption === "oldest") {
-      sortOption.date = 1;
-    }
-
     if (mood) {
       filter.mood = {
-        $regex: mood,
+        $regex: escapeRegex(mood),
         $options: "i",
       };
     }
     if (tag) {
       filter.tags = {
-        $regex: tag,
+        $regex: escapeRegex(tag),
         $options: "i",
       };
     }
@@ -115,7 +112,7 @@ const getChronicleById = async (req, res) => {
       return res.status(404).json({ message: "No such chronicle exists." });
     } else {
       if (chronicle.user.toString() === req.user.id) {
-        res.status(200).json({ chronicle });
+        return res.status(200).json({ chronicle });
       } else {
         return res.status(403).json({
           message: "You are not authorized to access this chronicle.",
@@ -192,25 +189,29 @@ const deleteChronicleById = async (req, res) => {
 const searchChronicle = async (req, res) => {
   const { query } = req.query;
 
+  if (typeof query !== "string" || query.trim() === "") {
+    return res.status(400).json({ message: "Search query is required" });
+  }
+
   try {
     const chronicle = await Chronicle.find({
       user: req.user.id,
       $or: [
         {
           content: {
-            $regex: query,
+            $regex: escapeRegex(query.trim()),
             $options: "i",
           },
         },
         {
           title: {
-            $regex: query,
+            $regex: escapeRegex(query.trim()),
             $options: "i",
           },
         },
         {
           tags: {
-            $regex: query,
+            $regex: escapeRegex(query.trim()),
             $options: "i",
           },
         },
@@ -218,15 +219,15 @@ const searchChronicle = async (req, res) => {
     }).sort({
       date: -1,
     });
-    if (chronicle) {
-      return res.status(200).json({
-        chronicle,
-      });
-    } else {
+    if (chronicle.length === 0) {
       return res.status(404).json({
         message: "No chronicle with matching keyword found.",
       });
     }
+
+    return res.status(200).json({
+      chronicle,
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -246,7 +247,13 @@ const getChronicleStats = async (req, res) => {
 
     let totalWords = 0;
     for (const chronicle of chronicles) {
-      totalWords += chronicle.content.trim().split(/\s+/).length;
+      const content = chronicle.content.trim();
+
+      if (!content) {
+        continue;
+      }
+
+      totalWords += content.split(/\s+/).length;
     }
     const averageWords =
       totalChronicles === 0 ? 0 : Math.round(totalWords / totalChronicles);
@@ -281,7 +288,11 @@ const getChronicleStats = async (req, res) => {
     const moodCount = {};
 
     for (const chronicle of findchronicles) {
-      const mood = chronicle.mood;
+      const mood = (chronicle.mood || "").trim();
+
+      if (!mood) {
+        continue;
+      }
 
       if (moodCount[mood]) {
         moodCount[mood]++;
@@ -306,22 +317,19 @@ const getChronicleStats = async (req, res) => {
 
     let currentStreak = chronicle.length > 0 ? 1 : 0;
     let longestStreak = currentStreak;
-    let oneDay = 24 * 60 * 60 * 1000;
+    const oneDay = 24 * 60 * 60 * 1000;
     const uniqueDates = [];
 
-    for (let i = 1; i < chronicle.length; i++) {
-      const previous = chronicle[i - 1].date.setHours(0, 0, 0, 0);
-      const newDate = chronicle[i].date.setHours(0, 0, 0, 0);
+    for (let i = 0; i < chronicle.length; i++) {
+      const newDate = new Date(chronicle[i].date).setHours(0, 0, 0, 0);
 
       if (!uniqueDates.includes(newDate)) {
         uniqueDates.push(newDate);
       }
     }
 
-    for (let i = 1; i < chronicle.length; i++) {
-      const previous = chronicle[i - 1].date.setHours(0, 0, 0, 0);
-      const newDate = chronicle[i].date.setHours(0, 0, 0, 0);
-      const difference = newDate - previous;
+    for (let i = 1; i < uniqueDates.length; i++) {
+      const difference = uniqueDates[i] - uniqueDates[i - 1];
 
       if (difference === oneDay) {
         currentStreak++;
@@ -337,6 +345,7 @@ const getChronicleStats = async (req, res) => {
       entriesThisMonth,
       entriesThisYear,
       mostCommonMood,
+      currentStreak,
       longestStreak,
     });
   } catch (err) {
