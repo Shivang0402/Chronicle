@@ -313,12 +313,14 @@ const getChronicleStats = async (req, res) => {
       const previous = chronicle[i - 1].date.setHours(0, 0, 0, 0);
       const newDate = chronicle[i].date.setHours(0, 0, 0, 0);
 
-      if (uniqueDates !== newDate) {
-        uniqueDates.push(chronicle[i]);
+      if (!uniqueDates.includes(newDate)) {
+        uniqueDates.push(newDate);
       }
     }
 
     for (let i = 1; i < chronicle.length; i++) {
+      const previous = chronicle[i - 1].date.setHours(0, 0, 0, 0);
+      const newDate = chronicle[i].date.setHours(0, 0, 0, 0);
       const difference = newDate - previous;
 
       if (difference === oneDay) {
