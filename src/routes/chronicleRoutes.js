@@ -16,7 +16,7 @@ router.get("/search", authMiddleware, searchChronicle);
 router.post("/", authMiddleware, createChronicle);
 router.get("/getchronicles", authMiddleware, getChronicles);
 router.get("/:id", authMiddleware, getChronicleById);
-router.put("/:id", authMiddleware, updateChronicleById);
+router.patch("/:id", authMiddleware, updateChronicleById);
 router.delete("/:id", authMiddleware, deleteChronicleById);
 
 module.exports = router;

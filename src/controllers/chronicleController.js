@@ -10,7 +10,7 @@ const validateContent = (content) => {
 
   const value = String(content).trim();
 
-  if (value.length < MIN_CONTENT_LENGTH) {
+  if (typeof content === "string" && value.length < MIN_CONTENT_LENGTH) {
     return {
       error: `Content must be at least ${MIN_CONTENT_LENGTH} characters`,
     };
@@ -26,6 +26,7 @@ const validateContent = (content) => {
 };
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
 const createChronicle = async (req, res) => {
   const { title, date, content, mood, tags } = req.body;
@@ -33,6 +34,18 @@ const createChronicle = async (req, res) => {
 
   if (validation.error) {
     return res.status(400).json({ message: validation.error });
+  }
+
+  if (
+    date !== undefined &&
+    date !== null &&
+    Number.isNaN(new Date(date).getTime())
+  ) {
+    return res.status(400).json({ message: "Invalid date" });
+  }
+
+  if (tags !== undefined && !Array.isArray(tags)) {
+    return res.status(400).json({ message: "Tags must be an array" });
   }
 
   try {
@@ -57,7 +70,9 @@ const createChronicle = async (req, res) => {
 };
 
 const getChronicles = async (req, res) => {
-  const { mood, tag, date } = req.query;
+  const mood = typeof req.query.mood === "string" ? req.query.mood : "";
+  const tag = typeof req.query.tag === "string" ? req.query.tag : "";
+  const date = typeof req.query.date === "string" ? req.query.date : "";
   const page = Math.max(Number(req.query.page) || 1, 1);
   const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
   const skip = (page - 1) * limit;
@@ -78,10 +93,16 @@ const getChronicles = async (req, res) => {
       };
     }
     if (date) {
-      filter.date = {
-        $regex: date,
-        $options: "i",
-      };
+      const start = new Date(date);
+
+      if (Number.isNaN(start.getTime())) {
+        return res.status(400).json({ message: "Invalid date filter" });
+      }
+
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 1);
+      filter.date = { $gte: start, $lt: end };
     }
 
     const chronicles = await Chronicle.find(filter)
@@ -106,6 +127,10 @@ const getChronicles = async (req, res) => {
 const getChronicleById = async (req, res) => {
   const chronicleId = req.params.id;
 
+  if (!isValidObjectId(chronicleId)) {
+    return res.status(400).json({ message: "Invalid chronicle id" });
+  }
+
   try {
     const chronicle = await Chronicle.findById(chronicleId);
     if (!chronicle) {
@@ -114,9 +139,7 @@ const getChronicleById = async (req, res) => {
       if (chronicle.user.toString() === req.user.id) {
         return res.status(200).json({ chronicle });
       } else {
-        return res.status(403).json({
-          message: "You are not authorized to access this chronicle.",
-        });
+        return res.status(404).json({ message: "No such chronicle exists." });
       }
     }
   } catch (error) {
@@ -127,36 +150,50 @@ const getChronicleById = async (req, res) => {
 const updateChronicleById = async (req, res) => {
   const chronicleId = req.params.id;
 
+  if (!isValidObjectId(chronicleId)) {
+    return res.status(400).json({ message: "Invalid chronicle id" });
+  }
+
   try {
     const chronicle = await Chronicle.findById(chronicleId);
     if (!chronicle) {
       return res.status(404).json({ message: "No such chronicle exists." });
-    } else {
-      if (chronicle.user.toString() === req.user.id) {
-        const { title, date, content, mood, tags } = req.body;
-        const validation = validateContent(content);
-
-        if (validation.error) {
-          return res.status(400).json({ message: validation.error });
-        }
-
-        chronicle.title = title;
-        chronicle.date = date;
-        chronicle.content = validation.value;
-        chronicle.mood = mood;
-        chronicle.tags = tags;
-
-        await chronicle.save();
-        return res.status(200).json({
-          message: "Chronicle updated successfully! \n",
-          chronicle,
-        });
-      } else {
-        return res.status(403).json({
-          message: "You are not authorized to access this chronicle.",
-        });
-      }
     }
+
+    if (chronicle.user.toString() !== req.user.id) {
+      return res.status(404).json({ message: "No such chronicle exists." });
+    }
+
+    const { title, date, content, mood, tags } = req.body;
+    const validation = content === undefined ? null : validateContent(content);
+
+    if (validation && validation.error) {
+      return res.status(400).json({ message: validation.error });
+    }
+
+    if (
+      date !== undefined &&
+      date !== null &&
+      Number.isNaN(new Date(date).getTime())
+    ) {
+      return res.status(400).json({ message: "Invalid date" });
+    }
+
+    if (tags !== undefined && !Array.isArray(tags)) {
+      return res.status(400).json({ message: "Tags must be an array" });
+    }
+
+    if (title !== undefined) chronicle.title = title;
+    if (date !== undefined) chronicle.date = date;
+    if (content !== undefined) chronicle.content = validation.value;
+    if (mood !== undefined) chronicle.mood = mood;
+    if (tags !== undefined) chronicle.tags = tags;
+
+    await chronicle.save();
+    return res.status(200).json({
+      message: "Chronicle updated successfully!",
+      chronicle,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -164,6 +201,10 @@ const updateChronicleById = async (req, res) => {
 
 const deleteChronicleById = async (req, res) => {
   const chronicleId = req.params.id;
+
+  if (!isValidObjectId(chronicleId)) {
+    return res.status(400).json({ message: "Invalid chronicle id" });
+  }
 
   try {
     const chronicle = await Chronicle.findById(chronicleId);
@@ -176,9 +217,7 @@ const deleteChronicleById = async (req, res) => {
           message: "Chronicle deleted successfully",
         });
       } else {
-        return res.status(403).json({
-          message: "You are not authorized to access this chronicle.",
-        });
+        return res.status(404).json({ message: "No such chronicle exists." });
       }
     }
   } catch (error) {
@@ -237,17 +276,14 @@ const searchChronicle = async (req, res) => {
 
 const getChronicleStats = async (req, res) => {
   try {
-    const totalChronicles = await Chronicle.countDocuments({
-      user: req.user.id,
-    });
-
     const chronicles = await Chronicle.find({
       user: req.user.id,
-    });
+    }).sort({ date: 1 });
+    const totalChronicles = chronicles.length;
 
     let totalWords = 0;
     for (const chronicle of chronicles) {
-      const content = chronicle.content.trim();
+      const content = (chronicle.content || "").trim();
 
       if (!content) {
         continue;
@@ -282,12 +318,9 @@ const getChronicleStats = async (req, res) => {
       },
     });
 
-    const findchronicles = await Chronicle.find({
-      user: req.user.id,
-    });
     const moodCount = {};
 
-    for (const chronicle of findchronicles) {
+    for (const chronicle of chronicles) {
       const mood = (chronicle.mood || "").trim();
 
       if (!mood) {
@@ -311,17 +344,13 @@ const getChronicleStats = async (req, res) => {
       }
     }
 
-    const chronicle = await Chronicle.find({
-      user: req.user.id,
-    }).sort({ date: 1 });
-
-    let currentStreak = chronicle.length > 0 ? 1 : 0;
+    let currentStreak = chronicles.length > 0 ? 1 : 0;
     let longestStreak = currentStreak;
     const oneDay = 24 * 60 * 60 * 1000;
     const uniqueDates = [];
 
-    for (let i = 0; i < chronicle.length; i++) {
-      const newDate = new Date(chronicle[i].date).setHours(0, 0, 0, 0);
+    for (let i = 0; i < chronicles.length; i++) {
+      const newDate = new Date(chronicles[i].date).setHours(0, 0, 0, 0);
 
       if (!uniqueDates.includes(newDate)) {
         uniqueDates.push(newDate);

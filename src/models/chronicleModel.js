@@ -24,6 +24,7 @@ const chronicleSchema = new mongoose.Schema(
       {
         type: String,
         trim: true,
+        required: false,
       },
     ],
 
