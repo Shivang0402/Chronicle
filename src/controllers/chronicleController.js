@@ -3,7 +3,7 @@ const Chronicle = require("../models/chronicleModel"); // model
 
 const createChronicle = async (req, res) => {
   const { title, date, content, mood, tags } = req.body;
-  if (!content || content.trim() === "" || content.trim().length() < 10) {
+  if (!content || content.trim() === "" || content.trim().length < 10) {
     return res
       .status(400)
       .json({ message: "Content must be of atleast 10 charcaters" });
