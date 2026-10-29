@@ -309,12 +309,12 @@ const getChronicleStats = async (req, res) => {
     let oneDay = 24 * 60 * 60 * 1000;
     const uniqueDates = [];
 
-    for (const entry of chronicle) {
+    for (let i = 1; i < chronicle.length; i++) {
       const previous = chronicle[i - 1].date.setHours(0, 0, 0, 0);
       const newDate = chronicle[i].date.setHours(0, 0, 0, 0);
 
       if (uniqueDates !== newDate) {
-        uniqueDates.push(entry);
+        uniqueDates.push(chronicle[i]);
       }
     }
 
