@@ -4,11 +4,11 @@ const MIN_CONTENT_LENGTH = 10;
 const MAX_CONTENT_LENGTH = 100000;
 
 const validateContent = (content) => {
-  if (typeof content !== "string") {
-    return { error: "Content must be a string" };
+  if (content === undefined || content === null) {
+    return { error: "Content is required" };
   }
 
-  const value = content.trim();
+  const value = String(content).trim();
 
   if (value.length < MIN_CONTENT_LENGTH) {
     return {
@@ -338,6 +338,14 @@ const getChronicleStats = async (req, res) => {
       }
       longestStreak = Math.max(currentStreak, longestStreak);
     }
+
+    const todayStart = new Date().setHours(0, 0, 0, 0);
+    const lastDate = uniqueDates[uniqueDates.length - 1];
+
+    if (lastDate !== todayStart && lastDate !== todayStart - oneDay) {
+      currentStreak = 0;
+    }
+
     return res.status(200).json({
       totalChronicles,
       totalWords,
