@@ -10,7 +10,7 @@ const validateContent = (content) => {
 
   const value = String(content).trim();
 
-  if (typeof content === "string" && value.length < MIN_CONTENT_LENGTH) {
+  if (value.length < MIN_CONTENT_LENGTH) {
     return {
       error: `Content must be at least ${MIN_CONTENT_LENGTH} characters`,
     };
