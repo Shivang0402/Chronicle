@@ -304,8 +304,8 @@ const getChronicleStats = async (req, res) => {
       user: req.user.id,
     }).sort({ date: 1 });
 
-    let currentStreak = 1;
-    let longestStreak = 1;
+    let currentStreak = chronicle.length > 0 ? 1 : 0;
+    let longestStreak = currentStreak;
     let oneDay = 24 * 60 * 60 * 1000;
     const uniqueDates = [];
 
