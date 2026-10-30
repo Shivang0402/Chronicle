@@ -13,6 +13,12 @@ const Chronicle = require("../src/models/chronicleModel");
 
 const auth = (token) => ({ Authorization: `Bearer ${token}` });
 
+const binaryParser = (res, callback) => {
+  const chunks = [];
+  res.on("data", (chunk) => chunks.push(chunk));
+  res.on("end", () => callback(null, Buffer.concat(chunks)));
+};
+
 let accountCount = 0;
 
 const createAccount = async () => {
@@ -384,5 +390,135 @@ describe("chronicles", () => {
       .get("/api/chronicle/stats?range=decade")
       .set(auth(token));
     assert.equal(bad.status, 400);
+  });
+
+  it("exports all, selected, or date-filtered entries", async () => {
+    const token = await createAccount();
+
+    const older = await createEntry(token, {
+      title: "Older",
+      date: "2026-03-01",
+      mood: "calm",
+      tags: ["life"],
+      content: "older exported content",
+    });
+    const newer = await createEntry(token, {
+      title: "Newer",
+      date: "2026-03-02",
+      mood: "happy",
+      tags: ["work"],
+      content: "newer exported content",
+    });
+    const olderId = older.body.chronicle._id;
+    const newerId = newer.body.chronicle._id;
+
+    const otherToken = await createAccount();
+    await createEntry(otherToken, {
+      title: "Secret",
+      content: "should never be exported",
+    });
+
+    const json = await request(app)
+      .get("/api/chronicle/export?format=json")
+      .set(auth(token));
+    assert.equal(json.status, 200);
+    assert.match(
+      json.headers["content-disposition"],
+      /chronicles-\d{4}-\d{2}-\d{2}\.json/,
+    );
+    assert.equal(json.body.length, 2);
+    assert.deepEqual(
+      json.body.map((entry) => entry.title),
+      ["Older", "Newer"],
+    );
+    assert.equal(json.body[0].content, "older exported content");
+    assert.equal(json.body[0].user, undefined);
+    assert.ok(json.body[0].id);
+    assert.doesNotMatch(JSON.stringify(json.body), /Secret/);
+
+    const single = await request(app)
+      .get(`/api/chronicle/export?ids=${olderId}`)
+      .set(auth(token));
+    assert.deepEqual(
+      single.body.map((entry) => entry.title),
+      ["Older"],
+    );
+
+    const selected = await request(app)
+      .get(`/api/chronicle/export?ids=${olderId},${newerId}`)
+      .set(auth(token));
+    assert.equal(selected.body.length, 2);
+
+    const range = await request(app)
+      .get("/api/chronicle/export?from=2026-03-02&to=2026-03-02")
+      .set(auth(token));
+    assert.deepEqual(
+      range.body.map((entry) => entry.title),
+      ["Newer"],
+    );
+
+    const year = await request(app)
+      .get("/api/chronicle/export?year=2026")
+      .set(auth(token));
+    assert.equal(year.body.length, 2);
+
+    const emptyYear = await request(app)
+      .get("/api/chronicle/export?year=2020")
+      .set(auth(token));
+    assert.deepEqual(emptyYear.body, []);
+
+    const markdown = await request(app)
+      .get(`/api/chronicle/export?format=markdown&ids=${olderId}`)
+      .set(auth(token));
+    assert.equal(markdown.status, 200);
+    assert.match(markdown.headers["content-type"], /text\/markdown/);
+    assert.match(markdown.headers["content-disposition"], /\.md/);
+    const heading = new Date("2026-03-01").toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    assert.ok(markdown.text.includes(`## ${heading}`));
+    assert.match(markdown.text, /### Older/);
+    assert.match(markdown.text, /_Mood: calm \| Tags: life_/);
+    assert.match(markdown.text, /older exported content/);
+    assert.doesNotMatch(markdown.text, /Secret/);
+
+    const pdf = await request(app)
+      .get(`/api/chronicle/export?format=pdf&ids=${olderId}`)
+      .set(auth(token))
+      .buffer(true)
+      .parse(binaryParser);
+    assert.equal(pdf.status, 200);
+    assert.match(pdf.headers["content-type"], /application\/pdf/);
+    assert.match(pdf.headers["content-disposition"], /\.pdf/);
+    assert.equal(pdf.body.subarray(0, 4).toString(), "%PDF");
+    assert.ok(pdf.body.length > 1000);
+
+    assert.equal(
+      (await request(app).get("/api/chronicle/export?format=xml").set(auth(token)))
+        .status,
+      400,
+    );
+    assert.equal(
+      (await request(app).get("/api/chronicle/export?ids=nope").set(auth(token)))
+        .status,
+      400,
+    );
+    assert.equal(
+      (await request(app).get("/api/chronicle/export?year=abc").set(auth(token)))
+        .status,
+      400,
+    );
+    assert.equal(
+      (
+        await request(app)
+          .get("/api/chronicle/export?from=not-a-date")
+          .set(auth(token))
+      ).status,
+      400,
+    );
+    assert.equal((await request(app).get("/api/chronicle/export")).status, 401);
   });
 });

@@ -8,6 +8,7 @@ const {
   updateChronicleById,
   deleteChronicleById,
   searchChronicle,
+  exportChronicles,
   getMoods,
   getTags,
   getChronicleStats,
@@ -15,6 +16,7 @@ const {
 
 router.get("/stats", authMiddleware, getChronicleStats);
 router.get("/search", authMiddleware, searchChronicle);
+router.get("/export", authMiddleware, exportChronicles);
 router.get("/moods", authMiddleware, getMoods);
 router.get("/tags", authMiddleware, getTags);
 router.post("/", authMiddleware, createChronicle);

@@ -1,3 +1,4 @@
+const PDFDocument = require("pdfkit");
 const Chronicle = require("../models/chronicleModel"); // model
 
 const MIN_CONTENT_LENGTH = 10;
@@ -13,6 +14,50 @@ const dayKey = (value) => {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
+};
+
+const buildPdf = (entries, exportedOn) => {
+  const doc = new PDFDocument({ size: "A4", margin: 50 });
+  const chunks = [];
+
+  doc.on("data", (chunk) => chunks.push(chunk));
+  const done = new Promise((resolve, reject) => {
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+  });
+
+  doc.fontSize(22).text("Chronicle Export", { align: "center" });
+  doc.moveDown(0.3);
+  doc
+    .fontSize(10)
+    .fillColor("#666666")
+    .text(`Exported on ${exportedOn}`, { align: "center" });
+  doc.moveDown(1.5);
+
+  for (const entry of entries) {
+    const heading = new Date(entry.date).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    const meta = [
+      entry.mood && `Mood: ${entry.mood}`,
+      entry.tags?.length && `Tags: ${entry.tags.join(", ")}`,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    doc.fillColor("#111111").fontSize(14).text(heading);
+    if (entry.title) doc.fontSize(12).text(entry.title);
+    if (meta) doc.fontSize(9).fillColor("#666666").text(meta);
+    doc.moveDown(0.4);
+    doc.fontSize(11).fillColor("#111111").text(entry.content);
+    doc.moveDown(1.5);
+  }
+
+  doc.end();
+  return done;
 };
 
 const validateContent = (content) => {
@@ -286,6 +331,120 @@ const searchChronicle = async (req, res) => {
   }
 };
 
+const exportChronicles = async (req, res) => {
+  const format = req.query.format || "json";
+  const { ids, year, from, to } = req.query;
+
+  if (!["json", "markdown", "pdf"].includes(format)) {
+    return res.status(400).json({ message: "Invalid format" });
+  }
+
+  const filter = { user: req.user.id };
+
+  if (ids !== undefined) {
+    const list =
+      typeof ids === "string" ? ids.split(",").map((id) => id.trim()) : [];
+
+    if (!list.length || !list.every(isValidObjectId)) {
+      return res.status(400).json({ message: "Invalid entry id" });
+    }
+    filter._id = { $in: list };
+  } else if (year !== undefined) {
+    const value = Number(year);
+
+    if (!Number.isInteger(value) || value < 1970 || value > 9999) {
+      return res.status(400).json({ message: "Invalid year" });
+    }
+    filter.date = {
+      $gte: new Date(value, 0, 1),
+      $lt: new Date(value + 1, 0, 1),
+    };
+  } else if (from || to) {
+    const start = from ? new Date(from) : null;
+    const end = to ? new Date(to) : null;
+
+    if (
+      (start && Number.isNaN(start.getTime())) ||
+      (end && Number.isNaN(end.getTime()))
+    ) {
+      return res.status(400).json({ message: "Invalid date" });
+    }
+
+    filter.date = {};
+
+    if (start) {
+      start.setHours(0, 0, 0, 0);
+      filter.date.$gte = start;
+    }
+    if (end) {
+      end.setHours(23, 59, 59, 999);
+      filter.date.$lte = end;
+    }
+  }
+
+  try {
+    const chronicles = await Chronicle.find(filter).sort({ date: 1 }).lean();
+    const date = new Date().toISOString().slice(0, 10);
+
+    if (format === "pdf") {
+      const pdf = await buildPdf(chronicles, date);
+
+      res.set(
+        "Content-Disposition",
+        `attachment; filename="chronicles-${date}.pdf"`,
+      );
+      res.type("application/pdf");
+      return res.status(200).send(pdf);
+    }
+
+    if (format === "json") {
+      const data = chronicles.map(({ _id, user, __v, ...entry }) => ({
+        id: _id.toString(),
+        ...entry,
+      }));
+
+      res.set(
+        "Content-Disposition",
+        `attachment; filename="chronicles-${date}.json"`,
+      );
+      return res.status(200).json(data);
+    }
+
+    const entries = chronicles
+      .map((entry) => {
+        const heading = new Date(entry.date).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        const title = entry.title ? `### ${entry.title}\n\n` : "";
+        const meta = [
+          entry.mood && `Mood: ${entry.mood}`,
+          entry.tags?.length && `Tags: ${entry.tags.join(", ")}`,
+        ]
+          .filter(Boolean)
+          .join(" | ");
+
+        return `## ${heading}\n\n${title}${
+          meta ? `_${meta}_\n\n` : ""
+        }${entry.content}\n`;
+      })
+      .join("\n---\n\n");
+
+    res.set(
+      "Content-Disposition",
+      `attachment; filename="chronicles-${date}.md"`,
+    );
+    res.type("text/markdown");
+    return res
+      .status(200)
+      .send(`# Chronicle Export\n\nExported on ${date}\n\n---\n\n${entries}`);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const getMoods = async (req, res) => {
   try {
     const entries = await Chronicle.find({ user: req.user.id }).select("mood");
@@ -518,6 +677,7 @@ module.exports = {
   updateChronicleById,
   deleteChronicleById,
   searchChronicle,
+  exportChronicles,
   getMoods,
   getTags,
   getChronicleStats,
