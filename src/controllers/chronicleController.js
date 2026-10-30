@@ -69,67 +69,57 @@ const createChronicle = async (req, res) => {
   }
 };
 
-const getChroniclesForUser = async (userId, query = {}) => {
-  const mood = typeof query.mood === "string" ? query.mood : "";
-  const tag = typeof query.tag === "string" ? query.tag : "";
-  const date = typeof query.date === "string" ? query.date : "";
-  const page = Math.max(Number(query.page) || 1, 1);
-  const limit = Math.min(Math.max(Number(query.limit) || 10, 1), 20);
-  const skip = (page - 1) * limit;
-  const filter = { user: userId };
-  const sortOption = { date: query.sort === "oldest" ? 1 : -1 };
-
-  if (mood) {
-    filter.mood = {
-      $regex: escapeRegex(mood),
-      $options: "i",
-    };
-  }
-  if (tag) {
-    filter.tags = {
-      $regex: escapeRegex(tag),
-      $options: "i",
-    };
-  }
-  if (date) {
-    const start = new Date(date);
-
-    if (Number.isNaN(start.getTime())) {
-      return { error: "Invalid date filter" };
-    }
-
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
-    filter.date = { $gte: start, $lt: end };
-  }
-
-  const chronicles = await Chronicle.find(filter)
-    .sort(sortOption)
-    .skip(skip)
-    .limit(limit);
-
-  const totalChronicles = await Chronicle.countDocuments(filter);
-
-  const totalPages = Math.ceil(totalChronicles / limit);
-  return {
-    page,
-    limit,
-    totalChronicles,
-    totalPages,
-    chronicles,
-  };
-};
-
 const getChronicles = async (req, res) => {
-  try {
-    const result = await getChroniclesForUser(req.user.id, req.query);
+  const mood = typeof req.query.mood === "string" ? req.query.mood : "";
+  const tag = typeof req.query.tag === "string" ? req.query.tag : "";
+  const date = typeof req.query.date === "string" ? req.query.date : "";
+  const page = Math.max(Number(req.query.page) || 1, 1);
+  const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
+  const skip = (page - 1) * limit;
+  const filter = { user: req.user.id };
+  const sortOption = { date: req.query.sort === "oldest" ? 1 : -1 };
 
-    if (result.error) {
-      return res.status(400).json({ message: result.error });
+  try {
+    if (mood) {
+      filter.mood = {
+        $regex: escapeRegex(mood),
+        $options: "i",
+      };
+    }
+    if (tag) {
+      filter.tags = {
+        $regex: escapeRegex(tag),
+        $options: "i",
+      };
+    }
+    if (date) {
+      const start = new Date(date);
+
+      if (Number.isNaN(start.getTime())) {
+        return res.status(400).json({ message: "Invalid date filter" });
+      }
+
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 1);
+      filter.date = { $gte: start, $lt: end };
     }
 
-    return res.status(200).json(result);
+    const chronicles = await Chronicle.find(filter)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+
+    const totalChronicles = await Chronicle.countDocuments(filter);
+
+    const totalPages = Math.ceil(totalChronicles / limit);
+    return res.status(200).json({
+      page,
+      limit,
+      totalChronicles,
+      totalPages,
+      chronicles,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -284,10 +274,11 @@ const searchChronicle = async (req, res) => {
   }
 };
 
-const getStatsForUser = async (userId) => {
-  const chronicles = await Chronicle.find({
-    user: userId,
-  }).sort({ date: 1 });
+const getChronicleStats = async (req, res) => {
+  try {
+    const chronicles = await Chronicle.find({
+      user: req.user.id,
+    }).sort({ date: 1 });
     const totalChronicles = chronicles.length;
 
     let totalWords = 0;
@@ -312,7 +303,7 @@ const getStatsForUser = async (userId) => {
     const endYear = new Date(year + 1, 0, 1);
 
     const entriesThisMonth = await Chronicle.countDocuments({
-      user: userId,
+      user: req.user.id,
       date: {
         $gte: startDate,
         $lt: endDate,
@@ -320,7 +311,7 @@ const getStatsForUser = async (userId) => {
     });
 
     const entriesThisYear = await Chronicle.countDocuments({
-      user: userId,
+      user: req.user.id,
       date: {
         $gte: startYear,
         $lt: endYear,
@@ -353,53 +344,54 @@ const getStatsForUser = async (userId) => {
       }
     }
 
-    let currentStreak = chronicles.length > 0 ? 1 : 0;
-    let longestStreak = currentStreak;
     const oneDay = 24 * 60 * 60 * 1000;
+    const toDayStart = (value) => {
+      const day = new Date(value);
+      return Date.UTC(day.getFullYear(), day.getMonth(), day.getDate());
+    };
+
     const uniqueDates = [];
 
-    for (let i = 0; i < chronicles.length; i++) {
-      const newDate = new Date(chronicles[i].date).setHours(0, 0, 0, 0);
+    for (const chronicle of chronicles) {
+      const dayStart = toDayStart(chronicle.date);
 
-      if (!uniqueDates.includes(newDate)) {
-        uniqueDates.push(newDate);
+      if (!uniqueDates.includes(dayStart)) {
+        uniqueDates.push(dayStart);
       }
     }
 
-    for (let i = 1; i < uniqueDates.length; i++) {
-      const difference = uniqueDates[i] - uniqueDates[i - 1];
+    let currentStreak = uniqueDates.length > 0 ? 1 : 0;
+    let longestStreak = currentStreak;
 
-      if (difference === oneDay) {
+    for (let i = 1; i < uniqueDates.length; i++) {
+      if (uniqueDates[i] - uniqueDates[i - 1] === oneDay) {
         currentStreak++;
       } else {
         currentStreak = 1;
       }
-      longestStreak = Math.max(currentStreak, longestStreak);
+      longestStreak = Math.max(longestStreak, currentStreak);
     }
 
-    const todayStart = new Date().setHours(0, 0, 0, 0);
+    const todayStart = toDayStart(new Date());
     const lastDate = uniqueDates[uniqueDates.length - 1];
 
-    if (lastDate !== todayStart && lastDate !== todayStart - oneDay) {
+    if (
+      uniqueDates.length === 0 ||
+      (lastDate !== todayStart && lastDate !== todayStart - oneDay)
+    ) {
       currentStreak = 0;
     }
 
-  return {
-    totalChronicles,
-    totalWords,
-    averageWords,
-    entriesThisMonth,
-    entriesThisYear,
-    mostCommonMood,
-    currentStreak,
-    longestStreak,
-  };
-};
-
-const getChronicleStats = async (req, res) => {
-  try {
-    const stats = await getStatsForUser(req.user.id);
-    return res.status(200).json(stats);
+    return res.status(200).json({
+      totalChronicles,
+      totalWords,
+      averageWords,
+      entriesThisMonth,
+      entriesThisYear,
+      mostCommonMood,
+      currentStreak,
+      longestStreak,
+    });
   } catch (err) {
     return res.status(500).json({
       message: err.message,
@@ -410,11 +402,9 @@ const getChronicleStats = async (req, res) => {
 module.exports = {
   createChronicle,
   getChronicles,
-  getChroniclesForUser,
   getChronicleById,
   updateChronicleById,
   deleteChronicleById,
   searchChronicle,
   getChronicleStats,
-  getStatsForUser,
 };
