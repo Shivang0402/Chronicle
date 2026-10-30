@@ -1,8 +1,10 @@
+const cors = require("cors");
 const express = require("express");
 const app = express();
 
 const authRoutes = require("./routes/authRoute");
 const chronicleRoutes = require("./routes/chronicleRoutes");
+app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
