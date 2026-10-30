@@ -40,5 +40,9 @@ const chronicleSchema = new mongoose.Schema(
   },
 );
 
+chronicleSchema.index({ user: 1, date: -1 });
+chronicleSchema.index({ user: 1, mood: 1 });
+chronicleSchema.index({ user: 1, tags: 1 });
+
 const Chronicle = mongoose.model("Chronicle", chronicleSchema);
 module.exports = Chronicle;
