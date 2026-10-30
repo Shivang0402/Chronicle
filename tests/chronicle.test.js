@@ -9,6 +9,7 @@ const {
   findToken,
 } = require("./helper");
 const app = require("../src/app");
+const Chronicle = require("../src/models/chronicleModel");
 
 const auth = (token) => ({ Authorization: `Bearer ${token}` });
 
@@ -61,6 +62,16 @@ describe("chronicles", () => {
   before(setup);
   after(teardown);
   beforeEach(clear);
+
+  it("creates indexes for common queries", async () => {
+    await Chronicle.init();
+    const indexes = await Chronicle.collection.indexes();
+    const keys = indexes.map((index) => JSON.stringify(index.key));
+
+    assert.ok(keys.includes(JSON.stringify({ user: 1, date: -1 })));
+    assert.ok(keys.includes(JSON.stringify({ user: 1, mood: 1 })));
+    assert.ok(keys.includes(JSON.stringify({ user: 1, tags: 1 })));
+  });
 
   it("creates a chronicle and rejects invalid input", async () => {
     const token = await createAccount();
@@ -301,5 +312,77 @@ describe("chronicles", () => {
     assert.equal(stats.status, 200);
     assert.equal(stats.body.currentStreak, 0);
     assert.equal(stats.body.longestStreak, 2);
+  });
+
+  it("lists the owner's moods and tags with counts", async () => {
+    const token = await createAccount();
+
+    await createEntry(token, { mood: "happy", tags: ["work", "daily"] });
+    await createEntry(token, { mood: "happy", tags: ["work"] });
+    await createEntry(token, { mood: "sad", tags: ["home"] });
+
+    const moods = await request(app)
+      .get("/api/chronicle/moods")
+      .set(auth(token));
+    assert.equal(moods.status, 200);
+    assert.deepEqual(
+      Object.fromEntries(moods.body.map((item) => [item.mood, item.count])),
+      { happy: 2, sad: 1 },
+    );
+
+    const tags = await request(app).get("/api/chronicle/tags").set(auth(token));
+    assert.equal(tags.status, 200);
+    assert.deepEqual(
+      Object.fromEntries(tags.body.map((item) => [item.tag, item.count])),
+      { work: 2, daily: 1, home: 1 },
+    );
+
+    const otherToken = await createAccount();
+    const otherMoods = await request(app)
+      .get("/api/chronicle/moods")
+      .set(auth(otherToken));
+    assert.deepEqual(otherMoods.body, []);
+  });
+
+  it("returns range insights: activity, mood breakdown and trend", async () => {
+    const token = await createAccount();
+
+    await createEntry(token, { date: daysAgo(0), mood: "happy" });
+    await createEntry(token, { date: daysAgo(1), mood: "sad" });
+    await createEntry(token, { date: daysAgo(2), mood: "happy" });
+
+    const all = await request(app)
+      .get("/api/chronicle/stats?range=all")
+      .set(auth(token));
+
+    assert.equal(all.status, 200);
+    assert.equal(all.body.range, "all");
+    assert.equal(all.body.activity.length, 3);
+    assert.equal(
+      all.body.activity.reduce((sum, day) => sum + day.entries, 0),
+      3,
+    );
+    assert.deepEqual(
+      Object.fromEntries(
+        all.body.moodBreakdown.map((item) => [item.mood, item.count]),
+      ),
+      { happy: 2, sad: 1 },
+    );
+    assert.equal(
+      all.body.trend.reduce((sum, bucket) => sum + bucket.entries, 0),
+      3,
+    );
+    assert.equal(all.body.currentStreak, 3);
+
+    const week = await request(app)
+      .get("/api/chronicle/stats?range=week")
+      .set(auth(token));
+    assert.equal(week.status, 200);
+    assert.equal(new Date(week.body.rangeStart).getDay(), 1);
+
+    const bad = await request(app)
+      .get("/api/chronicle/stats?range=decade")
+      .set(auth(token));
+    assert.equal(bad.status, 400);
   });
 });

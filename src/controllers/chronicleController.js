@@ -3,6 +3,18 @@ const Chronicle = require("../models/chronicleModel"); // model
 const MIN_CONTENT_LENGTH = 10;
 const MAX_CONTENT_LENGTH = 100000;
 
+const countWords = (content) => {
+  const text = String(content || "").trim();
+  return text ? text.split(/\s+/).length : 0;
+};
+
+const dayKey = (value) => {
+  const date = new Date(value);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+};
+
 const validateContent = (content) => {
   if (content === undefined || content === null) {
     return { error: "Content is required" };
@@ -274,6 +286,46 @@ const searchChronicle = async (req, res) => {
   }
 };
 
+const getMoods = async (req, res) => {
+  try {
+    const entries = await Chronicle.find({ user: req.user.id }).select("mood");
+    const counts = {};
+
+    for (const { mood } of entries) {
+      if (mood) counts[mood] = (counts[mood] || 0) + 1;
+    }
+
+    const moods = Object.entries(counts)
+      .map(([mood, count]) => ({ mood, count }))
+      .sort((a, b) => b.count - a.count);
+
+    return res.status(200).json(moods);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getTags = async (req, res) => {
+  try {
+    const entries = await Chronicle.find({ user: req.user.id }).select("tags");
+    const counts = {};
+
+    for (const { tags = [] } of entries) {
+      for (const tag of tags) {
+        if (tag) counts[tag] = (counts[tag] || 0) + 1;
+      }
+    }
+
+    const tags = Object.entries(counts)
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count);
+
+    return res.status(200).json(tags);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const getChronicleStats = async (req, res) => {
   try {
     const chronicles = await Chronicle.find({
@@ -281,16 +333,10 @@ const getChronicleStats = async (req, res) => {
     }).sort({ date: 1 });
     const totalChronicles = chronicles.length;
 
-    let totalWords = 0;
-    for (const chronicle of chronicles) {
-      const content = (chronicle.content || "").trim();
-
-      if (!content) {
-        continue;
-      }
-
-      totalWords += content.split(/\s+/).length;
-    }
+    const totalWords = chronicles.reduce(
+      (sum, chronicle) => sum + countWords(chronicle.content),
+      0,
+    );
     const averageWords =
       totalChronicles === 0 ? 0 : Math.round(totalWords / totalChronicles);
 
@@ -382,6 +428,61 @@ const getChronicleStats = async (req, res) => {
       currentStreak = 0;
     }
 
+    const range = req.query.range || "month";
+
+    if (!["week", "month", "year", "all"].includes(range)) {
+      return res.status(400).json({ message: "Invalid range" });
+    }
+
+    const now = new Date();
+    let rangeStart = null;
+
+    if (range === "week") {
+      rangeStart = new Date(now);
+      rangeStart.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+      rangeStart.setHours(0, 0, 0, 0);
+    } else if (range === "month") {
+      rangeStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else if (range === "year") {
+      rangeStart = new Date(now.getFullYear(), 0, 1);
+    }
+
+    const ranged = rangeStart
+      ? chronicles.filter((chronicle) => new Date(chronicle.date) >= rangeStart)
+      : chronicles;
+
+    const activity = {};
+    const moodBreakdown = {};
+    const trend = {};
+    const monthly = range === "year" || range === "all";
+
+    for (const chronicle of ranged) {
+      const words = countWords(chronicle.content);
+      const date = new Date(chronicle.date);
+      const day = dayKey(date);
+      const mood = (chronicle.mood || "").trim();
+
+      activity[day] = activity[day] || { date: day, entries: 0, words: 0 };
+      activity[day].entries += 1;
+      activity[day].words += words;
+
+      if (mood) moodBreakdown[mood] = (moodBreakdown[mood] || 0) + 1;
+
+      let label = day;
+
+      if (monthly) {
+        label = day.slice(0, 7);
+      } else {
+        const start = new Date(date);
+        start.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+        label = dayKey(start);
+      }
+
+      trend[label] = trend[label] || { label, entries: 0, words: 0 };
+      trend[label].entries += 1;
+      trend[label].words += words;
+    }
+
     return res.status(200).json({
       totalChronicles,
       totalWords,
@@ -391,6 +492,17 @@ const getChronicleStats = async (req, res) => {
       mostCommonMood,
       currentStreak,
       longestStreak,
+      range,
+      rangeStart,
+      activity: Object.values(activity).sort((a, b) =>
+        a.date.localeCompare(b.date),
+      ),
+      moodBreakdown: Object.entries(moodBreakdown)
+        .map(([mood, count]) => ({ mood, count }))
+        .sort((a, b) => b.count - a.count),
+      trend: Object.values(trend).sort((a, b) =>
+        a.label.localeCompare(b.label),
+      ),
     });
   } catch (err) {
     return res.status(500).json({
@@ -406,5 +518,7 @@ module.exports = {
   updateChronicleById,
   deleteChronicleById,
   searchChronicle,
+  getMoods,
+  getTags,
   getChronicleStats,
 };
