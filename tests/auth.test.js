@@ -23,6 +23,20 @@ const registerQuiet = async (body = credentials) => {
   return result;
 };
 
+const verifyEmail = (logs) =>
+  request(app).get(
+    `/api/auth/verify-email?token=${findToken(logs, "verify-email")}`,
+  );
+
+const registerVerified = async (body = credentials) => {
+  let result;
+  const logs = await captureLogs(async () => {
+    result = await register(body);
+  });
+  await verifyEmail(logs);
+  return result;
+};
+
 const login = (body) => request(app).post("/api/auth/login").send(body);
 
 const auth = (token) => ({ Authorization: `Bearer ${token}` });
@@ -124,8 +138,32 @@ describe("auth", () => {
     assert.match(unknown.body.message, /If an unverified account/);
   });
 
+  it("blocks login until the email is verified", async () => {
+    let registered;
+    const logs = await captureLogs(async () => {
+      registered = await register();
+    });
+    assert.equal(registered.status, 201);
+
+    const blocked = await login({
+      email: credentials.email,
+      password: credentials.password,
+    });
+    assert.equal(blocked.status, 403);
+    assert.match(blocked.body.message, /verify your email/i);
+
+    await verifyEmail(logs);
+
+    const allowed = await login({
+      email: credentials.email,
+      password: credentials.password,
+    });
+    assert.equal(allowed.status, 200);
+    assert.ok(allowed.body.token);
+  });
+
   it("logs in and reads the authenticated profile", async () => {
-    await registerQuiet();
+    await registerVerified();
 
     const wrong = await login({
       email: credentials.email,
@@ -152,7 +190,7 @@ describe("auth", () => {
   });
 
   it("resets a password through an emailed single-use token", async () => {
-    await registerQuiet();
+    await registerVerified();
 
     const logs = await captureLogs(() =>
       request(app)
@@ -201,7 +239,7 @@ describe("auth", () => {
   });
 
   it("changes the password for a logged-in user", async () => {
-    await registerQuiet();
+    await registerVerified();
     const session = await login({
       email: credentials.email,
       password: credentials.password,

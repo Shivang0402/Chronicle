@@ -1,7 +1,13 @@
 const { before, after, beforeEach, describe, it } = require("node:test");
 const assert = require("node:assert/strict");
 const request = require("supertest");
-const { setup, teardown, clear, captureLogs } = require("./helper");
+const {
+  setup,
+  teardown,
+  clear,
+  captureLogs,
+  findToken,
+} = require("./helper");
 const app = require("../src/app");
 
 const auth = (token) => ({ Authorization: `Bearer ${token}` });
@@ -14,13 +20,17 @@ const createAccount = async () => {
   const username = `writer${accountCount}`;
   const password = "password123";
 
-  await captureLogs(() =>
+  const logs = await captureLogs(() =>
     request(app).post("/api/auth/register").send({
       name: "Writer",
       username,
       email,
       password,
     }),
+  );
+
+  await request(app).get(
+    `/api/auth/verify-email?token=${findToken(logs, "verify-email")}`,
   );
 
   const session = await request(app)
