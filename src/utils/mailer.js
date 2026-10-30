@@ -15,22 +15,37 @@ const transport = nodemailer.createTransport(
     : { jsonTransport: true },
 );
 
-const sendEmail = async (user, token) => {
-  const baseUrl =
-    process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`;
-  const link = `${baseUrl}/api/auth/verify-email?token=${token}`;
+const appUrl = () =>
+  process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`;
 
+const sendMail = async (user, link, subject, message) => {
   const mail = await transport.sendMail({
     from: process.env.SMTP_FROM || "Chronicle <no-reply@chronicle.local>",
     to: user.email,
-    subject: "Verify your Chronicle account",
-    text: `Hi ${user.name},\n\nVerify your email by opening this link:\n${link}\n\nThis link expires in 24 hours.`,
-    html: `<p>Hi ${user.name},</p><p>Verify your email by opening this link:</p><p><a href="${link}">Verify my email</a></p><p>This link expires in 24 hours.</p>`,
+    subject,
+    text: `Hi ${user.name},\n\n${message}\n${link}\n\nIf you did not request this, ignore this email.`,
+    html: `<p>Hi ${user.name},</p><p>${message}</p><p><a href="${link}">${subject}</a></p><p>If you did not request this, ignore this email.</p>`,
   });
 
   if (mail.message) {
-    console.log(`Verification link for ${user.email}: ${link}`);
+    console.log(`${subject} link for ${user.email}: ${link}`);
   }
 };
 
-module.exports = sendEmail;
+const sendVerificationEmail = (user, token) =>
+  sendMail(
+    user,
+    `${appUrl()}/api/auth/verify-email?token=${token}`,
+    "Verify your Chronicle account",
+    "Verify your email by opening this link:",
+  );
+
+const sendPasswordResetEmail = (user, token) =>
+  sendMail(
+    user,
+    `${appUrl()}/reset-password?token=${token}`,
+    "Reset your Chronicle password",
+    "Reset your password by opening this link:",
+  );
+
+module.exports = { sendVerificationEmail, sendPasswordResetEmail };

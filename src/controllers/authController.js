@@ -2,9 +2,13 @@ const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const sendEmail = require("../utils/mailer");
+const {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+} = require("../utils/mailer");
 
 const tokenLifetime = 24 * 60 * 60 * 1000;
+const resetLifetime = 60 * 60 * 1000;
 
 const createToken = () => crypto.randomBytes(32).toString("hex");
 
@@ -18,9 +22,22 @@ const startVerification = async (user) => {
   await user.save();
 
   try {
-    await sendEmail(user, token);
+    await sendVerificationEmail(user, token);
   } catch (err) {
     console.error("Verification email could not be sent:", err.message);
+  }
+};
+
+const startPasswordReset = async (user) => {
+  const token = createToken();
+  user.passwordResetToken = hashToken(token);
+  user.passwordResetExpires = new Date(Date.now() + resetLifetime);
+  await user.save();
+
+  try {
+    await sendPasswordResetEmail(user, token);
+  } catch (err) {
+    console.error("Password reset email could not be sent:", err.message);
   }
 };
 
@@ -185,6 +202,115 @@ const resendVerification = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  const message =
+    "If an account exists for this email, a password reset link has been sent.";
+
+  if (typeof email !== "string" || !email.trim()) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const user = await userModel.findOne({
+      email: email.trim().toLowerCase(),
+    });
+
+    if (user) {
+      await startPasswordReset(user);
+    }
+
+    return res.status(200).json({ message });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Could not send password reset email" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+
+  if (typeof token !== "string" || !token) {
+    return res.status(400).json({ message: "Reset token is required" });
+  }
+
+  if (typeof password !== "string" || password.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 8 characters" });
+  }
+
+  try {
+    const result = await userModel.updateOne(
+      {
+        passwordResetToken: hashToken(token),
+        passwordResetExpires: { $gt: new Date() },
+      },
+      {
+        $set: { password: await bcrypt.hash(password, 12) },
+        $unset: { passwordResetToken: 1, passwordResetExpires: 1 },
+      },
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(400).json({ message: "Invalid or expired reset link" });
+    }
+
+    return res.status(200).json({ message: "Password reset successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: "Could not reset password" });
+  }
+};
+
+const changePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (
+    typeof currentPassword !== "string" ||
+    typeof newPassword !== "string" ||
+    !currentPassword ||
+    !newPassword
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Current and new passwords are required" });
+  }
+
+  if (newPassword.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 8 characters" });
+  }
+
+  try {
+    const user = await userModel.findById(req.user.id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Current password is incorrect" });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        message: "New password must be different from the current password",
+      });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
+
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: "Could not change password" });
+  }
+};
+
 const getProfile = async (req, res) => {
   try {
     const user = await userModel.findById(req.user.id).select("-password");
@@ -204,5 +330,8 @@ module.exports = {
   loginUser,
   verifyEmail,
   resendVerification,
+  forgotPassword,
+  resetPassword,
+  changePassword,
   getProfile,
 };
