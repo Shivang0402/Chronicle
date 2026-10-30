@@ -400,7 +400,7 @@ describe("chronicles", () => {
       date: "2026-03-01",
       mood: "calm",
       tags: ["life"],
-      content: "older exported content",
+      content: "older exported content 😀",
     });
     const newer = await createEntry(token, {
       title: "Newer",
@@ -431,7 +431,7 @@ describe("chronicles", () => {
       json.body.map((entry) => entry.title),
       ["Older", "Newer"],
     );
-    assert.equal(json.body[0].content, "older exported content");
+    assert.equal(json.body[0].content, "older exported content 😀");
     assert.equal(json.body[0].user, undefined);
     assert.ok(json.body[0].id);
     assert.doesNotMatch(JSON.stringify(json.body), /Secret/);

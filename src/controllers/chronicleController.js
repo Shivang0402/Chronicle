@@ -1,4 +1,4 @@
-const PDFDocument = require("pdfkit");
+const puppeteer = require("puppeteer");
 const Chronicle = require("../models/chronicleModel"); // model
 
 const MIN_CONTENT_LENGTH = 10;
@@ -16,48 +16,78 @@ const dayKey = (value) => {
   return `${date.getFullYear()}-${month}-${day}`;
 };
 
-const buildPdf = (entries, exportedOn) => {
-  const doc = new PDFDocument({ size: "A4", margin: 50 });
-  const chunks = [];
+const escapeHtml = (value) =>
+  String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 
-  doc.on("data", (chunk) => chunks.push(chunk));
-  const done = new Promise((resolve, reject) => {
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
-    doc.on("error", reject);
+const buildEntryHtml = (entry) => {
+  const heading = new Date(entry.date).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const meta = [
+    entry.mood && `Mood: ${entry.mood}`,
+    entry.tags?.length && `Tags: ${entry.tags.join(", ")}`,
+  ]
+    .filter(Boolean)
+    .join(" | ");
+
+  return `<section class="entry">
+    <p class="date">${escapeHtml(heading)}</p>
+    ${entry.title ? `<p class="title">${escapeHtml(entry.title)}</p>` : ""}
+    ${meta ? `<p class="meta">${escapeHtml(meta)}</p>` : ""}
+    <p class="content">${escapeHtml(entry.content)}</p>
+  </section>`;
+};
+
+const buildPdf = async (entries, exportedOn) => {
+  const html = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: Georgia, "Times New Roman", serif; color: #111111; line-height: 1.6; }
+  h1 { margin: 0 0 4px; font-size: 26px; text-align: center; }
+  .exported { margin: 0 0 28px; color: #666666; font-size: 12px; text-align: center; }
+  .entry { margin: 0 0 24px; padding-top: 20px; border-top: 1px solid #dddddd; page-break-inside: avoid; }
+  .entry:first-of-type { padding-top: 0; border-top: none; }
+  .date { margin: 0 0 4px; font-size: 16px; font-weight: bold; }
+  .title { margin: 0 0 6px; font-size: 18px; font-style: italic; }
+  .meta { margin: 0 0 12px; color: #666666; font-size: 12px; }
+  .content { margin: 0; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+  <h1>Chronicle Export</h1>
+  <p class="exported">Exported on ${escapeHtml(exportedOn)}</p>
+  ${entries.map(buildEntryHtml).join("\n  ")}
+</body>
+</html>`;
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
-  doc.fontSize(22).text("Chronicle Export", { align: "center" });
-  doc.moveDown(0.3);
-  doc
-    .fontSize(10)
-    .fillColor("#666666")
-    .text(`Exported on ${exportedOn}`, { align: "center" });
-  doc.moveDown(1.5);
+  try {
+    const page = await browser.newPage();
 
-  for (const entry of entries) {
-    const heading = new Date(entry.date).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+    await page.setContent(html, { waitUntil: "load" });
+    await page.evaluate(() => document.fonts.ready.then(() => true));
+    const pdf = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: { top: "20mm", right: "18mm", bottom: "20mm", left: "18mm" },
     });
-    const meta = [
-      entry.mood && `Mood: ${entry.mood}`,
-      entry.tags?.length && `Tags: ${entry.tags.join(", ")}`,
-    ]
-      .filter(Boolean)
-      .join(" | ");
 
-    doc.fillColor("#111111").fontSize(14).text(heading);
-    if (entry.title) doc.fontSize(12).text(entry.title);
-    if (meta) doc.fontSize(9).fillColor("#666666").text(meta);
-    doc.moveDown(0.4);
-    doc.fontSize(11).fillColor("#111111").text(entry.content);
-    doc.moveDown(1.5);
+    return Buffer.from(pdf);
+  } finally {
+    await browser.close();
   }
-
-  doc.end();
-  return done;
 };
 
 const validateContent = (content) => {
