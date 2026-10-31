@@ -16,10 +16,12 @@ const transport = nodemailer.createTransport(
 );
 
 const appUrl = () =>
-  process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`;
+  process.env.CLIENT_URL ||
+  process.env.APP_URL ||
+  `http://localhost:${process.env.PORT || 3000}`;
 
 const sendMail = async (user, link, subject, message) => {
-  const mail = await transport.sendMail({
+  await transport.sendMail({
     from: process.env.SMTP_FROM || "Chronicle <no-reply@chronicle.local>",
     to: user.email,
     subject,
@@ -27,7 +29,7 @@ const sendMail = async (user, link, subject, message) => {
     html: `<p>Hi ${user.name},</p><p>${message}</p><p><a href="${link}">${subject}</a></p><p>If you did not request this, ignore this email.</p>`,
   });
 
-  if (mail.message) {
+  if (!process.env.SMTP_HOST) {
     console.log(`${subject} link for ${user.email}: ${link}`);
   }
 };
@@ -35,7 +37,7 @@ const sendMail = async (user, link, subject, message) => {
 const sendVerificationEmail = (user, token) =>
   sendMail(
     user,
-    `${appUrl()}/api/auth/verify-email?token=${token}`,
+    `${appUrl()}/verify-email?token=${token}`,
     "Verify your Chronicle account",
     "Verify your email by opening this link:",
   );
