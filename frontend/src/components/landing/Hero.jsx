@@ -1,9 +1,14 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, ArrowRight, BookOpen, Lock } from "lucide-react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { ArrowDown, ArrowRight, BookOpen } from "lucide-react";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
-import Reveal from "../ui/Reveal";
+import Reveal, { RevealImage } from "../ui/Reveal";
 import RotatingWord from "../ui/RotatingWord";
 
 const provenance = [
@@ -14,15 +19,24 @@ const provenance = [
 
 export default function Hero() {
   const imageRef = useRef(null);
+  const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: imageRef,
     offset: ["start end", "end start"],
   });
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-4%", "5%"]);
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.06, 1.01]);
+  const imageY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    reduce ? ["0%", "0%"] : ["-4%", "5%"],
+  );
+  const imageScale = useTransform(
+    scrollYProgress,
+    [0, 1],
+    reduce ? [1, 1] : [1.06, 1.01],
+  );
 
   return (
-    <section className="relative overflow-hidden border-b border-hairline pb-20 pt-8 md:pb-32 md:pt-12">
+    <section className="relative overflow-hidden pb-20 pt-8 md:pb-32 md:pt-12">
       <div className="pointer-events-none absolute inset-0 paper-texture opacity-80" />
       <div className="pointer-events-none absolute -left-40 top-32 h-96 w-96 rounded-full bg-sage-light/25 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 top-0 h-80 w-80 rounded-full bg-warm-beige/70 blur-3xl" />
@@ -52,19 +66,22 @@ export default function Hero() {
             <AnimatedText
               onMount
               delay={0.22}
-              stagger={0.055}
+              stagger={0.045}
+              lineStagger={0.16}
               as="h1"
               className="max-w-4xl font-serif text-[42px] leading-[1.08] tracking-tight text-charcoal sm:text-6xl lg:text-[74px]"
-              parts={[
-                { text: "Some moments deserve" },
-                { text: "more", italic: true, className: "text-sage" },
-                { text: "than a memory." },
+              lines={[
+                [{ text: "Some moments deserve" }],
+                [
+                  { text: "more", italic: true, className: "text-sage" },
+                  { text: "than a memory." },
+                ],
               ]}
             />
 
             <Reveal
-              delay={0.6}
-              y={20}
+              delay={0.65}
+              y={18}
               blur={false}
               className="mt-8 max-w-2xl"
             >
@@ -83,7 +100,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{
                 duration: 0.8,
-                delay: 0.85,
+                delay: 0.9,
                 ease: [0.16, 1, 0.3, 1],
               }}
               className="mt-10 flex flex-wrap items-center gap-4"
@@ -123,47 +140,44 @@ export default function Hero() {
         </div>
 
         <div className="mt-16 grid grid-cols-1 items-center gap-8 md:mt-24 lg:grid-cols-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 1,
-              delay: 0.75,
-              ease: [0.16, 1, 0.3, 1],
-            }}
+          <div
             className="group relative lg:col-span-7"
             ref={imageRef}
           >
-            <div className="aspect-[16/10] overflow-hidden bg-hairline">
-              <motion.img
-                src="/images/hero-journal.jpg"
-                alt="Open linen journal on a sunlit wooden writing desk"
-                style={{ y: imageY, scale: imageScale }}
-                className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.035]"
-              />
-            </div>
-            <div className="mt-3 flex items-center justify-between gap-4 text-[11px] text-muted-gray">
+            <RevealImage onMount delay={0.75} y={0} duration={1}>
+              <div className="aspect-[16/10] overflow-hidden bg-hairline">
+                <motion.img
+                  src="/images/hero-journal.jpg"
+                  alt="Open linen journal on a sunlit wooden writing desk"
+                  style={{ y: imageY, scale: imageScale }}
+                  className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.035]"
+                />
+              </div>
+            </RevealImage>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 1.15 }}
+              className="mt-3 flex items-center justify-between gap-4 text-[11px] text-muted-gray"
+            >
               <span className="font-serif italic text-charcoal">
                 Study of morning light and desk journal
               </span>
               <span className="uppercase tracking-wider">October 14th</span>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 42, rotate: 0.6 }}
-            animate={{ opacity: 1, y: 0, rotate: 0 }}
-            transition={{
-              duration: 1.1,
-              delay: 0.95,
-              ease: [0.16, 1, 0.3, 1],
-            }}
+          <RevealImage
+            onMount
+            delay={0.95}
+            y={24}
+            duration={1.05}
             className="relative z-10 lg:col-span-5 lg:-ml-12"
           >
             <div className="relative border border-hairline/80 bg-paper p-8 shadow-paper sm:p-10 lg:p-12">
               <div className="absolute -top-3 right-7 flex items-center gap-2 rounded-full border border-hairline bg-paper px-3 py-1.5 text-[10px] uppercase tracking-wider text-sage shadow-sm">
                 <span className="h-1.5 w-1.5 animate-soft-pulse rounded-full bg-sage" />
-                Autosaved
+                Sample entry
               </div>
 
               <div className="flex items-center justify-between border-b border-hairline pb-6 text-[11px]">
@@ -191,8 +205,8 @@ export default function Hero() {
                   <span>3 min read</span>
                 </div>
                 <span className="flex items-center gap-1.5 text-sage">
-                  <Lock className="h-3 w-3" />
-                  Private ledger
+                  <BookOpen className="h-3 w-3" />
+                  Entry preview
                 </span>
               </div>
             </div>
@@ -204,9 +218,9 @@ export default function Hero() {
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             >
               <BookOpen className="h-3.5 w-3.5 text-sage" />
-              Written for no one else
+              A quiet place to write
             </motion.div>
-          </motion.div>
+          </RevealImage>
         </div>
 
         <motion.div

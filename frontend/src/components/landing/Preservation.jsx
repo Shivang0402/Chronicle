@@ -1,20 +1,29 @@
 import { motion } from "framer-motion";
-import { BookOpen, Download, FileJson, FileText } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpen,
+  FileJson,
+  FileText,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
-import Reveal from "../ui/Reveal";
+import Reveal, {
+  RevealGroup,
+  RevealImage,
+  RevealItem,
+} from "../ui/Reveal";
 
 const formats = [
-  { label: "Styled Printable PDF", icon: FileText },
+  { label: "PDF (.pdf)", icon: FileText },
   { label: "Markdown (.md)", icon: FileText },
-  { label: "Full JSON Schema", icon: FileJson },
+  { label: "JSON (.json)", icon: FileJson },
 ];
 
 export default function Preservation() {
   return (
     <section
       id="export"
-      className="border-b border-hairline bg-warm-beige/40 py-24 md:py-36"
+      className="scroll-mt-24 bg-warm-beige/40 py-24 md:py-36"
     >
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-12 lg:gap-16">
@@ -24,28 +33,44 @@ export default function Preservation() {
             </Reveal>
             <AnimatedText
               as="h2"
+              delay={0.1}
+              lineStagger={0.16}
               className="mb-6 font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl"
-              parts={[{ text: "Your words belong to you." }, { text: "Forever.", italic: true, className: "text-sage" }]}
+              lines={[
+                [{ text: "Your words belong to you." }],
+                [
+                  {
+                    text: "Take them with you.",
+                    italic: true,
+                    className: "text-sage",
+                  },
+                ],
+              ]}
             />
-            <Reveal delay={0.1} y={16} blur={false}>
+            <Reveal delay={0.24} y={16} blur={false}>
               <p className="mb-8 max-w-xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-                Never locked inside a proprietary database. At any moment,
-                export your complete archive into timeless formats designed to
-                outlast platforms, devices, and decades.
+                Export your complete archive at any time. Choose PDF for
+                reading, Markdown for writing tools, or JSON for your own
+                records.
               </p>
             </Reveal>
 
             <RevealGroupFormats />
 
-            <Reveal delay={0.2} y={12} blur={false}>
+            <Reveal delay={0.55} y={12} blur={false}>
               <p className="mt-6 text-xs font-light leading-relaxed text-muted-gray">
-                Compatible with Obsidian, Apple Books, bound print runs, and
-                offline hard drives.
+                Markdown opens in tools like Obsidian. PDF and JSON files stay
+                yours to keep offline.
               </p>
             </Reveal>
           </div>
 
-          <Reveal className="lg:col-span-6" y={38} amount={0.15}>
+          <RevealImage
+            className="lg:col-span-6"
+            y={20}
+            delay={0.22}
+            amount={0.15}
+          >
             <motion.div
               whileHover={{ rotateY: -2.5, rotateX: 1.2, y: -5 }}
               transition={{ type: "spring", stiffness: 180, damping: 20 }}
@@ -53,8 +78,8 @@ export default function Preservation() {
               style={{ transformStyle: "preserve-3d" }}
             >
               <div className="flex items-center justify-between border-b border-hairline pb-4 text-[10px] uppercase tracking-widest text-muted-gray">
-                <span>Typeset Edition — Volume 2025</span>
-                <span>A5 Book Spread</span>
+                <span>PDF Export — Sample Volume</span>
+                <span>A4 Document</span>
               </div>
 
               <div className="grid grid-cols-2 gap-6 py-9 text-charcoal sm:gap-8 sm:py-10">
@@ -67,7 +92,7 @@ export default function Preservation() {
                     is a deep, quiet gratitude found in this unhurried space...
                   </p>
                   <span className="block pt-4 text-[10px] text-muted-gray">
-                    Page 42
+                    Sample page 42
                   </span>
                 </div>
                 <div className="space-y-3 text-[11px] font-light leading-relaxed">
@@ -79,21 +104,21 @@ export default function Preservation() {
                     The maple leaves are turning deep burnt ochre...
                   </p>
                   <span className="block pt-4 text-[10px] text-muted-gray">
-                    Page 43
+                    Sample page 43
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between border-t border-hairline pt-4 text-[11px]">
                 <span className="text-muted-gray">
-                  Complete 52 entries compiled
+                  Sample preview of a complete archive
                 </span>
                 <Link
-                  to="/auth"
+                  to="/auth?mode=register"
                   className="group flex items-center gap-1.5 font-medium text-charcoal transition-colors hover:text-sage"
                 >
-                  <span>Download sample</span>
-                  <Download className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-y-0.5" />
+                  <span>Start your archive</span>
+                  <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </div>
 
@@ -106,7 +131,7 @@ export default function Preservation() {
                 <BookOpen className="h-4 w-4" />
               </motion.div>
             </motion.div>
-          </Reveal>
+          </RevealImage>
         </div>
       </div>
     </section>
@@ -115,18 +140,22 @@ export default function Preservation() {
 
 function RevealGroupFormats() {
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      {formats.map((format, index) => {
+    <RevealGroup
+      className="flex flex-wrap items-center gap-3"
+      delay={0.36}
+      stagger={0.1}
+    >
+      {formats.map((format) => {
         const Icon = format.icon;
         return (
-          <Reveal key={format.label} delay={0.12 + index * 0.08} y={10} blur={false}>
+          <RevealItem key={format.label} y={8}>
             <span className="inline-flex items-center gap-2 rounded-full border border-hairline bg-paper/80 px-4 py-2 text-xs text-charcoal-muted">
               <Icon className="h-3.5 w-3.5 text-sage" />
               {format.label}
             </span>
-          </Reveal>
+          </RevealItem>
         );
       })}
-    </div>
+    </RevealGroup>
   );
 }

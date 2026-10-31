@@ -1,4 +1,4 @@
-import { Lock, Sparkles } from "lucide-react";
+import { BookOpen, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
 import Reveal from "../ui/Reveal";
@@ -12,25 +12,33 @@ export default function ClosingCTA() {
 
       <div className="relative mx-auto max-w-4xl px-6 text-center sm:px-10">
         <Reveal y={12} blur={false}>
-          <span className="eyebrow mb-6 block">Your Private Harbor</span>
+          <span className="eyebrow mb-6 block">A Quiet Place to Begin</span>
         </Reveal>
 
         <AnimatedText
           as="h2"
+          delay={0.1}
+          lineStagger={0.16}
           className="mx-auto max-w-3xl font-serif text-4xl leading-[1.12] tracking-tight text-charcoal sm:text-6xl"
-          parts={[{ text: "Your story deserves" }, { text: "a place.", italic: true, className: "text-sage" }]}
+          lines={[
+            [{ text: "Your story deserves" }],
+            [{ text: "a place.", italic: true, className: "text-sage" }],
+          ]}
         />
 
-        <Reveal delay={0.15} y={18} blur={false}>
+        <Reveal delay={0.25} y={18} blur={false}>
           <p className="mx-auto mt-8 max-w-xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-            Begin capturing the thoughts and moments you don’t want to lose.
-            Private by default, calming by design, archival by nature.
+            Begin capturing the thoughts and moments you don’t want to lose. A
+            calm place to write, reflect, and keep what matters.
           </p>
         </Reveal>
 
-        <Reveal delay={0.28} y={16} blur={false}>
+        <Reveal delay={0.38} y={16} blur={false}>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link to="/auth?mode=register" className="btn-primary w-full sm:w-auto">
+            <Link
+              to="/auth?mode=register"
+              className="btn-primary w-full sm:w-auto"
+            >
               Begin your journal
             </Link>
             <a
@@ -42,18 +50,18 @@ export default function ClosingCTA() {
           </div>
         </Reveal>
 
-        <Reveal delay={0.4} y={10} blur={false}>
+        <Reveal delay={0.5} y={10} blur={false}>
           <div className="mt-14 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[10px] uppercase tracking-wider text-muted-gray">
             <span className="flex items-center gap-1.5">
-              <Lock className="h-3.5 w-3.5 text-sage" />
-              Private and untracked
+              <BookOpen className="h-3.5 w-3.5 text-sage" />
+              A space of your own
             </span>
             <span className="h-1 w-1 rounded-full bg-hairline" />
-            <span>Zero social streams</span>
+            <span>No social feeds</span>
             <span className="h-1 w-1 rounded-full bg-hairline" />
             <span className="flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-sage" />
-              Yours forever
+              <Download className="h-3.5 w-3.5 text-sage" />
+              Export anytime
             </span>
           </div>
         </Reveal>

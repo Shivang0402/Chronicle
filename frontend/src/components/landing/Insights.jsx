@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import useInViewOnce from "../../hooks/useInViewOnce";
 import AnimatedText from "../ui/AnimatedText";
 import CountUp from "../ui/CountUp";
 import Reveal, { RevealGroup, RevealItem } from "../ui/Reveal";
@@ -24,39 +25,52 @@ const cellTones = {
 };
 
 export default function Insights() {
+  const reduce = useReducedMotion();
+  const [cadenceRef, cadenceInView] = useInViewOnce({ amount: 0.4 });
+  const [moodRef, moodInView] = useInViewOnce({ amount: 0.4 });
+  const showCadence = reduce || cadenceInView;
+  const showMoods = reduce || moodInView;
+
   return (
-    <section id="insights" className="border-b border-hairline py-24 md:py-36">
+    <section id="insights" className="scroll-mt-24 py-24 md:py-36">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="mb-16 max-w-2xl md:mb-20">
           <Reveal y={14} blur={false}>
-            <span className="eyebrow mb-3 block">Quiet Resonance</span>
+            <span className="eyebrow mb-3 flex flex-wrap items-center gap-2">
+              Quiet Resonance
+              <span className="rounded-full border border-hairline bg-paper/70 px-2.5 py-1 text-[9px] tracking-wider text-muted-gray">
+                Sample data
+              </span>
+            </span>
           </Reveal>
           <AnimatedText
             as="h2"
+            delay={0.1}
             className="font-serif text-3xl tracking-tight text-charcoal sm:text-5xl"
             parts={[{ text: "Notice the patterns in your pages." }]}
           />
-          <Reveal delay={0.1} y={16} blur={false}>
+          <Reveal delay={0.24} y={16} blur={false}>
             <p className="mt-4 text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-              Honest reflection over gamification. Subtle cadences and
-              reflective states uncovered naturally over time.
+              Honest reflection over gamification. The patterns below are
+              illustrative sample data, uncovered naturally over time.
             </p>
           </Reveal>
         </div>
 
         <RevealGroup
           className="grid grid-cols-1 gap-12 border-b border-hairline pb-16 md:grid-cols-2 lg:grid-cols-12 lg:gap-16"
-          stagger={0.12}
+          delay={0.32}
+          stagger={0.14}
         >
           <RevealItem className="lg:col-span-4">
             <span className="block font-serif text-6xl leading-none text-charcoal sm:text-7xl lg:text-8xl">
               <CountUp value={52} />
             </span>
             <span className="mt-3 block font-serif text-sm italic text-charcoal">
-              Entries preserved this year
+              Sample entries this year
             </span>
             <p className="mt-2 max-w-xs text-xs font-light leading-relaxed text-muted-gray">
-              A consistent weekly cadence across autumn and winter.
+              A sample weekly cadence across autumn and winter.
             </p>
           </RevealItem>
 
@@ -65,10 +79,11 @@ export default function Insights() {
               <CountUp value={34820} />
             </span>
             <span className="mt-3 block font-serif text-sm italic text-charcoal">
-              Words written in private
+              Sample words written
             </span>
             <p className="mt-2 max-w-xs text-xs font-light leading-relaxed text-muted-gray">
-              Roughly the equivalent of a 130-page personal memoir.
+              Illustratively, roughly the equivalent of a 130-page personal
+              memoir.
             </p>
           </RevealItem>
 
@@ -80,40 +95,45 @@ export default function Insights() {
               </span>
             </span>
             <span className="mt-3 block font-serif text-sm italic text-charcoal">
-              Deliberate reflective depth
+              Sample average entry
             </span>
             <p className="mt-2 max-w-xs text-xs font-light leading-relaxed text-muted-gray">
-              Never rushed. An intentional space to find clarity.
+              A glimpse of deliberate reflective depth.
             </p>
           </RevealItem>
         </RevealGroup>
 
         <div className="grid grid-cols-1 gap-14 pt-16 lg:grid-cols-12 lg:gap-16">
-          <Reveal className="lg:col-span-7" y={30} amount={0.2}>
+          <Reveal className="lg:col-span-7" y={24} delay={0.4} amount={0.15}>
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
               <span className="text-[11px] uppercase tracking-wide2 text-muted-gray">
-                12-Week Writing Rhythm
+                12-Week Sample Rhythm
               </span>
               <span className="flex items-center gap-2 text-[11px] font-medium text-sage">
                 <span className="h-1.5 w-1.5 animate-soft-pulse rounded-full bg-sage" />
-                88% active reflective days
+                88% of sample days active
               </span>
             </div>
 
-            <div className="grid gap-1.5" style={{ gridTemplateColumns: "repeat(12, minmax(0, 1fr))" }}>
+            <div
+              ref={cadenceRef}
+              className="grid gap-1.5"
+              style={{ gridTemplateColumns: "repeat(12, minmax(0, 1fr))" }}
+            >
               {cadence.map((level, index) => (
                 <motion.span
                   key={index}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true, amount: 0.4 }}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={
+                    showCadence ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }
+                  }
                   transition={{
-                    duration: 0.45,
-                    delay: index * 0.012,
+                    duration: reduce ? 0.01 : 0.45,
+                    delay: reduce ? 0 : index * 0.012,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className={`h-3 rounded-[2px] sm:h-3.5 ${cellTones[level]}`}
-                  title={`Week ${index + 1}: ${level} entries`}
+                  title={`Sample week ${index + 1}: ${level} entries`}
                 />
               ))}
             </div>
@@ -130,11 +150,11 @@ export default function Insights() {
             </div>
           </Reveal>
 
-          <Reveal className="lg:col-span-5" y={30} delay={0.12} amount={0.2}>
+          <Reveal className="lg:col-span-5" y={24} delay={0.52} amount={0.15}>
             <span className="mb-6 block text-[11px] uppercase tracking-wide2 text-muted-gray">
-              Reflective States
+              Sample Reflective States
             </span>
-            <div className="space-y-5">
+            <div ref={moodRef} className="space-y-5">
               {moods.map((mood, index) => (
                 <div key={mood.label}>
                   <div className="mb-1.5 flex items-center justify-between text-xs font-medium text-charcoal">
@@ -145,11 +165,10 @@ export default function Insights() {
                     <motion.div
                       className={`h-full rounded-full ${mood.color}`}
                       initial={{ width: 0 }}
-                      whileInView={{ width: `${mood.value}%` }}
-                      viewport={{ once: true, amount: 0.8 }}
+                      animate={{ width: showMoods ? `${mood.value}%` : 0 }}
                       transition={{
-                        duration: 1.2,
-                        delay: 0.2 + index * 0.12,
+                        duration: reduce ? 0.01 : 1.1,
+                        delay: reduce ? 0 : 0.2 + index * 0.12,
                         ease: [0.16, 1, 0.3, 1],
                       }}
                     />

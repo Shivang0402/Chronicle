@@ -1,89 +1,120 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import useInViewOnce from "../../hooks/useInViewOnce";
 
 const easing = [0.16, 1, 0.3, 1];
 
-const wordVariants = {
-  hidden: { y: "112%", opacity: 0, rotate: 1.5 },
-  visible: {
-    y: "0%",
-    opacity: 1,
-    rotate: 0,
-    transition: { duration: 0.9, ease: easing },
-  },
+const toParts = (value) => (Array.isArray(value) ? value : [{ text: value }]);
+
+const buildWords = (parts) => {
+  const words = [];
+
+  toParts(parts).forEach((part, partIndex) => {
+    String(part.text)
+      .split(/\s+/)
+      .filter(Boolean)
+      .forEach((word, wordIndex) => {
+        words.push({
+          id: `${partIndex}-${wordIndex}-${word}`,
+          text: word,
+          className: part.className || "",
+          italic: Boolean(part.italic),
+        });
+      });
+  });
+
+  return words;
 };
 
 export default function AnimatedText({
-  parts,
+  parts = [],
+  lines,
   as: Tag = "h1",
   className = "",
   delay = 0,
-  stagger = 0.045,
+  stagger = 0.04,
+  lineStagger = 0.14,
   once = true,
   onMount = false,
-  amount = 0.45,
+  amount = 0.15,
 }) {
-  const normalized = Array.isArray(parts) ? parts : [{ text: parts }];
-  const words = [];
-
-  normalized.forEach((part, partIndex) => {
-    const pieces = String(part.text).split(/\s+/).filter(Boolean);
-
-    pieces.forEach((word, wordIndex) => {
-      words.push({
-        id: `${partIndex}-${wordIndex}-${word}`,
-        text: word,
-        className: part.className || "",
-        italic: Boolean(part.italic),
-      });
-    });
-  });
-
-  const viewProps = onMount
-    ? { initial: "hidden", animate: "visible" }
-    : {
-        initial: "hidden",
-        whileInView: "visible",
-        viewport: { once, amount },
-      };
+  const reduce = useReducedMotion();
+  const [ref, inView] = useInViewOnce({ once, amount });
+  const show = onMount || reduce || inView;
+  const lineWords = lines
+    ? lines.map((line) => buildWords(line))
+    : [buildWords(parts)];
+  const label = lineWords
+    .map((words) => words.map((word) => word.text).join(" "))
+    .join(" ");
 
   return (
-    <Tag
-      className={className}
-      aria-label={normalized.map((part) => part.text).join(" ")}
-    >
+    <Tag className={className} aria-label={label}>
       <motion.span
+        ref={ref}
         aria-hidden="true"
-        className="inline"
+        className="block"
+        initial="hidden"
+        animate={show ? "visible" : "hidden"}
         variants={{
           hidden: {},
           visible: {
-            transition: { staggerChildren: stagger, delayChildren: delay },
+            transition: {
+              staggerChildren: reduce ? 0 : lineStagger,
+              delayChildren: reduce ? 0 : delay,
+            },
           },
         }}
-        {...viewProps}
       >
-        {words.map((word, index) => (
-          <span
-            key={word.id}
-            className="inline-flex overflow-hidden pb-[0.12em] align-bottom"
-            style={{
-              marginBottom: "-0.12em",
-              marginRight: index === words.length - 1 ? 0 : "0.26em",
+        {lineWords.map((words, lineIndex) => (
+          <motion.span
+            key={lineIndex}
+            className="block"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: { staggerChildren: reduce ? 0 : stagger },
+              },
             }}
           >
-            <motion.span
-              variants={wordVariants}
-              className={[
-                "inline-block",
-                word.italic ? "font-serif italic font-normal" : "",
-                word.className,
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              {word.text}
-            </motion.span>
-          </span>
+            {words.map((word, index) => (
+              <span
+                key={word.id}
+                className="inline-flex overflow-hidden pb-[0.12em] align-bottom"
+                style={{
+                  marginBottom: "-0.12em",
+                  marginRight: index === words.length - 1 ? 0 : "0.26em",
+                }}
+              >
+                <motion.span
+                  variants={{
+                    hidden: reduce
+                      ? { opacity: 0 }
+                      : { y: "112%", opacity: 0, rotate: 1.5 },
+                    visible: reduce
+                      ? {
+                          opacity: 1,
+                          transition: { duration: 0.01, ease: "easeOut" },
+                        }
+                      : {
+                          y: "0%",
+                          opacity: 1,
+                          rotate: 0,
+                          transition: { duration: 0.9, ease: easing },
+                        },
+                  }}
+                  className={[
+                    "inline-block",
+                    word.italic ? "font-serif italic font-normal" : "",
+                    word.className,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {word.text}
+                </motion.span>
+              </span>
+            ))}
+          </motion.span>
         ))}
       </motion.span>
     </Tag>

@@ -22,7 +22,7 @@ export default function Footer() {
               the timeless ritual of prose.
             </p>
             <p className="mt-6 text-[11px] uppercase tracking-wide2 text-muted-gray">
-              Private by default · Calming by design
+              A quiet space · Calming by design
             </p>
           </div>
 
@@ -70,7 +70,7 @@ export default function Footer() {
                   to="/forgot-password"
                   className="text-sm text-charcoal-muted transition-colors hover:text-charcoal"
                 >
-                  Recover a passphrase
+                  Reset your password
                 </Link>
               </li>
             </ul>

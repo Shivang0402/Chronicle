@@ -1,63 +1,62 @@
-import { motion } from "framer-motion";
 import AnimatedText from "../ui/AnimatedText";
 import CountUp from "../ui/CountUp";
-import Reveal, { RevealGroup, RevealItem } from "../ui/Reveal";
+import Reveal, {
+  RevealGroup,
+  RevealImage,
+  RevealItem,
+} from "../ui/Reveal";
 
 const principles = [
-  { value: 100, suffix: "%", label: "Private Sanctuary", animate: true },
-  { value: 0, suffix: "", label: "Likes, Feeds, or Noise", animate: false },
-  { value: "∞", suffix: "", label: "Time to Think", animate: false },
+  { value: 3, suffix: "", label: "Export Formats", animate: true },
+  { value: 0, suffix: "", label: "Social Feeds", animate: false },
+  { value: "∞", suffix: "", label: "Time to Reflect", animate: false },
 ];
 
 export default function Philosophy() {
   return (
-    <section
-      id="experience"
-      className="border-b border-hairline py-24 md:py-36"
-    >
+    <section id="experience" className="scroll-mt-24 py-24 md:py-36">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-16">
-          <Reveal
-            className="order-2 lg:order-1 lg:col-span-5"
-            y={36}
-            amount={0.15}
-          >
-            <div className="group overflow-hidden bg-hairline">
-              <motion.img
-                src="/images/philosophy-journal.jpg"
-                alt="A quiet desk with an open blank journal beside a sunny window"
-                className="aspect-[4/5] w-full object-cover"
-                initial={{ scale: 1.09 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
-                loading="lazy"
-              />
-            </div>
-            <p className="mt-4 max-w-md text-xs leading-relaxed text-muted-gray">
-              Solitude at the study window. A blank page welcomes thoughts
-              without judgement.
-            </p>
-          </Reveal>
+          <div className="order-2 lg:order-1 lg:col-span-5">
+            <RevealImage y={18} amount={0.15} delay={0.05}>
+              <div className="group overflow-hidden bg-hairline">
+                <img
+                  src="/images/philosophy-journal.jpg"
+                  alt="A quiet desk with an open blank journal beside a sunny window"
+                  className="aspect-[4/5] w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </RevealImage>
+            <Reveal delay={0.28} y={10} blur={false}>
+              <p className="mt-4 max-w-md text-xs leading-relaxed text-muted-gray">
+                Solitude at the study window. A blank page welcomes thoughts
+                without judgement.
+              </p>
+            </Reveal>
+          </div>
 
           <div className="order-1 flex flex-col justify-center lg:order-2 lg:col-span-7 lg:pl-6">
-            <Reveal y={16} blur={false}>
+            <Reveal y={14} blur={false}>
               <span className="eyebrow mb-8 block">The Philosophy</span>
             </Reveal>
 
             <AnimatedText
               as="blockquote"
+              delay={0.12}
+              lineStagger={0.16}
               className="mb-10 font-serif text-3xl leading-[1.18] tracking-tight text-charcoal sm:text-4xl lg:text-[50px]"
-              parts={[
-                {
-                  text: "“Not everything needs to be shared. Some things are",
-                },
-                { text: "simply", italic: true, className: "text-sage" },
-                { text: "worth remembering.”" },
+              lines={[
+                [{ text: "“Not everything needs to be shared." }],
+                [
+                  { text: "Some things are" },
+                  { text: "simply", italic: true, className: "text-sage" },
+                  { text: "worth remembering.”" },
+                ],
               ]}
             />
 
-            <RevealGroup className="max-w-xl space-y-6" delay={0.1}>
+            <RevealGroup className="max-w-xl space-y-6" delay={0.3}>
               <RevealItem>
                 <p className="text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
                   We live surrounded by streams of instant reaction, performance
@@ -76,7 +75,8 @@ export default function Philosophy() {
 
             <RevealGroup
               className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-6 border-t border-hairline pt-8"
-              delay={0.2}
+              delay={0.45}
+              stagger={0.1}
             >
               {principles.map((item, index) => (
                 <RevealItem key={item.label} className="flex items-center gap-8">

@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
@@ -46,7 +47,7 @@ export default function ArchiveLedger() {
   return (
     <section
       id="features"
-      className="border-b border-hairline bg-warm-beige/40 py-24 md:py-36"
+      className="scroll-mt-24 bg-warm-beige/40 py-24 md:py-36"
     >
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="mb-14 flex flex-col justify-between gap-6 md:mb-16 md:flex-row md:items-end">
@@ -56,22 +57,37 @@ export default function ArchiveLedger() {
             </Reveal>
             <AnimatedText
               as="h2"
+              delay={0.1}
               className="font-serif text-3xl tracking-tight text-charcoal sm:text-5xl"
               parts={[{ text: "Every entry has its place." }]}
             />
           </div>
-          <Reveal delay={0.15} y={12} blur={false}>
+          <Reveal delay={0.22} y={12} blur={false}>
             <p className="text-sm text-charcoal-muted">
-              <span className="font-medium text-charcoal">52 entries</span>{" "}
-              archived in Volume 2025
+              <span className="font-medium text-charcoal">Sample archive</span>{" "}
+              · 52 entries in Volume 2025
             </p>
           </Reveal>
         </div>
 
-        <div className="border-t border-hairline">
-          <RevealGroup className="divide-y divide-hairline" stagger={0.12}>
+        <div>
+          <RevealGroup stagger={0.12} delay={0.28} amount={0.1}>
             {entries.map((entry) => (
-              <RevealItem key={entry.title}>
+              <RevealItem key={entry.title} y={18}>
+                <motion.span
+                  aria-hidden="true"
+                  className="block h-px origin-left bg-hairline"
+                  variants={{
+                    hidden: { scaleX: 0 },
+                    visible: {
+                      scaleX: 1,
+                      transition: {
+                        duration: 0.9,
+                        ease: [0.16, 1, 0.3, 1],
+                      },
+                    },
+                  }}
+                />
                 <article className="group -mx-4 grid grid-cols-1 gap-5 px-4 py-9 transition-colors duration-300 hover:bg-black/[0.012] lg:grid-cols-12 lg:items-baseline lg:gap-6 lg:py-10">
                   <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-muted-gray lg:col-span-3">
                     <span>{entry.date}</span>
@@ -113,12 +129,12 @@ export default function ArchiveLedger() {
         </div>
 
         <Reveal
-          delay={0.1}
+          delay={0.38}
           y={14}
           blur={false}
           className="flex flex-col items-start justify-between gap-4 border-t border-hairline pt-8 text-[10px] uppercase tracking-wide2 text-muted-gray sm:flex-row sm:items-center"
         >
-          <span>Displaying 4 of 52 ledger entries</span>
+          <span>Showing 4 of 52 sample entries</span>
           <Link
             to="/auth"
             className="group flex items-center gap-2 font-medium text-charcoal transition-colors hover:text-sage"
