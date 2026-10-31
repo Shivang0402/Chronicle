@@ -1,7 +1,6 @@
 const nodemailer = require("nodemailer");
 
 const port = Number(process.env.SMTP_PORT) || 587;
-
 const transport = nodemailer.createTransport(
   process.env.SMTP_HOST
     ? {
@@ -15,12 +14,26 @@ const transport = nodemailer.createTransport(
     : { jsonTransport: true },
 );
 
-const appUrl = () =>
+const baseUrl =
   process.env.CLIENT_URL ||
   process.env.APP_URL ||
   `http://localhost:${process.env.PORT || 3000}`;
 
-const sendMail = async (user, link, subject, message) => {
+const actions = {
+  "verify-email": [
+    "Verify your Chronicle account",
+    "Verify your email by opening this link:",
+  ],
+  "reset-password": [
+    "Reset your Chronicle password",
+    "Reset your password by opening this link:",
+  ],
+};
+
+const sendMail = async (user, token, path) => {
+  const [subject, message] = actions[path];
+  const link = `${baseUrl}/${path}?token=${token}`;
+
   await transport.sendMail({
     from: process.env.SMTP_FROM || "Chronicle <no-reply@chronicle.local>",
     to: user.email,
@@ -34,20 +47,8 @@ const sendMail = async (user, link, subject, message) => {
   }
 };
 
-const sendVerificationEmail = (user, token) =>
-  sendMail(
-    user,
-    `${appUrl()}/verify-email?token=${token}`,
-    "Verify your Chronicle account",
-    "Verify your email by opening this link:",
-  );
-
-const sendPasswordResetEmail = (user, token) =>
-  sendMail(
-    user,
-    `${appUrl()}/reset-password?token=${token}`,
-    "Reset your Chronicle password",
-    "Reset your password by opening this link:",
-  );
-
-module.exports = { sendVerificationEmail, sendPasswordResetEmail };
+module.exports = {
+  sendVerificationEmail: (user, token) => sendMail(user, token, "verify-email"),
+  sendPasswordResetEmail: (user, token) =>
+    sendMail(user, token, "reset-password"),
+};
