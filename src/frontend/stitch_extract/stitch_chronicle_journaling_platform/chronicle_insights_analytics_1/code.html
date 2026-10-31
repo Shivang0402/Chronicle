@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-fixed-dim":"#b9ccb2","primary":"#50614b","outline":"#747871","primary-fixed":"#d5e8cd","surface-container-high":"#e9e8e2","on-primary-container":"#f7fff0","outline-variant":"#c4c8bf","secondary-container":"#dbe2d4","on-surface-variant":"#444841","on-error-container":"#93000a","tertiary":"#5c5c57","on-secondary":"#ffffff","inverse-primary":"#b9ccb2","surface-container-lowest":"#ffffff","on-primary-fixed-variant":"#3b4b37","surface-bright":"#fbf9f3","primary-container":"#687963","on-primary-fixed":"#101f0e","on-surface":"#1b1c18","on-secondary-container":"#5e655a","secondary":"#596055","on-error":"#ffffff","surface-dim":"#dbdad4","surface-tint":"#52634d","on-background":"#1b1c18","inverse-on-surface":"#f2f1ea","on-tertiary-fixed-variant":"#474742","surface-container-low":"#f5f4ed","background":"#fbf9f3","secondary-fixed":"#dee5d7","tertiary-container":"#75756f","on-primary":"#ffffff","tertiary-fixed":"#e4e2dc","tertiary-fixed-dim":"#c8c6c0","on-tertiary-fixed":"#1b1c18","error-container":"#ffdad6","surface-variant":"#e4e3dc","surface-container-highest":"#e4e3dc","on-tertiary-container":"#fffcf5","secondary-fixed-dim":"#c2c9bb","inverse-surface":"#30312d","error":"#ba1a1a","on-secondary-fixed-variant":"#42493e","on-tertiary":"#ffffff","surface-container":"#efeee7","on-secondary-fixed":"#171d15","surface":"#fbf9f3"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin":"2rem","space-sm":"0.5rem","space-xl":"2.5rem","gutter":"1.5rem","space-lg":"1.5rem","space-xs":"0.25rem","space-md":"1rem"},fontFamily:{"headline-sm":["Playfair Display"],"label-md":["DM Sans"],"label-sm":["DM Sans"],"display-lg-mobile":["Playfair Display"],"headline-lg-mobile":["Playfair Display"],"body-md":["DM Sans"],"display-lg":["Playfair Display"],"body-sm":["DM Sans"],"headline-lg":["Playfair Display"],"headline-md":["Playfair Display"],"body-lg":["Playfair Display"]},fontSize:{"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"label-md":["13px",{lineHeight:"18px",letterSpacing:"0.02em",fontWeight:"500"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"600"}],"display-lg-mobile":["34px",{lineHeight:"42px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-lg-mobile":["26px",{lineHeight:"34px",letterSpacing:"0em",fontWeight:"500"}],"body-md":["15px",{lineHeight:"24px",fontWeight:"400"}],"display-lg":["48px",{lineHeight:"56px",letterSpacing:"-0.02em",fontWeight:"400"}],"body-sm":["13px",{lineHeight:"20px",fontWeight:"400"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.01em",fontWeight:"500"}],"headline-md":["24px",{lineHeight:"32px",fontWeight:"500"}],"body-lg":["19px",{lineHeight:"32px",letterSpacing:"0.01em",fontWeight:"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-surface-container border-r border-surface-container-highest z-50 flex flex-col justify-between overflow-y-auto"><div class="p-space-lg"><div class="flex items-center gap-space-sm mb-space-xl"><img alt="Chronicle Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UwJU6hmRt5QPfpeXiSF39z2OESrhDFLMld920TKRZmvqWYTHBrD282GkW3eGfbY4UjaFGn6xd_BjMGWfGuyHReAx_VEN0gcQ3r93O7N0BaWS8bdGurazRfkHlB8LMicNZuY-NGeZwN08aaPOzrBvdD8zEgAh-C9u03OmXm3MHyQsZhJTY8NDScN82GIjUhGTg2zYVFygUXmETyOEPi4PQd5r3i19MOgp_LeNwCJg"/><div class="flex flex-col"><span class="font-headline-md text-headline-md tracking-tight text-on-surface">Chronicle</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Private Journal</span></div></div><div class="mb-space-lg"><a class="w-full flex items-center justify-center gap-space-sm py-space-sm px-space-md bg-primary hover:bg-primary-container text-on-primary rounded-lg transition-colors shadow-[0_2px_8px_-2px_rgba(37,38,34,0.06)]" data-path="new-entry" href="#"><span class="material-symbols-outlined text-lg">edit_note</span><span class="font-label-md text-label-md">New Entry</span></a></div><div class="mb-space-xs"><span class="font-label-sm text-label-sm uppercase text-secondary px-space-sm tracking-wider">Journal Navigation</span></div><nav class="flex flex-col gap-space-xs mb-space-lg" data-active-classes="bg-surface-container-highest text-on-surface font-semibold rounded-lg"><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-lg">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="my-journal" href="#"><span class="material-symbols-outlined text-lg">auto_stories</span><span class="font-body-md text-body-md">My Journal</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="insights" href="#"><span class="material-symbols-outlined text-lg">analytics</span><span class="font-body-md text-body-md">Insights</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="export" href="#"><span class="material-symbols-outlined text-lg">ios_share</span><span class="font-body-md text-body-md">Export</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-lg">settings</span><span class="font-body-md text-body-md">Settings</span></a></nav><div class="mb-space-xs"><span class="font-label-sm text-label-sm uppercase text-secondary px-space-sm tracking-wider">Collections</span></div><div class="flex flex-col gap-space-xs"><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="reflections" href="#"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span><span class="font-body-sm text-body-sm">#Reflections</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="gratitude" href="#"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span><span class="font-body-sm text-body-sm">#Gratitude</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="morning-pages" href="#"><span class="w-1.5 h-1.5 rounded-full bg-outline"></span><span class="font-body-sm text-body-sm">#MorningPages</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="travel" href="#"><span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span><span class="font-body-sm text-body-sm">#Travel</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="ideas" href="#"><span class="w-1.5 h-1.5 rounded-front bg-tertiary"></span><span class="font-body-sm text-body-sm">#Ideas</span></a></div></div><div class="p-space-lg border-t border-surface-container-highest"><div class="flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaLZCItq9VyOCWdwA5IXZwLw4ML3tXMoMUFr0Y0qGZX3QSbCFWRa_Na0JGmgEVHlsw_19dYIv9kZYITZMqriEKmjSIqMom80ZqPEy4k92WhfZcHpLmyqToDERYDiltDqV3kbaaujgiyyeD2ATOuToOpmHmHE6gtGHakEbfOCPiZxj7kM3So-ZWUlA2X2AhbpOU31Wq02AnqBxiZdDcbpzldWs42LhlY6HLLqsrzQ"/><span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-primary border-2 border-surface-container"></span></div><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface">Eleanor Vance</span><span class="font-label-sm text-label-sm text-secondary">Archival Mode</span></div></div><button class="text-secondary hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-lg">dock_to_left</span></button></div></div></aside><div class="pl-72 min-h-screen bg-background"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl border-b border-surface-container-highest z-40 flex items-center justify-between px-gutter"><div class="flex items-center gap-space-md"><span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Vol. IV • Private Desk</span></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface py-space-xs px-space-sm rounded-lg hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">search</span><span class="font-body-sm text-body-sm">Search (⌘K)</span></button><button class="text-on-surface-variant hover:text-on-surface p-space-xs rounded-lg hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">notifications_none</span></button><div class="h-4 w-[1px] bg-outline-variant"></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaLZCItq9VyOCWdwA5IXZwLw4ML3tXMoMUFr0Y0qGZX3QSbCFWRa_Na0JGmgEVHlsw_19dYIv9kZYITZMqriEKmjSIqMom80ZqPEy4k92WhfZcHpLmyqToDERYDiltDqV3kbaaujgiyyeD2ATOuToOpmHmHE6gtGHakEbfOCPiZxj7kM3So-ZWUlA2X2AhbpOU31Wq02AnqBxiZdDcbpzldWs42LhlY6HLLqsrzQ"/></div></header><main class="w-full pt-16 bg-background"><div class="flex flex-col w-full">
+<!-- Active Navigation Sync for Insights -->
+<script>
+    (function() {
+      const navLinks = document.querySelectorAll('aside nav a');
+      navLinks.forEach(link => {
+        if (link.getAttribute('data-path') === 'insights') {
+          link.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high');
+          link.classList.add('bg-surface-container-highest', 'text-on-surface', 'font-semibold', 'rounded-lg');
+        } else {
+          link.classList.remove('bg-surface-container-highest', 'font-semibold');
+          link.classList.add('text-on-surface-variant');
+        }
+      });
+    })();
+  </script>
+<!-- Ambient Editorial Background Glow (contained) -->
+<div class="relative w-full max-w-7xl mx-auto px-gutter py-space-xl flex flex-col gap-space-xl">
+<div class="pointer-events-none absolute -top-16 right-12 w-96 h-96 rounded-full bg-gradient-to-br from-primary-fixed/30 via-secondary-fixed/20 to-transparent blur-3xl opacity-70"></div>
+<div class="pointer-events-none absolute top-1/3 left-1/4 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tr from-surface-container-high/40 via-primary-fixed-dim/15 to-transparent blur-3xl opacity-60"></div>
+<!-- 1. Header Section -->
+<header class="relative flex flex-col md:flex-row md:items-end justify-between gap-space-lg">
+<div class="flex flex-col gap-space-xs max-w-2xl">
+<div class="flex items-center gap-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Personal Reflections &amp; Archive Metrics</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">Your Journey</h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          A calm perspective on your writing rhythms, emotional cadence, and evolving thoughts across time.
+        </p>
+</div>
+<!-- Header Controls: Time Pill Selector & Action -->
+<div class="flex flex-col sm:flex-row sm:items-center gap-space-sm">
+<!-- Time Range Pills -->
+<div class="inline-flex p-1 bg-surface-container rounded-full shadow-sm">
+<button class="px-3 py-1 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-full transition-colors" type="button">Week</button>
+<button class="px-3 py-1 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-full transition-colors" type="button">Month</button>
+<button class="px-3 py-1 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-full transition-colors" type="button">Quarter</button>
+<button class="px-3 py-1.5 bg-surface text-on-surface font-label-md text-label-md rounded-full shadow-sm font-semibold transition-all" type="button">Year (2024)</button>
+<button class="px-3 py-1 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-full transition-colors" type="button">All time</button>
+</div>
+<!-- Export Insights Button -->
+<button class="inline-flex items-center justify-center gap-space-xs px-4 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg font-label-md text-label-md transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-base">download</span>
+<span>Export Summary</span>
+</button>
+</div>
+</header>
+<!-- Scope Marker Strip -->
+<div class="flex items-center justify-between py-space-xs px-space-md bg-surface-container-low rounded-lg text-secondary">
+<div class="flex items-center gap-space-sm font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-base text-primary">calendar_today</span>
+<span class="uppercase tracking-wider">Active Scope: Jan 1 – Oct 24, 2024</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Desk Vol. IV • Archival Ledger #10</span>
+</div>
+<!-- 2. Key Archival Statistics (Strip of 5 Metric Cards) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md">
+<!-- Metric 1: Preserved Folios -->
+<div class="relative bg-surface-container-low hover:bg-surface-container-high/60 transition-all rounded-xl p-space-md flex flex-col justify-between shadow-sm min-w-0">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Preserved folios</span>
+<span class="material-symbols-outlined text-primary text-lg">book</span>
+</div>
+<div class="flex items-baseline gap-space-xs mb-space-xs">
+<span class="font-display-lg text-display-lg leading-none text-on-surface font-headline-lg">52</span>
+<span class="font-label-md text-label-md text-secondary">entries</span>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-primary">
+<span class="material-symbols-outlined text-xs">arrow_upward</span>
+<span>+12 this quarter</span>
+</div>
+</div>
+<!-- Metric 2: Total Words -->
+<div class="relative bg-surface-container-low hover:bg-surface-container-high/60 transition-all rounded-xl p-space-md flex flex-col justify-between shadow-sm min-w-0">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Words to page</span>
+<span class="material-symbols-outlined text-primary text-lg">edit_note</span>
+</div>
+<div class="flex items-baseline gap-space-xs mb-space-xs">
+<span class="font-display-lg text-display-lg leading-none text-on-surface font-headline-lg">34,820</span>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-secondary">
+<span class="material-symbols-outlined text-xs">menu_book</span>
+<span>≈ 140 book pages</span>
+</div>
+</div>
+<!-- Metric 3: Average Depth -->
+<div class="relative bg-surface-container-low hover:bg-surface-container-high/60 transition-all rounded-xl p-space-md flex flex-col justify-between shadow-sm min-w-0">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Average depth</span>
+<span class="material-symbols-outlined text-primary text-lg">subject</span>
+</div>
+<div class="flex items-baseline gap-space-xs mb-space-xs">
+<span class="font-display-lg text-display-lg leading-none text-on-surface font-headline-lg">670</span>
+<span class="font-label-md text-label-md text-secondary">words/entry</span>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Steady contemplative pace</span>
+</div>
+</div>
+<!-- Metric 4: Daily Habit -->
+<div class="relative bg-surface-container-low hover:bg-surface-container-high/60 transition-all rounded-xl p-space-md flex flex-col justify-between shadow-sm min-w-0">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Daily habit</span>
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div class="flex items-baseline gap-space-xs mb-space-xs">
+<span class="font-display-lg text-display-lg leading-none text-on-surface font-headline-lg">14</span>
+<span class="font-label-md text-label-md text-secondary">days active</span>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-primary">
+<span class="material-symbols-outlined text-xs">nest_eco_leaf</span>
+<span>Gentle cadence</span>
+</div>
+</div>
+<!-- Metric 5: Longest Cadence -->
+<div class="relative bg-surface-container-low hover:bg-surface-container-high/60 transition-all rounded-xl p-space-md flex flex-col justify-between shadow-sm min-w-0">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Longest cadence</span>
+<span class="material-symbols-outlined text-primary text-lg">hourglass_empty</span>
+</div>
+<div class="flex items-baseline gap-space-xs mb-space-xs">
+<span class="font-display-lg text-display-lg leading-none text-on-surface font-headline-lg">28</span>
+<span class="font-label-md text-label-md text-secondary">days span</span>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-secondary truncate">
+<span>Achieved in May 2024</span>
+</div>
+</div>
+</section>
+<!-- 3. Primary Analytics Grid (Bento Grid Architecture) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Section A: Writing Rhythms & Consistency Heatmap (Span 12) -->
+<div class="lg:col-span-12 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface">Writing Rhythms &amp; Cadence</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Visualizing 42 weeks of personal reflection across 2024</p>
+</div>
+<div class="flex items-center gap-space-sm font-label-sm text-label-sm text-secondary">
+<span>Infrequent</span>
+<div class="flex items-center gap-1">
+<span class="w-3 h-3 rounded-sm bg-surface-container"></span>
+<span class="w-3 h-3 rounded-sm bg-secondary-fixed"></span>
+<span class="w-3 h-3 rounded-sm bg-primary-fixed"></span>
+<span class="w-3 h-3 rounded-sm bg-primary-container"></span>
+<span class="w-3 h-3 rounded-sm bg-primary"></span>
+</div>
+<span>Deep flow</span>
+</div>
+</div>
+<!-- Archival Habit Grid (42 weeks x 7 days) -->
+<div class="overflow-x-auto pb-space-xs">
+<div class="min-w-[760px] flex flex-col gap-2">
+<!-- Month Labels -->
+<div class="grid grid-cols-10 pl-8 text-secondary font-label-sm text-label-sm">
+<span>Jan</span>
+<span>Feb</span>
+<span>Mar</span>
+<span>Apr</span>
+<span>May</span>
+<span>Jun</span>
+<span>Jul</span>
+<span>Aug</span>
+<span>Sep</span>
+<span>Oct</span>
+</div>
+<!-- Heatmap Body with Day Labels -->
+<div class="flex gap-2">
+<div class="flex flex-col justify-between py-1 text-secondary font-label-sm text-label-sm w-6">
+<span>Mon</span>
+<span>Wed</span>
+<span>Fri</span>
+<span>Sun</span>
+</div>
+<!-- 42 columns of week dots -->
+<div class="grid grid-flow-col grid-rows-7 gap-1 flex-1">
+<!-- Col 1 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 2 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<!-- Col 3 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 4 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 5 (Feb) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 6 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<!-- Col 7 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<!-- Col 8 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<!-- Col 9 (Mar) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 10 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 11 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 12 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 13 (Apr) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 14 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 15 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 16 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 17 (May - Cadence Peak) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<!-- Col 18 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<!-- Col 19 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<!-- Col 20 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<!-- Col 21 (Jun) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 22 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 23 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 24 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 25 (Jul) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 26 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 27 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<!-- Col 28 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 29 (Aug) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<!-- Col 30 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 31 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<!-- Col 32 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 33 (Sep) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 34 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<!-- Col 35 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 36 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<!-- Col 37 (Oct) -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<!-- Col 38 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<!-- Col 39 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<!-- Col 40 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<!-- Col 41 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-secondary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<!-- Col 42 -->
+<div class="w-3.5 h-3.5 rounded-sm bg-primary"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-primary-fixed"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+<div class="w-3.5 h-3.5 rounded-sm bg-surface-container"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Heatmap Insight Strip -->
+<div class="flex items-center gap-space-sm p-space-sm bg-surface-container-low rounded-lg text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-base">bedtime</span>
+<span><strong>Most reflective time:</strong> Thursday evenings (8:00 PM – 10:30 PM) • <strong>73%</strong> of entries penned in dusk/night hours.</span>
+</div>
+</div>
+<!-- Section B: Emotional Resonance & Mood Spectrum (Span 6) -->
+<div class="lg:col-span-6 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-on-surface">Emotional Resonance</h2>
+<span class="font-label-sm text-label-sm text-secondary uppercase">52 Entries Categorized</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">The nuanced internal spectrum woven through your entries</p>
+</div>
+<!-- Donut & Breakdown Visualization -->
+<div class="flex flex-col sm:flex-row items-center gap-space-lg py-space-sm">
+<!-- Clean Inline SVG Donut -->
+<div class="relative w-40 h-40 flex-shrink-0 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 120 120">
+<!-- Background ring -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#efeee7" stroke-width="14"></circle>
+<!-- Peaceful & Serene (38%) -> offset 0 to 114.6 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#50614b" stroke-dasharray="114.6 301.6" stroke-dashoffset="0" stroke-width="14"></circle>
+<!-- Grateful (27%) -> 81.4 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#687963" stroke-dasharray="81.4 301.6" stroke-dashoffset="-114.6" stroke-width="14"></circle>
+<!-- Inspired & Creative (17%) -> 51.3 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#b9ccb2" stroke-dasharray="51.3 301.6" stroke-dashoffset="-196" stroke-width="14"></circle>
+<!-- Contemplative & Melancholy (12%) -> 36.2 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#5c5c57" stroke-dasharray="36.2 301.6" stroke-dashoffset="-247.3" stroke-width="14"></circle>
+<!-- Vulnerable & Raw (6%) -> 18.1 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#c4c8bf" stroke-dasharray="18.1 301.6" stroke-dashoffset="-283.5" stroke-width="14"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-headline-sm text-headline-sm text-on-surface">38%</span>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-tight">Serenity</span>
+</div>
+</div>
+<!-- Mood Breakdown Table / Rows -->
+<div class="flex flex-col gap-2 flex-1 w-full">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="text-on-surface">Peaceful &amp; Serene</span>
+</div>
+<div class="flex items-center gap-space-sm text-secondary">
+<span>20 entries</span>
+<span class="font-semibold text-on-surface">38%</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="text-on-surface">Grateful &amp; Rooted</span>
+</div>
+<div class="flex items-center gap-space-sm text-secondary">
+<span>14 entries</span>
+<span class="font-semibold text-on-surface">27%</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-fixed-dim"></span>
+<span class="text-on-surface">Inspired &amp; Creative</span>
+</div>
+<div class="flex items-center gap-space-sm text-secondary">
+<span>9 entries</span>
+<span class="font-semibold text-on-surface">17%</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="text-on-surface">Contemplative</span>
+</div>
+<div class="flex items-center gap-space-sm text-secondary">
+<span>6 entries</span>
+<span class="font-semibold text-on-surface">12%</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant"></span>
+<span class="text-on-surface">Vulnerable &amp; Raw</span>
+</div>
+<div class="flex items-center gap-space-sm text-secondary">
+<span>3 entries</span>
+<span class="font-semibold text-on-surface">6%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Mindful Data Note -->
+<div class="p-space-sm bg-surface-container-low rounded-lg text-on-surface-variant font-body-sm text-body-sm flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-base mt-0.5">psychology_alt</span>
+<span>A natural equilibrium favoring calm and gratitude. Creative reflections notably gather around unhurried weekend mornings.</span>
+</div>
+</div>
+<!-- Section C: Folio Length & Expression Over Time (Span 6) -->
+<div class="lg:col-span-6 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-on-surface">Folio Length &amp; Expression</h2>
+<span class="font-label-sm text-label-sm text-secondary uppercase">Monthly Volume</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Word count distribution and average depth per entry</p>
+</div>
+<!-- Custom SVG Chart: Monthly Words and Average Words -->
+<div class="w-full flex flex-col gap-2 pt-space-xs">
+<div class="h-44 w-full relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 500 160">
+<!-- Baseline Grid Lines -->
+<line stroke="#e9e8e2" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="500" y1="40" y2="40"></line>
+<line stroke="#e9e8e2" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="500" y1="80" y2="80"></line>
+<line stroke="#e9e8e2" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="500" y1="120" y2="120"></line>
+<!-- Target Guideline (avg 670w) -->
+<line stroke="#747871" stroke-dasharray="3 3" stroke-width="1" x1="0" x2="500" y1="65" y2="65"></line>
+<text class="font-label-sm text-[10px]" fill="#747871" x="440" y="60">Avg 670w</text>
+<!-- Monthly Bars (Jan - Oct) -->
+<!-- Jan: 2,400w -->
+<rect fill="#dbe2d4" height="70" rx="3" width="22" x="25" y="90"></rect>
+<!-- Feb: 2,800w -->
+<rect fill="#dbe2d4" height="82" rx="3" width="22" x="73" y="78"></rect>
+<!-- Mar: 3,200w -->
+<rect fill="#dbe2d4" height="94" rx="3" width="22" x="121" y="66"></rect>
+<!-- Apr: 3,100w -->
+<rect fill="#dbe2d4" height="90" rx="3" width="22" x="169" y="70"></rect>
+<!-- May: 4,600w (Spring cadence) -->
+<rect fill="#687963" height="130" rx="3" width="22" x="217" y="30"></rect>
+<!-- Jun: 3,400w -->
+<rect fill="#dbe2d4" height="98" rx="3" width="22" x="265" y="62"></rect>
+<!-- Jul: 3,100w -->
+<rect fill="#dbe2d4" height="88" rx="3" width="22" x="313" y="72"></rect>
+<!-- Aug: 3,600w -->
+<rect fill="#dbe2d4" height="102" rx="3" width="22" x="361" y="58"></rect>
+<!-- Sep: 3,900w -->
+<rect fill="#dbe2d4" height="112" rx="3" width="22" x="409" y="48"></rect>
+<!-- Oct: 4,720w (Peak depth) -->
+<rect fill="#50614b" height="138" rx="3" width="22" x="457" y="22"></rect>
+<!-- Trend Sparkline Line (Avg word count depth) -->
+<polyline fill="none" points="
+                  36,100
+                  84,92
+                  132,78
+                  180,82
+                  228,45
+                  276,74
+                  324,80
+                  372,66
+                  420,54
+                  468,34
+                " stroke="#50614b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline>
+<!-- Highlight dot on October -->
+<circle cx="468" cy="34" fill="#fbf9f3" r="4.5" stroke="#50614b" stroke-width="2.5"></circle>
+</svg>
+</div>
+<!-- X-Axis Month Indicators -->
+<div class="grid grid-cols-10 text-center font-label-sm text-label-sm text-secondary">
+<span>Jan</span>
+<span>Feb</span>
+<span>Mar</span>
+<span>Apr</span>
+<span>May</span>
+<span>Jun</span>
+<span>Jul</span>
+<span>Aug</span>
+<span>Sep</span>
+<span class="font-semibold text-primary">Oct</span>
+</div>
+</div>
+<!-- Trend Insight Footer -->
+<div class="p-space-sm bg-surface-container-low rounded-lg text-on-surface-variant font-body-sm text-body-sm flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-base">auto_awesome</span>
+<span><strong>October</strong> marked your deepest entries, averaging <strong>745 words</strong> per session.</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary hidden sm:inline">+18% vs year avg</span>
+</div>
+</div>
+<!-- Section D: Recurring Themes & Intellectual Inquiries (Span 12) -->
+<div class="lg:col-span-12 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Themes &amp; Intellectual Inquiries</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Recurring subjects, philosophical queries, and frequent tags</p>
+</div>
+<div class="flex items-center gap-space-xs text-primary font-body-sm text-body-sm bg-secondary-container px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-base">trending_up</span>
+<span>Nature &amp; Evening Walks +45% since September</span>
+</div>
+</div>
+<!-- Tag Clusters & Proportional Badges -->
+<div class="flex flex-wrap gap-space-sm pt-space-xs">
+<!-- Chip 1 -->
+<div class="group flex items-center gap-space-sm px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-full transition-all cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-body-md text-body-md text-on-surface font-medium">#Reflections</span>
+<span class="font-label-sm text-label-sm bg-surface text-secondary px-2 py-0.5 rounded-full shadow-sm">34 folios</span>
+</div>
+<!-- Chip 2 -->
+<div class="group flex items-center gap-space-sm px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-full transition-all cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-body-md text-body-md text-on-surface font-medium">#EveningThoughts</span>
+<span class="font-label-sm text-label-sm bg-surface text-secondary px-2 py-0.5 rounded-full shadow-sm">22 folios</span>
+</div>
+<!-- Chip 3 -->
+<div class="group flex items-center gap-space-sm px-4 py-2 bg-secondary-container hover:bg-secondary-fixed rounded-full transition-all cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-body-md text-body-md text-on-surface font-medium">#Nature &amp; Walks</span>
+<span class="font-label-sm text-label-sm bg-surface text-on-surface-variant px-2 py-0.5 rounded-full shadow-sm font-semibold">19 folios</span>
+</div>
+<!-- Chip 4 -->
+<div class="group flex items-center gap-space-sm px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-full transition-all cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="font-body-md text-body-md text-on-surface font-medium">#MorningPages</span>
+<span class="font-label-sm text-label-sm bg-surface text-secondary px-2 py-0.5 rounded-full shadow-sm">15 folios</span>
+</div>
+<!-- Chip 5 -->
+<div class="group flex items-center gap-space-sm px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-full transition-all cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-body-md text-body-md text-on-surface font-medium">#Books &amp; Reading</span>
+<span class="font-label-sm text-label-sm bg-surface text-secondary px-2 py-0.5 rounded-full shadow-sm">12 folios</span>
+</div>
+<!-- Chip 6 -->
+<div class="group flex items-center gap-space-sm px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-full transition-all cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md text-on-surface font-medium">#CreativeWork</span>
+<span class="font-label-sm text-label-sm bg-surface text-secondary px-2 py-0.5 rounded-full shadow-sm">11 folios</span>
+</div>
+<!-- Chip 7 -->
+<div class="group flex items-center gap-space-sm px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-full transition-all cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed-dim"></span>
+<span class="font-body-md text-body-md text-on-surface font-medium">#TravelNotes</span>
+<span class="font-label-sm text-label-sm bg-surface text-secondary px-2 py-0.5 rounded-full shadow-sm">8 folios</span>
+</div>
+<!-- Chip 8 -->
+<div class="group flex items-center gap-space-sm px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-full transition-all cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span class="font-body-md text-body-md text-on-surface font-medium">#Solitude</span>
+<span class="font-label-sm text-label-sm bg-surface text-secondary px-2 py-0.5 rounded-full shadow-sm">7 folios</span>
+</div>
+</div>
+<!-- Topical Cross-Section Narrative -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md pt-space-xs border-t border-surface-container-highest">
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Evolving Interest</span>
+<p class="font-body-sm text-body-sm text-on-surface">Transition from structural productivity to naturalist observations during late autumn months.</p>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Frequent Pairings</span>
+<p class="font-body-sm text-body-sm text-on-surface"><strong>#Solitude</strong> co-occurs with <strong>#Nature &amp; Walks</strong> in 85% of related entries.</p>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Vocabulary Horizon</span>
+<p class="font-body-sm text-body-sm text-on-surface">Rich descriptions of dusk light, physical books, stillness, and tactile paper texture.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. Meaningful Insights & Thoughtful Summary Card -->
+<section class="relative bg-surface-container-low rounded-xl p-space-xl overflow-hidden shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-xl">
+<!-- Decorative Archival Watermark -->
+<div class="pointer-events-none absolute right-4 -bottom-10 select-none text-surface-container-high opacity-40">
+<span class="material-symbols-outlined text-[180px]">history_edu</span>
+</div>
+<div class="flex flex-col gap-space-sm max-w-3xl relative z-10">
+<div class="flex items-center gap-space-xs text-primary font-label-sm text-label-sm uppercase tracking-widest">
+<span class="material-symbols-outlined text-base">format_quote</span>
+<span>Archival Synthesis • Vol. IV Observation</span>
+</div>
+<blockquote class="font-body-lg text-body-lg text-on-surface italic leading-relaxed">
+          “You write most expansively when walking through autumn rain and during quiet late hours. Writing has remained a steady anchor across 10 continuous months.”
+        </blockquote>
+<div class="flex items-center gap-space-sm text-secondary font-label-sm text-label-sm pt-space-xs">
+<span>Observed cadence across 52 preserved folios</span>
+<span>•</span>
+<span>Next review scheduled for Winter Solstice</span>
+</div>
+</div>
+<!-- Mindful Privacy & Security Badge -->
+<div class="relative z-10 flex-shrink-0 flex flex-col items-start md:items-end justify-center gap-1 bg-surface-container p-space-md rounded-lg text-secondary">
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-base">lock</span>
+<span class="font-semibold text-on-surface">Vault Integrity</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Encrypted &amp; Private</span>
+<span class="font-label-sm text-label-sm text-secondary max-w-[200px] md:text-right">Computed locally on-device. Never shared or analyzed externally.</span>
+</div>
+</section>
+</div>
+</div></main></div></body></html>

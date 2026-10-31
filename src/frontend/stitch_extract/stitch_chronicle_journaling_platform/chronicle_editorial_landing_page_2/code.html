@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chronicle — A Quiet Editorial Sanctuary for Your Thoughts</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&amp;family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            ivory: "#F8F7F3",
+            charcoal: "#252622",
+            "charcoal-muted": "#565851",
+            sage: "#82947C",
+            "sage-subtle": "#E8EFE6",
+            "sage-light": "#DCE3D5",
+            "muted-gray": "#85857D",
+            hairline: "#E8E6DF",
+            "paper-sheet": "#FDFCF9"
+          },
+          fontFamily: {
+            serif: ["Playfair Display", "Georgia", "serif"],
+            sans: ["DM Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"]
+          },
+          letterSpacing: {
+            tighter: "-0.04em",
+            tight: "-0.02em",
+            widest: "0.18em",
+            mega: "0.28em"
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    ::selection {
+      background-color: #DCE3D5;
+      color: #252622;
+    }
+    @keyframes fadeInSlow {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeInSlow 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="bg-ivory text-charcoal font-sans antialiased selection:bg-sage-light">
+<!-- Minimal Sticky Navigation -->
+<header class="sticky top-0 z-50 bg-ivory/90 backdrop-blur-md border-b border-hairline transition-all">
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 h-20 flex items-center justify-between">
+<a class="font-serif text-2xl tracking-tight text-charcoal hover:opacity-80 transition-opacity" href="#">
+        Chronicle
+      </a>
+<nav class="hidden md:flex items-center gap-10 text-sm tracking-wide text-charcoal-muted">
+<a class="hover:text-charcoal transition-colors" href="#experience">The Experience</a>
+<a class="hover:text-charcoal transition-colors" href="#features">Archive</a>
+<a class="hover:text-charcoal transition-colors" href="#insights">Insights</a>
+<a class="hover:text-charcoal transition-colors" href="#export">Preservation</a>
+</nav>
+<div class="flex items-center gap-6">
+<a class="text-sm font-medium text-charcoal-muted hover:text-charcoal transition-colors" href="#signin">
+          Sign In
+        </a>
+<a class="inline-flex items-center px-5 py-2.5 rounded-full bg-charcoal text-ivory text-xs uppercase tracking-widest font-medium hover:bg-neutral-800 transition-all" href="#editor">
+          Get Started
+        </a>
+</div>
+</div>
+</header>
+<main>
+<!-- HERO SECTION: Massive Art Direction & Editorial Rhythm -->
+<section class="relative pt-12 pb-24 md:pt-20 md:pb-36 border-b border-hairline overflow-hidden">
+<!-- Watermark / Oversized Brand Presence -->
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 mb-8 select-none pointer-events-none">
+<div class="text-[13vw] lg:text-[180px] font-serif font-normal leading-none tracking-tight text-charcoal/[0.04] uppercase text-center md:text-left -mb-6 md:-mb-14">
+          Chronicle
+        </div>
+</div>
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-end">
+<!-- Editorial Headline Column -->
+<div class="lg:col-span-8 flex flex-col justify-end">
+<span class="inline-flex items-center gap-3 text-xs tracking-mega uppercase text-sage mb-6 font-medium">
+<span class="w-8 h-px bg-sage"></span>
+              The Quiet Sanctuary for Thoughts
+            </span>
+<h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl font-normal leading-[1.1] text-charcoal tracking-tight max-w-4xl">
+              Some moments deserve <span class="italic font-normal">more</span> than a memory.
+            </h1>
+<p class="mt-8 text-lg sm:text-xl text-charcoal-muted font-normal max-w-2xl leading-relaxed">
+              A personal space for your thoughts, experiences, and everything worth remembering. Chronicle offers them a peaceful, lasting place to live.
+            </p>
+<div class="mt-10 flex flex-wrap items-center gap-5">
+<a class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-charcoal text-ivory text-sm tracking-wide font-medium hover:bg-neutral-800 transition-all shadow-sm" href="#editor">
+<span>Start your journal</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-4 text-sm font-medium text-charcoal-muted hover:text-charcoal transition-colors group" href="#experience">
+<span>Explore Chronicle</span>
+<span class="material-symbols-outlined text-base group-hover:translate-y-0.5 transition-transform">south</span>
+</a>
+</div>
+</div>
+<!-- Subtle Journal Provenance Caption -->
+<div class="lg:col-span-4 pb-2 lg:text-right text-xs tracking-wider uppercase text-muted-gray flex flex-col lg:items-end gap-1">
+<span class="text-charcoal font-medium">Archival Vol. IV</span>
+<span>Handcrafted Digital Folio</span>
+<span>Designed for Lifelong Introspection</span>
+</div>
+</div>
+<!-- Layered Asymmetric Hero Visual: Photography & Open Unboxed Sheet -->
+<div class="mt-16 md:mt-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Physical Imagery -->
+<div class="lg:col-span-7 relative">
+<div class="aspect-[16/10] overflow-hidden bg-hairline">
+<img alt="Open linen journal on sunlit wooden writing desk" class="w-full h-full object-cover transition-transform duration-1000 ease-out hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1VLjgFeqbidvU2nMjlp_mJwZGJFVCXDhERr1f8sJ_ZDhz0EChZbjlRbtpvtowSARL1kqzyZf1FiDiZo18q0J7fdpVPy-H9SDiqYg9bdbaHgonhpdPeBitXdFV1X7IO20JlJqm7sEQKKuzzg1X1e9QYgkK7OokdNBKBz0vIbBDTcz0FIcOXUaqzRNSPOv-82fcZ-34wSM3BaDYXd9WweX_yjNiwjEpFM5jZOsJFPamg"/>
+</div>
+<div class="mt-3 flex items-center justify-between text-xs text-muted-gray">
+<span class="font-serif italic text-charcoal">Study of morning light and desk journal</span>
+<span>October 14th</span>
+</div>
+</div>
+<!-- Unboxed Entry Preview: Clean cream surface with airy typography -->
+<div class="lg:col-span-5 lg:-ml-12 z-10 pt-4 lg:pt-0">
+<div class="bg-paper-sheet border border-hairline/80 p-8 sm:p-12 shadow-[0_12px_40px_-15px_rgba(37,38,34,0.06)] relative">
+<div class="flex items-center justify-between pb-6 border-b border-hairline mb-8 text-xs">
+<span class="uppercase tracking-widest text-muted-gray">October 14 • 8:15 PM</span>
+<span class="text-sage font-medium tracking-wide">#Peaceful</span>
+</div>
+<h2 class="font-serif text-2xl sm:text-3xl text-charcoal mb-5 leading-snug">
+                October evening by the window
+              </h2>
+<p class="font-sans text-charcoal-muted leading-relaxed text-sm sm:text-base mb-6 font-light">
+                The morning light was a soft reminder to slow down. The tea steeped quietly as thoughts began to settle. There is a deep, quiet gratitude found in this unhurried space.
+              </p>
+<div class="pt-6 border-t border-hairline flex items-center justify-between text-xs text-muted-gray font-normal">
+<div class="flex items-center gap-3">
+<span>412 words</span>
+<span>·</span>
+<span>3 min read</span>
+</div>
+<span class="italic font-serif text-charcoal-muted">Private ledger</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- PHILOSOPHY SECTION: Pure Editorial Storytelling without Boxes -->
+<section class="py-24 md:py-36 border-b border-hairline" id="experience">
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+<div class="lg:col-span-5 order-2 lg:order-1">
+<div class="aspect-[4/5] overflow-hidden bg-hairline">
+<img alt="Quiet desk with an open blank journal next to sunny window" class="w-full h-full object-cover transition-transform duration-1000 ease-out hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1XK-2a2uUj-kpWg0oycJ32YBAWfYCk2s27dhH9GWM8le_FVlKwuY7E4kkonaGBtW1qo8vg810-tdOz3tyRRyImKnR78Tqt48hsxP2_iPZpkby50u2QcEdKtseuJQOXct3qnJalwm8iQP6hfBwEbRx-3mWm_jc9f3gj7K2Xjvwhanrn5QKX_ZIQ8Y2YHN0Slo0mlAj-7OZ9bEJ-QftBmx0CsgeLAOEt618tnb-VEjmE"/>
+</div>
+<p class="mt-4 text-xs tracking-wide text-muted-gray">
+              Solitude at the study window. A blank page welcomes thoughts without judgement.
+            </p>
+</div>
+<div class="lg:col-span-7 order-1 lg:order-2 flex flex-col justify-center lg:pl-6">
+<span class="text-xs uppercase tracking-mega text-sage font-medium mb-8">The Philosophy</span>
+<blockquote class="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal leading-[1.2] tracking-tight mb-10">
+              Not everything needs to be shared. Some things are <span class="italic font-normal">simply</span> worth remembering.
+            </blockquote>
+<div class="space-y-6 text-charcoal-muted text-base sm:text-lg font-light leading-relaxed max-w-xl">
+<p>
+                We live surrounded by streams of instant reaction, performance metrics, and public eyes. Chronicle is an deliberate antithesis: an unhurried, quiet harbor for private reflection.
+              </p>
+<p>
+                Some thoughts are fleeting. Some experiences stay with us. Chronicle is a personal space to capture them, return to them, and make sense of your own journey at your own rhythm.
+              </p>
+</div>
+<div class="mt-12 pt-8 border-t border-hairline flex items-center gap-8">
+<div>
+<span class="block text-2xl font-serif text-charcoal">100%</span>
+<span class="text-xs uppercase tracking-wider text-muted-gray mt-1 block">Private Sanctuary</span>
+</div>
+<div class="w-px h-10 bg-hairline"></div>
+<div>
+<span class="block text-2xl font-serif text-charcoal">0</span>
+<span class="text-xs uppercase tracking-wider text-muted-gray mt-1 block">Likes, Feeds, or Noise</span>
+</div>
+<div class="w-px h-10 bg-hairline"></div>
+<div>
+<span class="block text-2xl font-serif text-charcoal">∞</span>
+<span class="text-xs uppercase tracking-wider text-muted-gray mt-1 block">Time to Think</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- WRITING EXPERIENCE: The Digital Journal Sheet -->
+<section class="py-24 md:py-36 border-b border-hairline bg-ivory" id="editor">
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+<div class="max-w-3xl mb-16">
+<span class="text-xs uppercase tracking-mega text-sage font-medium mb-3 block">The Writing Canvas</span>
+<h2 class="font-serif text-3xl sm:text-5xl text-charcoal font-normal tracking-tight">
+            Give your thoughts room to unfold.
+          </h2>
+<p class="mt-4 text-charcoal-muted text-base sm:text-lg font-light leading-relaxed">
+            A distraction-free folio that honors the intimacy of pen and paper, quietly elevated for the modern thinker.
+          </p>
+</div>
+<!-- The Unboxed Journal Folio Resting on Warm Ivory -->
+<div class="max-w-4xl mx-auto bg-paper-sheet border border-hairline p-8 sm:p-14 lg:p-20 shadow-[0_4px_24px_rgba(37,38,34,0.03)]">
+<!-- Folio Header Controls (Understated & Intentional) -->
+<div class="flex flex-wrap items-center justify-between gap-4 pb-8 border-b border-hairline text-xs">
+<div class="flex items-center gap-6">
+<span class="text-muted-gray tracking-wider uppercase font-medium">Sunday, October 24</span>
+<span class="text-hairline">|</span>
+<span class="text-charcoal-muted font-light">Late Afternoon</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-muted-gray uppercase tracking-widest text-[11px]">Mood</span>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sage-subtle text-charcoal text-xs font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-sage"></span>
+                Peaceful
+              </div>
+</div>
+</div>
+<!-- Document Content Area -->
+<div class="pt-10 pb-12">
+<h3 class="font-serif text-3xl sm:text-4xl text-charcoal font-normal mb-6 tracking-tight leading-tight">
+              The quiet architecture of morning
+            </h3>
+<div class="flex flex-wrap gap-2 mb-8">
+<span class="text-xs text-muted-gray hover:text-charcoal transition-colors">#Reflections</span>
+<span class="text-xs text-muted-gray">·</span>
+<span class="text-xs text-muted-gray hover:text-charcoal transition-colors">#MorningThoughts</span>
+<span class="text-xs text-muted-gray">·</span>
+<span class="text-xs text-muted-gray hover:text-charcoal transition-colors">#TeaRitual</span>
+</div>
+<div class="font-sans text-charcoal leading-[1.8] text-base sm:text-lg space-y-6 font-light">
+<p>
+                There is an unmistakable fragrance that autumn brings when the rain finally ceases. The windowpane is still dotted with dew, catching the faint amber glow from the morning sun.
+              </p>
+<p>
+                I used to mistake stillness for inactivity. Now I recognize it as the fertile ground where thoughts take root. Writing today feels less like recording facts and more like tuning an instrument—the cadence returning one deliberate sentence at a time.
+              </p>
+</div>
+</div>
+<!-- Folio Footer & Explicit Action -->
+<div class="pt-8 border-t border-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+<div class="flex items-center gap-5 text-xs text-muted-gray">
+<span>670 words</span>
+<span>·</span>
+<span>4 min read</span>
+<span>·</span>
+<span class="italic font-serif">Unpublished draft</span>
+</div>
+<div class="flex items-center gap-4 w-full sm:w-auto justify-end">
+<button class="px-5 py-2.5 text-xs uppercase tracking-wider text-muted-gray hover:text-charcoal transition-colors">
+                Discard
+              </button>
+<button class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-charcoal text-ivory text-xs uppercase tracking-widest font-medium hover:bg-neutral-800 transition-all" id="save-btn">
+<span class="material-symbols-outlined text-sm">check</span>
+<span>Save</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ARCHIVE & TIMELINE: Vertical Literary Ledger (No Card Grid) -->
+<section class="py-24 md:py-36 border-b border-hairline" id="features">
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+<div class="max-w-2xl">
+<span class="text-xs uppercase tracking-mega text-sage font-medium mb-3 block">Archive &amp; Ledger</span>
+<h2 class="font-serif text-3xl sm:text-5xl text-charcoal font-normal tracking-tight">
+              Every entry has its place.
+            </h2>
+</div>
+<div class="text-sm text-charcoal-muted">
+<span>52 entries archived in Volume 2025</span>
+</div>
+</div>
+<!-- Typographic Ledger Sequence -->
+<div class="border-t border-hairline divide-y divide-hairline">
+<!-- Ledger Row 1 -->
+<article class="py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-baseline group hover:bg-black/[0.01] transition-colors -mx-4 px-4">
+<div class="lg:col-span-3 text-xs uppercase tracking-widest text-muted-gray flex items-center gap-3">
+<span>Oct 22, 2025</span>
+<span class="w-1 h-1 rounded-full bg-sage"></span>
+<span class="text-charcoal-muted font-medium">Peaceful</span>
+</div>
+<div class="lg:col-span-6">
+<h3 class="font-serif text-2xl text-charcoal group-hover:text-sage transition-colors mb-3">
+                The cadence of autumn winds
+              </h3>
+<p class="text-sm text-charcoal-muted font-light leading-relaxed line-clamp-2">
+                Walked down by the river canal right as dusk began falling. The maple leaves are turning that deep burnt ochre. A sudden sense of peace accompanied the evening chill.
+              </p>
+</div>
+<div class="lg:col-span-3 lg:text-right flex lg:flex-col justify-between items-end gap-2 text-xs text-muted-gray">
+<span>540 words · 3 min</span>
+<div class="flex gap-2">
+<span class="text-charcoal-muted">#Walks</span>
+<span>·</span>
+<span class="text-charcoal-muted">#Reflections</span>
+</div>
+</div>
+</article>
+<!-- Ledger Row 2 -->
+<article class="py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-baseline group hover:bg-black/[0.01] transition-colors -mx-4 px-4">
+<div class="lg:col-span-3 text-xs uppercase tracking-widest text-muted-gray flex items-center gap-3">
+<span>Oct 18, 2025</span>
+<span class="w-1 h-1 rounded-full bg-sage"></span>
+<span class="text-charcoal-muted font-medium">Inspired</span>
+</div>
+<div class="lg:col-span-6">
+<h3 class="font-serif text-2xl text-charcoal group-hover:text-sage transition-colors mb-3">
+                Pages from the second notebook
+              </h3>
+<p class="text-sm text-charcoal-muted font-light leading-relaxed line-clamp-2">
+                Finished reading Calvino’s Invisible Cities again. Made extensive notes on how memory shapes the physical contours of spaces we inhabit and return to.
+              </p>
+</div>
+<div class="lg:col-span-3 lg:text-right flex lg:flex-col justify-between items-end gap-2 text-xs text-muted-gray">
+<span>820 words · 5 min</span>
+<div class="flex gap-2">
+<span class="text-charcoal-muted">#Books</span>
+<span>·</span>
+<span class="text-charcoal-muted">#Architecture</span>
+</div>
+</div>
+</article>
+<!-- Ledger Row 3 -->
+<article class="py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-baseline group hover:bg-black/[0.01] transition-colors -mx-4 px-4">
+<div class="lg:col-span-3 text-xs uppercase tracking-widest text-muted-gray flex items-center gap-3">
+<span>Oct 14, 2025</span>
+<span class="w-1 h-1 rounded-full bg-sage"></span>
+<span class="text-charcoal-muted font-medium">Grateful</span>
+</div>
+<div class="lg:col-span-6">
+<h3 class="font-serif text-2xl text-charcoal group-hover:text-sage transition-colors mb-3">
+                Quiet cup of morning tea
+              </h3>
+<p class="text-sm text-charcoal-muted font-light leading-relaxed line-clamp-2">
+                Morning light filters past the curtains. Steaming mug, zero notifications for an hour. Relearning how pleasant it is to just hear the kettle whistle on the stove.
+              </p>
+</div>
+<div class="lg:col-span-3 lg:text-right flex lg:flex-col justify-between items-end gap-2 text-xs text-muted-gray">
+<span>412 words · 2 min</span>
+<div class="flex gap-2">
+<span class="text-charcoal-muted">#Morning</span>
+<span>·</span>
+<span class="text-charcoal-muted">#Stillness</span>
+</div>
+</div>
+</article>
+<!-- Ledger Row 4 -->
+<article class="py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-baseline group hover:bg-black/[0.01] transition-colors -mx-4 px-4">
+<div class="lg:col-span-3 text-xs uppercase tracking-widest text-muted-gray flex items-center gap-3">
+<span>Oct 08, 2025</span>
+<span class="w-1 h-1 rounded-full bg-sage"></span>
+<span class="text-charcoal-muted font-medium">Contemplative</span>
+</div>
+<div class="lg:col-span-6">
+<h3 class="font-serif text-2xl text-charcoal group-hover:text-sage transition-colors mb-3">
+                Letters unposted, thoughts preserved
+              </h3>
+<p class="text-sm text-charcoal-muted font-light leading-relaxed line-clamp-2">
+                Sorting old correspondence in the cedar chest. There is something profoundly tactile in dated handwriting that modern communication will never quite replicate.
+              </p>
+</div>
+<div class="lg:col-span-3 lg:text-right flex lg:flex-col justify-between items-end gap-2 text-xs text-muted-gray">
+<span>615 words · 4 min</span>
+<div class="flex gap-2">
+<span class="text-charcoal-muted">#Memory</span>
+<span>·</span>
+<span class="text-charcoal-muted">#Letters</span>
+</div>
+</div>
+</article>
+</div>
+<div class="pt-8 flex items-center justify-between text-xs uppercase tracking-widest text-muted-gray">
+<span>Displaying 4 of 52 ledger entries</span>
+<a class="text-charcoal font-medium hover:text-sage transition-colors flex items-center gap-1.5" href="#">
+<span>View Full Archive</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- INSIGHTS: Typographic Resonance vs Cluttered Boxes -->
+<section class="py-24 md:py-36 border-b border-hairline" id="insights">
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+<div class="max-w-2xl mb-20">
+<span class="text-xs uppercase tracking-mega text-sage font-medium mb-3 block">Quiet Resonance</span>
+<h2 class="font-serif text-3xl sm:text-5xl text-charcoal font-normal tracking-tight">
+            Notice the patterns in your pages.
+          </h2>
+<p class="mt-4 text-charcoal-muted text-base sm:text-lg font-light leading-relaxed">
+            Honest reflection over gamification. Subtle cadences and reflective states uncovered naturally over time.
+          </p>
+</div>
+<!-- Confident Typographic Numbers -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16 pb-16 border-b border-hairline">
+<div class="lg:col-span-4">
+<span class="font-serif text-6xl sm:text-7xl lg:text-8xl text-charcoal font-normal block leading-none">
+              52
+            </span>
+<span class="mt-3 block text-sm font-serif italic text-charcoal">Entries preserved this year</span>
+<p class="mt-2 text-xs text-muted-gray font-light">
+              Consistent weekly cadence across autumn and winter.
+            </p>
+</div>
+<div class="lg:col-span-4">
+<span class="font-serif text-6xl sm:text-7xl lg:text-8xl text-charcoal font-normal block leading-none">
+              34,820
+            </span>
+<span class="mt-3 block text-sm font-serif italic text-charcoal">Words written in private</span>
+<p class="mt-2 text-xs text-muted-gray font-light">
+              Roughly equivalent to a 130-page personal memoir.
+            </p>
+</div>
+<div class="lg:col-span-4 flex flex-col justify-end">
+<span class="font-serif text-4xl sm:text-5xl text-charcoal font-normal block leading-none">
+              670 <span class="text-xl text-muted-gray font-sans font-light">words / avg</span>
+</span>
+<span class="mt-3 block text-sm font-serif italic text-charcoal">Deliberate reflective depth</span>
+<p class="mt-2 text-xs text-muted-gray font-light">
+              Never rushed. An intentional space to find clarity.
+            </p>
+</div>
+</div>
+<!-- Open Visualization: Cadence Heatmap & Archetype Rhythms -->
+<div class="pt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+<!-- Cadence Matrix (Open, Frameless) -->
+<div class="lg:col-span-7">
+<div class="flex items-center justify-between mb-6">
+<span class="text-xs uppercase tracking-widest text-muted-gray font-medium">12-Week Writing Rhythm</span>
+<span class="text-xs text-sage font-medium">88% active reflective days</span>
+</div>
+<!-- Heatmap Strip -->
+<div class="w-full overflow-x-auto py-2">
+<svg class="w-full h-auto text-sage" viewbox="0 0 420 72">
+<g fill="currentColor">
+<!-- Row 1 -->
+<rect class="text-hairline fill-current" height="10" rx="2" width="20" x="0" y="0"></rect>
+<rect class="text-sage/40 fill-current" height="10" rx="2" width="20" x="35" y="0"></rect>
+<rect class="text-sage/70 fill-current" height="10" rx="2" width="20" x="70" y="0"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="105" y="0"></rect>
+<rect class="text-sage/60 fill-current" height="10" rx="2" width="20" x="140" y="0"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="175" y="0"></rect>
+<rect class="text-sage/80 fill-current" height="10" rx="2" width="20" x="210" y="0"></rect>
+<rect class="text-sage/50 fill-current" height="10" rx="2" width="20" x="245" y="0"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="280" y="0"></rect>
+<rect class="text-sage/90 fill-current" height="10" rx="2" width="20" x="315" y="0"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="350" y="0"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="385" y="0"></rect>
+<!-- Row 2 -->
+<rect class="text-sage/30 fill-current" height="10" rx="2" width="20" x="0" y="15"></rect>
+<rect class="text-sage/80 fill-current" height="10" rx="2" width="20" x="35" y="15"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="70" y="15"></rect>
+<rect class="text-hairline fill-current" height="10" rx="2" width="20" x="105" y="15"></rect>
+<rect class="text-sage/70 fill-current" height="10" rx="2" width="20" x="140" y="15"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="175" y="15"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="210" y="15"></rect>
+<rect class="text-sage/60 fill-current" height="10" rx="2" width="20" x="245" y="15"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="280" y="15"></rect>
+<rect class="text-sage/80 fill-current" height="10" rx="2" width="20" x="315" y="15"></rect>
+<rect class="text-sage/70 fill-current" height="10" rx="2" width="20" x="350" y="15"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="385" y="15"></rect>
+<!-- Row 3 -->
+<rect class="text-sage/60 fill-current" height="10" rx="2" width="20" x="0" y="30"></rect>
+<rect class="text-hairline fill-current" height="10" rx="2" width="20" x="35" y="30"></rect>
+<rect class="text-sage/80 fill-current" height="10" rx="2" width="20" x="70" y="30"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="105" y="30"></rect>
+<rect class="text-sage/60 fill-current" height="10" rx="2" width="20" x="140" y="30"></rect>
+<rect class="text-sage/90 fill-current" height="10" rx="2" width="20" x="175" y="30"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="210" y="30"></rect>
+<rect class="text-sage/70 fill-current" height="10" rx="2" width="20" x="245" y="30"></rect>
+<rect class="text-hairline fill-current" height="10" rx="2" width="20" x="280" y="30"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="315" y="30"></rect>
+<rect class="text-sage/80 fill-current" height="10" rx="2" width="20" x="350" y="30"></rect>
+<rect class="text-sage fill-current" height="10" rx="2" width="20" x="385" y="30"></rect>
+</g>
+</svg>
+</div>
+<div class="mt-4 flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-gray">
+<span>Less frequent</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-hairline"></span>
+<span class="w-2.5 h-2.5 rounded-sm bg-sage/40"></span>
+<span class="w-2.5 h-2.5 rounded-sm bg-sage/70"></span>
+<span class="w-2.5 h-2.5 rounded-sm bg-sage"></span>
+</div>
+<span>More frequent</span>
+</div>
+</div>
+<!-- Mood Breakdown (Simple Open Hairline Sequence) -->
+<div class="lg:col-span-5">
+<span class="text-xs uppercase tracking-widest text-muted-gray font-medium mb-6 block">Reflective States</span>
+<div class="space-y-4">
+<div>
+<div class="flex items-center justify-between text-xs text-charcoal mb-1.5 font-medium">
+<span>Peaceful</span>
+<span class="text-muted-gray">38%</span>
+</div>
+<div class="w-full h-1 bg-hairline rounded-full overflow-hidden">
+<div class="h-full bg-sage" style="width: 38%"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-xs text-charcoal mb-1.5 font-medium">
+<span>Grateful</span>
+<span class="text-muted-gray">27%</span>
+</div>
+<div class="w-full h-1 bg-hairline rounded-full overflow-hidden">
+<div class="h-full bg-charcoal" style="width: 27%"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-xs text-charcoal mb-1.5 font-medium">
+<span>Inspired</span>
+<span class="text-muted-gray">17%</span>
+</div>
+<div class="w-full h-1 bg-hairline rounded-full overflow-hidden">
+<div class="h-full bg-sage-light" style="width: 17%"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-xs text-charcoal mb-1.5 font-medium">
+<span>Contemplative</span>
+<span class="text-muted-gray">12%</span>
+</div>
+<div class="w-full h-1 bg-hairline rounded-full overflow-hidden">
+<div class="h-full bg-muted-gray" style="width: 12%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- EXPORT & PRESERVATION: Radical Simplification Editorial Spread -->
+<section class="py-24 md:py-36 border-b border-hairline" id="export">
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+<div class="lg:col-span-6">
+<span class="text-xs uppercase tracking-mega text-sage font-medium mb-3 block">Lifelong Preservation</span>
+<h2 class="font-serif text-3xl sm:text-5xl text-charcoal font-normal tracking-tight mb-6 leading-tight">
+              Your words belong to you. Forever.
+            </h2>
+<p class="text-charcoal-muted text-base sm:text-lg font-light leading-relaxed mb-8">
+              Never locked inside a proprietary database. At any moment, export your complete archive into timeless formats designed to outlast platforms, devices, and decades.
+            </p>
+<!-- Inline Typographic Format Indicators -->
+<div class="py-6 border-y border-hairline flex flex-wrap items-center gap-y-3 gap-x-8 text-sm">
+<span class="font-serif text-charcoal font-medium">Styled Printable PDF</span>
+<span class="text-hairline">·</span>
+<span class="font-serif text-charcoal font-medium">Markdown (.md)</span>
+<span class="text-hairline">·</span>
+<span class="font-serif text-charcoal font-medium">Full JSON Schema</span>
+</div>
+<p class="mt-6 text-xs text-muted-gray font-light">
+              Compatible with Obsidian, Apple Books, bound print runs, and offline hard drives.
+            </p>
+</div>
+<!-- Printable Book Folio Preview Mockup -->
+<div class="lg:col-span-6">
+<div class="bg-paper-sheet border border-hairline p-8 sm:p-12 shadow-sm relative">
+<div class="text-[11px] uppercase tracking-widest text-muted-gray pb-4 border-b border-hairline flex justify-between">
+<span>Typeset Edition — Volume 2025</span>
+<span>A5 Book Spread</span>
+</div>
+<div class="py-10 grid grid-cols-2 gap-8 text-charcoal">
+<!-- Page Left -->
+<div class="space-y-3 text-xs border-r border-hairline pr-6 font-light leading-relaxed">
+<span class="font-serif italic block text-sm">Chapter IV: Autumn Rhythms</span>
+<p class="text-charcoal-muted">
+                    The tea steeped quietly as thoughts began to settle. There is a deep, quiet gratitude found in this unhurried space...
+                  </p>
+<span class="block pt-4 text-[10px] text-muted-gray">Page 42</span>
+</div>
+<!-- Page Right -->
+<div class="space-y-3 text-xs font-light leading-relaxed">
+<span class="font-serif italic block text-sm">October 22, 2025</span>
+<p class="text-charcoal-muted">
+                    Walked down by the river canal right as dusk began falling. The maple leaves are turning deep burnt ochre...
+                  </p>
+<span class="block pt-4 text-[10px] text-muted-gray">Page 43</span>
+</div>
+</div>
+<div class="pt-4 border-t border-hairline flex items-center justify-between text-xs">
+<span class="text-muted-gray">Complete 52 Entries Compiled</span>
+<a class="text-charcoal font-medium hover:text-sage transition-colors flex items-center gap-1" href="#">
+<span>Download Sample</span>
+<span class="material-symbols-outlined text-sm">download</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CLOSING SECTION: Full-Width Editorial Conclusion without Cards -->
+<section class="py-28 md:py-40 bg-ivory">
+<div class="max-w-4xl mx-auto px-6 sm:px-10 text-center">
+<span class="text-xs uppercase tracking-mega text-sage font-medium mb-6 block">
+          Your Private Harbor
+        </span>
+<h2 class="font-serif text-4xl sm:text-6xl text-charcoal font-normal tracking-tight leading-[1.15] mb-8">
+          Your story deserves a place.
+        </h2>
+<p class="text-charcoal-muted text-lg sm:text-xl font-light leading-relaxed max-w-xl mx-auto mb-12">
+          Begin capturing the thoughts and moments you don't want to lose. Private by default, calming by design, archival by nature.
+        </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-5">
+<a class="w-full sm:w-auto px-9 py-4 rounded-full bg-charcoal text-ivory text-sm tracking-wide font-medium hover:bg-neutral-800 transition-all shadow-sm" href="#editor">
+            Begin your journal
+          </a>
+<a class="w-full sm:w-auto px-8 py-4 text-sm font-medium text-charcoal-muted hover:text-charcoal transition-colors" href="#experience">
+            Read our philosophy
+          </a>
+</div>
+<div class="mt-16 flex items-center justify-center gap-8 text-xs text-muted-gray font-light">
+<span>Private and untracked</span>
+<span>·</span>
+<span>Zero social streams</span>
+<span>·</span>
+<span>Yours forever</span>
+</div>
+</div>
+</section>
+</main>
+<!-- MINIMALIST FOOTER -->
+<footer class="border-t border-hairline bg-ivory py-16">
+<div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-12 border-b border-hairline">
+<div>
+<span class="font-serif text-2xl tracking-tight text-charcoal block mb-2">Chronicle</span>
+<p class="text-xs text-charcoal-muted font-light max-w-sm">
+            A quiet sanctuary for reflective thinkers, unhurried clarity, and the timeless ritual of prose.
+          </p>
+</div>
+<div class="flex items-center gap-8 text-xs uppercase tracking-wider text-charcoal-muted">
+<a class="hover:text-charcoal transition-colors" href="#signin">Sign In</a>
+<a class="hover:text-charcoal transition-colors" href="#editor">Get Started</a>
+<a class="hover:text-charcoal transition-colors" href="#">Privacy</a>
+<a class="hover:text-charcoal transition-colors" href="#">Terms</a>
+</div>
+</div>
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-gray font-light">
+<p>© 2025 Chronicle Journaling Co. Crafted for thoughtful reflection.</p>
+<p class="uppercase tracking-widest text-[10px]">Archival Quality Digital Canvas</p>
+</div>
+</div>
+</footer>
+<!-- Save Button Interaction Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const saveBtn = document.getElementById('save-btn');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+          const original = saveBtn.innerHTML;
+          saveBtn.innerHTML = '<span class="material-symbols-outlined text-sm">check</span><span>Saved</span>';
+          saveBtn.classList.add('bg-sage');
+          saveBtn.classList.remove('bg-charcoal');
+          setTimeout(() => {
+            saveBtn.innerHTML = original;
+            saveBtn.classList.remove('bg-sage');
+            saveBtn.classList.add('bg-charcoal');
+          }, 2000);
+        });
+      }
+    });
+  </script>
+</body></html>

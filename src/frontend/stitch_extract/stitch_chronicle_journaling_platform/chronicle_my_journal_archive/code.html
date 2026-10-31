@@ -1,0 +1,303 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-fixed-dim":"#b9ccb2","primary":"#50614b","outline":"#747871","primary-fixed":"#d5e8cd","surface-container-high":"#e9e8e2","on-primary-container":"#f7fff0","outline-variant":"#c4c8bf","secondary-container":"#dbe2d4","on-surface-variant":"#444841","on-error-container":"#93000a","tertiary":"#5c5c57","on-secondary":"#ffffff","inverse-primary":"#b9ccb2","surface-container-lowest":"#ffffff","on-primary-fixed-variant":"#3b4b37","surface-bright":"#fbf9f3","primary-container":"#687963","on-primary-fixed":"#101f0e","on-surface":"#1b1c18","on-secondary-container":"#5e655a","secondary":"#596055","on-error":"#ffffff","surface-dim":"#dbdad4","surface-tint":"#52634d","on-background":"#1b1c18","inverse-on-surface":"#f2f1ea","on-tertiary-fixed-variant":"#474742","surface-container-low":"#f5f4ed","background":"#fbf9f3","secondary-fixed":"#dee5d7","tertiary-container":"#75756f","on-primary":"#ffffff","tertiary-fixed":"#e4e2dc","tertiary-fixed-dim":"#c8c6c0","on-tertiary-fixed":"#1b1c18","error-container":"#ffdad6","surface-variant":"#e4e3dc","surface-container-highest":"#e4e3dc","on-tertiary-container":"#fffcf5","secondary-fixed-dim":"#c2c9bb","inverse-surface":"#30312d","error":"#ba1a1a","on-secondary-fixed-variant":"#42493e","on-tertiary":"#ffffff","surface-container":"#efeee7","on-secondary-fixed":"#171d15","surface":"#fbf9f3"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin":"2rem","space-sm":"0.5rem","space-xl":"2.5rem","gutter":"1.5rem","space-lg":"1.5rem","space-xs":"0.25rem","space-md":"1rem"},fontFamily:{"headline-sm":["Playfair Display"],"label-md":["DM Sans"],"label-sm":["DM Sans"],"display-lg-mobile":["Playfair Display"],"headline-lg-mobile":["Playfair Display"],"body-md":["DM Sans"],"display-lg":["Playfair Display"],"body-sm":["DM Sans"],"headline-lg":["Playfair Display"],"headline-md":["Playfair Display"],"body-lg":["Playfair Display"]},fontSize:{"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"label-md":["13px",{lineHeight:"18px",letterSpacing:"0.02em",fontWeight:"500"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"600"}],"display-lg-mobile":["34px",{lineHeight:"42px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-lg-mobile":["26px",{lineHeight:"34px",letterSpacing:"0em",fontWeight:"500"}],"body-md":["15px",{lineHeight:"24px",fontWeight:"400"}],"display-lg":["48px",{lineHeight:"56px",letterSpacing:"-0.02em",fontWeight:"400"}],"body-sm":["13px",{lineHeight:"20px",fontWeight:"400"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.01em",fontWeight:"500"}],"headline-md":["24px",{lineHeight:"32px",fontWeight:"500"}],"body-lg":["19px",{lineHeight:"32px",letterSpacing:"0.01em",fontWeight:"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-surface-container border-r border-surface-container-highest z-50 flex flex-col justify-between overflow-y-auto"><div class="p-space-lg"><div class="flex items-center gap-space-sm mb-space-xl"><img alt="Chronicle Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UwJU6hmRt5QPfpeXiSF39z2OESrhDFLMld920TKRZmvqWYTHBrD282GkW3eGfbY4UjaFGn6xd_BjMGWfGuyHReAx_VEN0gcQ3r93O7N0BaWS8bdGurazRfkHlB8LMicNZuY-NGeZwN08aaPOzrBvdD8zEgAh-C9u03OmXm3MHyQsZhJTY8NDScN82GIjUhGTg2zYVFygUXmETyOEPi4PQd5r3i19MOgp_LeNwCJg"><div class="flex flex-col"><span class="font-headline-md text-headline-md tracking-tight text-on-surface">Chronicle</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Private Journal</span></div></div><div class="mb-space-lg"><a class="w-full flex items-center justify-center gap-space-sm py-space-sm px-space-md bg-primary hover:bg-primary-container text-on-primary rounded-lg transition-colors shadow-[0_2px_8px_-2px_rgba(37,38,34,0.06)]" data-path="new-entry" href="#"><span class="material-symbols-outlined text-lg">edit_note</span><span class="font-label-md text-label-md">New Entry</span></a></div><div class="mb-space-xs"><span class="font-label-sm text-label-sm uppercase text-secondary px-space-sm tracking-wider">Journal Navigation</span></div><nav class="flex flex-col gap-space-xs mb-space-lg" data-active-classes="bg-surface-container-highest text-on-surface font-semibold rounded-lg"><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-lg">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-sm transition-colors bg-surface-container-highest text-on-surface font-semibold rounded-lg" data-path="my-journal" href="#"><span class="material-symbols-outlined text-lg">auto_stories</span><span class="font-body-md text-body-md">My Journal</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="insights" href="#"><span class="material-symbols-outlined text-lg">analytics</span><span class="font-body-md text-body-md">Insights</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="export" href="#"><span class="material-symbols-outlined text-lg">ios_share</span><span class="font-body-md text-body-md">Export</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-lg">settings</span><span class="font-body-md text-body-md">Settings</span></a></nav><div class="mb-space-xs"><span class="font-label-sm text-label-sm uppercase text-secondary px-space-sm tracking-wider">Collections</span></div><div class="flex flex-col gap-space-xs"><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="reflections" href="#"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span><span class="font-body-sm text-body-sm">#Reflections</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="gratitude" href="#"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span><span class="font-body-sm text-body-sm">#Gratitude</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="morning-pages" href="#"><span class="w-1.5 h-1.5 rounded-full bg-outline"></span><span class="font-body-sm text-body-sm">#MorningPages</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="travel" href="#"><span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span><span class="font-body-sm text-body-sm">#Travel</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="ideas" href="#"><span class="w-1.5 h-1.5 rounded-front bg-tertiary"></span><span class="font-body-sm text-body-sm">#Ideas</span></a></div></div><div class="p-space-lg border-t border-surface-container-highest"><div class="flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaLZCItq9VyOCWdwA5IXZwLw4ML3tXMoMUFr0Y0qGZX3QSbCFWRa_Na0JGmgEVHlsw_19dYIv9kZYITZMqriEKmjSIqMom80ZqPEy4k92WhfZcHpLmyqToDERYDiltDqV3kbaaujgiyyeD2ATOuToOpmHmHE6gtGHakEbfOCPiZxj7kM3So-ZWUlA2X2AhbpOU31Wq02AnqBxiZdDcbpzldWs42LhlY6HLLqsrzQ"><span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-primary border-2 border-surface-container"></span></div><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface">Eleanor Vance</span><span class="font-label-sm text-label-sm text-secondary">eleanor@chronicle.journal</span></div></div><button class="text-secondary hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-lg">dock_to_left</span></button></div></div></aside><div class="pl-72 min-h-screen bg-background"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl border-b border-surface-container-highest z-40 flex items-center justify-between px-gutter"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm"><span class="font-headline-sm text-base text-on-surface font-serif">Chronicle</span><span class="text-outline-variant">/</span><span class="font-label-md text-label-md text-secondary">My Journal</span></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface py-space-xs px-space-sm rounded-lg hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">search</span><span class="font-body-sm text-body-sm">Search (⌘K)</span></button><button class="text-on-surface-variant hover:text-on-surface p-space-xs rounded-lg hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">notifications_none</span></button><div class="h-4 w-[1px] bg-outline-variant"></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaLZCItq9VyOCWdwA5IXZwLw4ML3tXMoMUFr0Y0qGZX3QSbCFWRa_Na0JGmgEVHlsw_19dYIv9kZYITZMqriEKmjSIqMom80ZqPEy4k92WhfZcHpLmyqToDERYDiltDqV3kbaaujgiyyeD2ATOuToOpmHmHE6gtGHakEbfOCPiZxj7kM3So-ZWUlA2X2AhbpOU31Wq02AnqBxiZdDcbpzldWs42LhlY6HLLqsrzQ"></div></header><main class="w-full pt-16 bg-background"><div class="max-w-4xl mx-auto px-margin py-space-lg"><div class="flex flex-col w-full">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
+<div><h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight font-serif">My Journal</h1><p class="font-body-md text-body-md text-secondary mt-1">52 personal entries preserved in your private collection</p></div>
+<div class="flex items-center gap-space-sm bg-surface-container-low p-1.5 rounded-lg shadow-sm">
+<div class="flex items-center bg-surface-container-high rounded-md p-1">
+<button aria-label="Grid View" class="p-1.5 rounded bg-surface text-primary shadow-sm transition-colors" id="viewGridBtn">
+<span class="material-symbols-outlined text-base leading-none">grid_view</span>
+</button>
+<button aria-label="List View" class="p-1.5 rounded text-secondary hover:text-on-surface transition-colors" id="viewListBtn">
+<span class="material-symbols-outlined text-base leading-none">view_agenda</span>
+</button>
+</div>
+<div class="h-4 w-px bg-outline-variant/40"></div>
+<div class="relative inline-block text-left">
+<button class="flex items-center gap-space-xs px-space-sm py-1.5 rounded-md bg-surface text-on-surface-variant hover:text-on-surface text-body-sm font-body-sm transition-colors" id="sortToggle" type="button">
+<span class="material-symbols-outlined text-sm text-secondary">swap_vert</span>
+<span id="sortLabel" class="">Newest first</span>
+<span class="material-symbols-outlined text-xs text-secondary">expand_more</span>
+</button>
+<div class="hidden absolute right-0 mt-2 w-40 bg-surface-container-lowest rounded-lg shadow-xl z-20 py-1" id="sortMenu">
+<button class="w-full text-left px-space-sm py-1.5 text-body-sm font-body-sm text-primary bg-secondary-container/40">Newest first</button>
+<button class="w-full text-left px-space-sm py-1.5 text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container-low">Oldest first</button>
+<button class="w-full text-left px-space-sm py-1.5 text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-container-low">Most words</button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-sm mb-space-xl flex flex-col gap-space-md"><div class="relative w-full"><span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-lg">search</span><input class="w-full pl-11 pr-20 py-2.5 bg-surface rounded-lg text-body-md font-body-md text-on-surface placeholder:text-secondary focus:outline-none focus:ring-1 focus:ring-primary shadow-sm transition-all" placeholder="Search your memories, thoughts, keywords..." type="text"><div class="absolute right-space-md top-1/2 -translate-y-1/2 flex items-center gap-1"><kbd class="px-2 py-0.5 text-label-sm font-label-sm text-secondary bg-surface-container-high rounded text-xs shadow-inner">⌘K</kbd></div></div><div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs"><div class="flex flex-wrap items-center gap-space-xs"><div class="relative"><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface text-on-surface-variant text-label-md font-label-md hover:bg-surface-container-high transition-colors shadow-sm" id="moodFilterBtn" type="button"><span class="material-symbols-outlined text-sm text-primary">sentiment_satisfied</span><span class="">Mood: All Moods</span><span class="material-symbols-outlined text-xs text-secondary">expand_more</span></button></div><div class="relative"><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface text-on-surface-variant text-label-md font-label-md hover:bg-surface-container-high transition-colors shadow-sm" id="tagFilterBtn" type="button"><span class="material-symbols-outlined text-sm text-secondary">tag</span><span class="">Topic: All Tags</span><span class="material-symbols-outlined text-xs text-secondary">expand_more</span></button></div><div class="relative"><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-label-md font-label-md shadow-sm" id="dateFilterBtn" type="button"><span class="material-symbols-outlined text-sm">calendar_month</span><span class="">Date: October 2024</span><span class="material-symbols-outlined text-xs">close</span></button></div></div><div class="flex items-center gap-space-sm text-label-sm font-label-sm text-secondary"><span class="">Active Filters: <strong class="text-on-surface">1</strong></span><button class="hover:text-primary transition-colors underline underline-offset-2 flex items-center gap-1" type="button"><span class="material-symbols-outlined text-xs">restart_alt</span><span class="">Reset filters</span></button></div></div></div>
+<div class="flex items-center gap-space-md mb-space-lg"><div class="flex items-baseline gap-space-xs"><h2 class="font-headline-md text-headline-md text-on-surface font-serif">October</h2><span class="font-headline-sm text-headline-sm text-secondary italic font-serif">2024</span></div><div class="h-0.5 flex-1 bg-surface-container-high"></div><span class="font-label-sm text-label-sm text-secondary tracking-wider uppercase">6 entries</span></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg mb-space-xl" id="journalGrid">
+<article class="group relative flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-300">
+<div>
+<div class="flex items-center justify-between gap-space-sm mb-space-sm">
+<div class="flex items-center gap-1.5 text-secondary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">today</span>
+<span class="">Oct 23, 2024</span>
+<span class="text-outline-variant">•</span>
+<span class="">9:15 PM</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+            🌱 Serene
+          </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-space-xs line-clamp-2">
+          The scent of rain on pine needles
+        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+          The morning walk through the conservatory reminded me how silence can feel so complete. There was a gentle drizzle tapping against the high glass ceiling...
+        </p>
+</div>
+<div class="pt-space-sm">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#Reflections</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#Nature</span>
+</div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-secondary">
+<span class="">642 words</span>
+<span class="">•</span>
+<span class="">3 min read</span>
+</div>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-300">
+<div>
+<div class="flex items-center justify-between gap-space-sm mb-space-sm">
+<div class="flex items-center gap-1.5 text-secondary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">today</span>
+<span class="">Oct 21, 2024</span>
+<span class="text-outline-variant">•</span>
+<span class="">10:30 AM</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm">
+            💡 Inspired
+          </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-space-xs line-clamp-2">
+          A sudden shift in perspective over coffee
+        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+          Notes from an unhurried conversation at the corner café with Julian. We spoke about creative patience and how ideas need room to breathe before they take shape...
+        </p>
+</div>
+<div class="pt-space-sm">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#Ideas</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#Work</span>
+</div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-secondary">
+<span class="">820 words</span>
+<span class="">•</span>
+<span class="">4 min read</span>
+</div>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-300">
+<div>
+<div class="flex items-center justify-between gap-space-sm mb-space-sm">
+<div class="flex items-center gap-1.5 text-secondary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">today</span>
+<span class="">Oct 19, 2024</span>
+<span class="text-outline-variant">•</span>
+<span class="">4:45 PM</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">
+            ✨ Grateful
+          </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-space-xs line-clamp-2">
+          Finding quiet in the middle of travel chaos
+        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+          Flight delays transformed into two unexpected hours of uninterrupted reading and tea. Sometimes unplanned pauses are the best gifts...
+        </p>
+</div>
+<div class="pt-space-sm">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#Travel</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#Gratitude</span>
+</div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-secondary">
+<span class="">510 words</span>
+<span class="">•</span>
+<span class="">2 min read</span>
+</div>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-300">
+<div>
+<div class="flex items-center justify-between gap-space-sm mb-space-sm">
+<div class="flex items-center gap-1.5 text-secondary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">today</span>
+<span class="">Oct 15, 2024</span>
+<span class="text-outline-variant">•</span>
+<span class="">6:00 PM</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
+            🍂 Contemplative
+          </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-space-xs line-clamp-2">
+          Autumn shadows across the studio desk
+        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+          The light changes so quickly by mid-October. By five in the afternoon, long amber shadows stretch across the wooden floorboards...
+        </p>
+</div>
+<div class="pt-space-sm">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#MorningPages</span>
+</div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-secondary">
+<span class="">730 words</span>
+<span class="">•</span>
+<span class="">3 min read</span>
+</div>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-300">
+<div>
+<div class="flex items-center justify-between gap-space-sm mb-space-sm">
+<div class="flex items-center gap-1.5 text-secondary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">today</span>
+<span class="">Oct 12, 2024</span>
+<span class="text-outline-variant">•</span>
+<span class="">11:20 PM</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+            🌙 Reflective
+          </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-space-xs line-clamp-2">
+          Questions worth carrying into the coming year
+        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+          What projects genuinely energize me? What habits have I kept simply out of routine rather than joy? An honest audit of my weeks...
+        </p>
+</div>
+<div class="pt-space-sm">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#Reflections</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#YearReview</span>
+</div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-secondary">
+<span class="">950 words</span>
+<span class="">•</span>
+<span class="">5 min read</span>
+</div>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col justify-between p-space-lg rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-300">
+<div>
+<div class="flex items-center justify-between gap-space-sm mb-space-sm">
+<div class="flex items-center gap-1.5 text-secondary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">today</span>
+<span class="">Oct 8, 2024</span>
+<span class="text-outline-variant">•</span>
+<span class="">2:15 PM</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary-fixed-dim text-on-primary-fixed-variant font-label-sm text-label-sm">
+            🍵 Peaceful
+          </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-space-xs line-clamp-2">
+          A handmade ceramic bowl from the flea market
+        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md line-clamp-3">
+          Imperfect glaze, textured clay, crafted with intention. It sits on the windowsill catching morning light, reminding me of simple tactile pleasures...
+        </p>
+</div>
+<div class="pt-space-sm">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">#Gratitude</span>
+</div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-secondary">
+<span class="">380 words</span>
+<span class="">•</span>
+<span class="">2 min read</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-md pb-space-lg">
+<div class="text-body-sm font-body-sm text-secondary">
+      Showing <span class="font-medium text-on-surface">1–6</span> of <span class="font-medium text-on-surface">52</span> entries
+    </div>
+<div class="flex items-center gap-1.5 bg-surface-container-low p-1 rounded-lg">
+<button aria-label="Previous Page" class="p-2 rounded text-secondary/40 cursor-not-allowed transition-colors" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center shadow-sm">
+        1
+      </button>
+<button class="w-8 h-8 rounded text-on-surface-variant hover:bg-surface hover:text-on-surface font-label-sm text-label-sm flex items-center justify-center transition-colors">
+        2
+      </button>
+<button class="w-8 h-8 rounded text-on-surface-variant hover:bg-surface hover:text-on-surface font-label-sm text-label-sm flex items-center justify-center transition-colors">
+        3
+      </button>
+<span class="px-1 text-secondary font-label-sm text-label-sm">…</span>
+<button class="w-8 h-8 rounded text-on-surface-variant hover:bg-surface hover:text-on-surface font-label-sm text-label-sm flex items-center justify-center transition-colors">
+        9
+      </button>
+<button aria-label="Next Page" class="p-2 rounded text-secondary hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xs text-body-sm font-body-sm text-secondary">
+<span class="">Page 1 of 9</span>
+</div>
+</div>
+<div class="mt-space-xl p-space-lg rounded-xl bg-surface-container-low/70 flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container"><span class="material-symbols-outlined text-xl">manage_search</span></div><div><h4 class="font-headline-sm text-headline-sm text-on-surface font-serif">Looking for a specific entry?</h4><p class="font-body-sm text-body-sm text-secondary mt-0.5">You can filter by mood, tag, and date, or backup your entire journal anytime.</p></div></div><div class="flex items-center gap-space-sm"><a class="inline-flex items-center gap-1.5 px-space-md py-2 rounded-lg bg-surface text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors shadow-sm" href="#" data-path="export"><span class="material-symbols-outlined text-sm">ios_share</span><span class="">Export Journal</span></a></div></div>
+</div>
+<script>
+  (function() {
+    const gridBtn = document.getElementById('viewGridBtn');
+    const listBtn = document.getElementById('viewListBtn');
+    const container = document.getElementById('journalGrid');
+    const sortToggle = document.getElementById('sortToggle');
+    const sortMenu = document.getElementById('sortMenu');
+
+    if (gridBtn && listBtn && container) {
+      gridBtn.addEventListener('click', () => {
+        container.className = 'grid grid-cols-1 md:grid-cols-2 gap-space-lg mb-space-xl';
+        gridBtn.className = 'p-1.5 rounded bg-surface text-primary shadow-sm transition-colors';
+        listBtn.className = 'p-1.5 rounded text-secondary hover:text-on-surface transition-colors';
+      });
+
+      listBtn.addEventListener('click', () => {
+        container.className = 'grid grid-cols-1 gap-space-md mb-space-xl';
+        listBtn.className = 'p-1.5 rounded bg-surface text-primary shadow-sm transition-colors';
+        gridBtn.className = 'p-1.5 rounded text-secondary hover:text-on-surface transition-colors';
+      });
+    }
+
+    if (sortToggle && sortMenu) {
+      sortToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sortMenu.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', () => {
+        if (!sortMenu.classList.contains('hidden')) {
+          sortMenu.classList.add('hidden');
+        }
+      });
+    }
+  })();
+</script></div></main></div>
+
+</body></html>

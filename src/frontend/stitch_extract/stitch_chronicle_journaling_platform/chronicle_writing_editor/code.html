@@ -1,0 +1,254 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-fixed-dim":"#b9ccb2","primary":"#50614b","outline":"#747871","primary-fixed":"#d5e8cd","surface-container-high":"#e9e8e2","on-primary-container":"#f7fff0","outline-variant":"#c4c8bf","secondary-container":"#dbe2d4","on-surface-variant":"#444841","on-error-container":"#93000a","tertiary":"#5c5c57","on-secondary":"#ffffff","inverse-primary":"#b9ccb2","surface-container-lowest":"#ffffff","on-primary-fixed-variant":"#3b4b37","surface-bright":"#fbf9f3","primary-container":"#687963","on-primary-fixed":"#101f0e","on-surface":"#1b1c18","on-secondary-container":"#5e655a","secondary":"#596055","on-error":"#ffffff","surface-dim":"#dbdad4","surface-tint":"#52634d","on-background":"#1b1c18","inverse-on-surface":"#f2f1ea","on-tertiary-fixed-variant":"#474742","surface-container-low":"#f5f4ed","background":"#fbf9f3","secondary-fixed":"#dee5d7","tertiary-container":"#75756f","on-primary":"#ffffff","tertiary-fixed":"#e4e2dc","tertiary-fixed-dim":"#c8c6c0","on-tertiary-fixed":"#1b1c18","error-container":"#ffdad6","surface-variant":"#e4e3dc","surface-container-highest":"#e4e3dc","on-tertiary-container":"#fffcf5","secondary-fixed-dim":"#c2c9bb","inverse-surface":"#30312d","error":"#ba1a1a","on-secondary-fixed-variant":"#42493e","on-tertiary":"#ffffff","surface-container":"#efeee7","on-secondary-fixed":"#171d15","surface":"#fbf9f3"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin":"2rem","space-sm":"0.5rem","space-xl":"2.5rem","gutter":"1.5rem","space-lg":"1.5rem","space-xs":"0.25rem","space-md":"1rem"},fontFamily:{"headline-sm":["Playfair Display"],"label-md":["DM Sans"],"label-sm":["DM Sans"],"display-lg-mobile":["Playfair Display"],"headline-lg-mobile":["Playfair Display"],"body-md":["DM Sans"],"display-lg":["Playfair Display"],"body-sm":["DM Sans"],"headline-lg":["Playfair Display"],"headline-md":["Playfair Display"],"body-lg":["Playfair Display"]},fontSize:{"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"label-md":["13px",{lineHeight:"18px",letterSpacing:"0.02em",fontWeight:"500"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"600"}],"display-lg-mobile":["34px",{lineHeight:"42px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-lg-mobile":["26px",{lineHeight:"34px",letterSpacing:"0em",fontWeight:"500"}],"body-md":["15px",{lineHeight:"24px",fontWeight:"400"}],"display-lg":["48px",{lineHeight:"56px",letterSpacing:"-0.02em",fontWeight:"400"}],"body-sm":["13px",{lineHeight:"20px",fontWeight:"400"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.01em",fontWeight:"500"}],"headline-md":["24px",{lineHeight:"32px",fontWeight:"500"}],"body-lg":["19px",{lineHeight:"32px",letterSpacing:"0.01em",fontWeight:"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-surface-container border-r border-surface-container-highest z-50 flex flex-col justify-between overflow-y-auto"><div class="p-space-lg"><div class="flex items-center gap-space-sm mb-space-xl"><img alt="Chronicle Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UwJU6hmRt5QPfpeXiSF39z2OESrhDFLMld920TKRZmvqWYTHBrD282GkW3eGfbY4UjaFGn6xd_BjMGWfGuyHReAx_VEN0gcQ3r93O7N0BaWS8bdGurazRfkHlB8LMicNZuY-NGeZwN08aaPOzrBvdD8zEgAh-C9u03OmXm3MHyQsZhJTY8NDScN82GIjUhGTg2zYVFygUXmETyOEPi4PQd5r3i19MOgp_LeNwCJg"><div class="flex flex-col"><span class="font-headline-md text-headline-md tracking-tight text-on-surface">Chronicle</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Private Journal</span></div></div><div class="mb-space-lg"><a class="w-full flex items-center justify-center gap-space-sm py-space-sm px-space-md bg-primary hover:bg-primary-container text-on-primary rounded-lg transition-colors shadow-[0_2px_8px_-2px_rgba(37,38,34,0.06)]" data-path="new-entry" href="#"><span class="material-symbols-outlined text-lg">edit_note</span><span class="font-label-md text-label-md">New Entry</span></a></div><div class="mb-space-xs"><span class="font-label-sm text-label-sm uppercase text-secondary px-space-sm tracking-wider">Journal Navigation</span></div><nav class="flex flex-col gap-space-xs mb-space-lg" data-active-classes="bg-surface-container-highest text-on-surface font-semibold rounded-lg"><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-lg">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="my-journal" href="#"><span class="material-symbols-outlined text-lg">auto_stories</span><span class="font-body-md text-body-md">My Journal</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="insights" href="#"><span class="material-symbols-outlined text-lg">analytics</span><span class="font-body-md text-body-md">Insights</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="export" href="#"><span class="material-symbols-outlined text-lg">ios_share</span><span class="font-body-md text-body-md">Export</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-lg">settings</span><span class="font-body-md text-body-md">Settings</span></a></nav><div class="mb-space-xs"><span class="font-label-sm text-label-sm uppercase text-secondary px-space-sm tracking-wider">Collections</span></div><div class="flex flex-col gap-space-xs"><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="reflections" href="#"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span><span class="font-body-sm text-body-sm">#Reflections</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="gratitude" href="#"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span><span class="font-body-sm text-body-sm">#Gratitude</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="morning-pages" href="#"><span class="w-1.5 h-1.5 rounded-full bg-outline"></span><span class="font-body-sm text-body-sm">#MorningPages</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="travel" href="#"><span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span><span class="font-body-sm text-body-sm">#Travel</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="ideas" href="#"><span class="w-1.5 h-1.5 rounded-front bg-tertiary"></span><span class="font-body-sm text-body-sm">#Ideas</span></a></div></div><div class="p-space-lg border-t border-surface-container-highest"><div class="flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaLZCItq9VyOCWdwA5IXZwLw4ML3tXMoMUFr0Y0qGZX3QSbCFWRa_Na0JGmgEVHlsw_19dYIv9kZYITZMqriEKmjSIqMom80ZqPEy4k92WhfZcHpLmyqToDERYDiltDqV3kbaaujgiyyeD2ATOuToOpmHmHE6gtGHakEbfOCPiZxj7kM3So-ZWUlA2X2AhbpOU31Wq02AnqBxiZdDcbpzldWs42LhlY6HLLqsrzQ"><span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-primary border-2 border-surface-container"></span></div><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface">Eleanor Vance</span><span class="font-label-sm text-label-sm text-secondary">Archival Mode</span></div></div><button class="text-secondary hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-lg">dock_to_left</span></button></div></div></aside><div class="pl-72 min-h-screen bg-background"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl border-b border-surface-container-highest z-40 flex items-center justify-between px-gutter"><div class="flex items-center gap-space-md"><span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Vol. IV • Private Desk</span></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface py-space-xs px-space-sm rounded-lg hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">search</span><span class="font-body-sm text-body-sm">Search (⌘K)</span></button><button class="text-on-surface-variant hover:text-on-surface p-space-xs rounded-lg hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-lg">notifications_none</span></button><div class="h-4 w-[1px] bg-outline-variant"></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaLZCItq9VyOCWdwA5IXZwLw4ML3tXMoMUFr0Y0qGZX3QSbCFWRa_Na0JGmgEVHlsw_19dYIv9kZYITZMqriEKmjSIqMom80ZqPEy4k92WhfZcHpLmyqToDERYDiltDqV3kbaaujgiyyeD2ATOuToOpmHmHE6gtGHakEbfOCPiZxj7kM3So-ZWUlA2X2AhbpOU31Wq02AnqBxiZdDcbpzldWs42LhlY6HLLqsrzQ"></div></header><main class="w-full pt-16 bg-background"><div class="max-w-4xl mx-auto px-margin py-space-lg"><div class="flex flex-col w-full">
+<!-- Desk Top Utility Bar -->
+<header class="w-full flex flex-wrap items-center justify-between gap-space-md py-space-sm mb-space-lg">
+<!-- Left Navigation Return -->
+<div class="flex items-center">
+<a class="group flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-3 rounded-lg hover:bg-surface-container-high" data-path="my-journal" href="#">
+<span class="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">west</span>
+<span class="font-label-md text-label-md">Back to Journal</span>
+</a>
+</div>
+<!-- Center Status Ribbon -->
+<div class="flex items-center gap-space-md bg-surface-container-low px-space-md py-1.5 rounded-full shadow-sm text-secondary"><div class="flex items-center gap-1.5"><span class="relative flex h-2 w-2"><span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span></span><span class="font-label-sm text-label-sm text-on-surface-variant" id="live-save-status">All changes saved</span></div><span class="w-1 h-1 rounded-full bg-outline-variant"></span><span class="font-label-sm text-label-sm tracking-wide text-secondary" id="word-count-badge">384 words</span></div>
+<!-- Right Controls & Actions -->
+<div class="flex items-center gap-space-sm"><button class="w-9 h-9 flex items-center justify-center rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-high transition-colors" id="options-toggle-btn" title="Writing Preferences" type="button"><span class="material-symbols-outlined text-lg">tune</span></button><button class="px-space-md py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md transition-colors shadow-sm flex items-center gap-1.5" type="button" id="save-entry-btn"><span class="material-symbols-outlined text-base">check</span><span class="">Save</span></button></div>
+</header>
+<!-- Desk Canvas Container: Centered arch-notebook layout -->
+<div class="w-full max-w-[760px] mx-auto flex flex-col relative">
+<!-- Atmospheric Visual Vignette (Archival desk imagery) -->
+<div class="relative w-full h-44 rounded-xl overflow-hidden mb-space-lg shadow-sm bg-surface-container"><div class="bg-cover bg-center w-full h-full filter saturate-[0.85] brightness-[0.96]" data-alt="Soft atmospheric dusk light streaming across an antique oak writing desk with vintage fountain pens, open cotton paper journal, and a glass of warm tea" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuDjSPnQ_pkrxmw8oCMWfant9bbHjJhsm1jzGQAJEjx_oknQmHuaP2nNra3pxenvYHyEZPrd7PK_dClQNzxhumzBgEs8gOjBQregmNcdBV-Z5xMwkM1xgGYnw5Ti5Pvt7IjFQ4HgFDkYPYqUwbyHOFQuU7tQeWtJQ2WCywL1wNIgyDJ_XVB1xLUuRFLKj91MkNbKom50tyuCIc-jdCet42cp7st31iQn0cznQvCEjg&quot;);"></div><div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/90 via-surface-container-lowest/30 to-transparent"></div></div>
+<!-- Metadata Strip -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md mb-space-lg shadow-sm flex flex-col gap-space-md">
+<!-- Date & Time Row -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-sm bg-surface-container-low/40 p-space-sm rounded-lg"><div class="flex items-center gap-2 text-on-surface"><span class="material-symbols-outlined text-lg text-primary">calendar_today</span><span class="font-headline-sm text-headline-sm">Thursday, October 24, 2024</span><span class="text-secondary font-label-md text-label-md">• 8:30 PM</span></div></div>
+<!-- Mood & Resonance Selector -->
+<div class="flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Emotional Resonance</span>
+<div class="flex flex-wrap gap-2 items-center" id="mood-selector">
+<button class="mood-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md transition-all shadow-sm" data-mood="peaceful" type="button">
+<span class="">🌱</span>
+<span class="">Peaceful</span>
+</button>
+<button class="mood-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all" data-mood="grateful" type="button">
+<span class="">✨</span>
+<span class="">Grateful</span>
+</button>
+<button class="mood-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all" data-mood="inspired" type="button">
+<span class="">💡</span>
+<span class="">Inspired</span>
+</button>
+<button class="mood-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all" data-mood="contemplative" type="button">
+<span class="">🍂</span>
+<span class="">Contemplative</span>
+</button>
+<button class="mood-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all" data-mood="vulnerable" type="button">
+<span class="">🌧</span>
+<span class="">Vulnerable</span>
+</button>
+<button class="mood-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all" data-mood="restless" type="button">
+<span class="">⚡</span>
+<span class="">Restless</span>
+</button>
+</div>
+</div>
+<!-- Tag Taxonomy -->
+<div class="flex flex-wrap items-center gap-2 pt-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary mr-1">Tags:</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-secondary font-body-sm text-body-sm hover:text-on-surface transition-colors cursor-pointer group">
+          #Reflections
+          <span class="material-symbols-outlined text-xs group-hover:text-error transition-colors">close</span>
+</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-secondary font-body-sm text-body-sm hover:text-on-surface transition-colors cursor-pointer group">
+          #EveningThoughts
+          <span class="material-symbols-outlined text-xs group-hover:text-error transition-colors">close</span>
+</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-secondary font-body-sm text-body-sm hover:text-on-surface transition-colors cursor-pointer group">
+          #WalksInRain
+          <span class="material-symbols-outlined text-xs group-hover:text-error transition-colors">close</span>
+</span>
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high hover:bg-surface-variant text-on-surface-variant font-label-sm text-label-sm transition-colors" id="add-tag-btn" type="button">
+<span class="material-symbols-outlined text-xs">add</span>
+<span class="">Add Tag</span>
+</button>
+</div>
+</section>
+<!-- Floating / Sticky Formatting Bar -->
+<div class="sticky top-20 z-30 mb-space-lg self-center w-full max-w-xl">
+<nav class="flex items-center justify-between px-3 py-1.5 bg-surface-container-lowest/95 backdrop-blur-md rounded-full shadow-md text-secondary">
+<!-- Formatting Tools Group -->
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.execCommand('formatBlock', false, 'h2')" title="Heading 1" type="button">
+<span class="font-headline-sm text-headline-sm leading-none">H1</span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.execCommand('formatBlock', false, 'h3')" title="Heading 2" type="button">
+<span class="font-headline-sm text-sm leading-none">H2</span>
+</button>
+<div class="h-4 w-px bg-surface-container-highest mx-1"></div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.execCommand('bold', false, null)" title="Bold" type="button">
+<span class="material-symbols-outlined text-base font-bold">format_bold</span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.execCommand('italic', false, null)" title="Italic" type="button">
+<span class="material-symbols-outlined text-base">format_italic</span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.execCommand('strikeThrough', false, null)" title="Strikethrough" type="button">
+<span class="material-symbols-outlined text-base">format_strikethrough</span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.execCommand('formatBlock', false, 'blockquote')" title="Quote" type="button">
+<span class="material-symbols-outlined text-base">format_quote</span>
+</button>
+<div class="h-4 w-px bg-surface-container-highest mx-1"></div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.execCommand('insertUnorderedList', false, null)" title="Bullet List" type="button">
+<span class="material-symbols-outlined text-base">format_list_bulleted</span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.execCommand('insertOrderedList', false, null)" title="Numbered List" type="button">
+<span class="material-symbols-outlined text-base">format_list_numbered</span>
+</button>
+</div>
+<!-- Addons Group -->
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Insert Photograph" type="button">
+<span class="material-symbols-outlined text-base">add_photo_alternate</span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Add Bookmark Divider" type="button">
+<span class="material-symbols-outlined text-base">bookmark_add</span>
+</button>
+<div class="h-4 w-px bg-surface-container-highest mx-1"></div>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container/60 hover:bg-secondary-container text-on-secondary-container font-label-sm text-label-sm transition-colors" id="zen-mode-toggle" title="Toggle Distraction-free View" type="button">
+<span class="material-symbols-outlined text-sm">visibility</span>
+<span class="">Zen</span>
+</button>
+</div>
+</nav>
+</div>
+<!-- Main Editorial Writing Canvas -->
+<main class="w-full bg-surface-container-lowest rounded-2xl p-space-xl sm:p-12 mb-space-xl shadow-md min-h-[720px] flex flex-col">
+<!-- Stately Editorial Title Input -->
+<div class="relative mb-space-lg group">
+<input class="w-full bg-transparent text-on-surface font-headline-lg text-headline-lg tracking-tight focus:outline-none placeholder:text-outline-variant transition-colors pb-2" id="journal-title" placeholder="Untitled Reflection..." type="text" value="Unfolding the quiet hours after twilight">
+<div class="w-full h-0.5 bg-surface-container-high rounded-full group-focus-within:bg-primary transition-colors"></div>
+</div>
+<!-- Rich Writing Desk Content Area -->
+<article class="focus:outline-none font-body-lg text-body-lg text-on-surface space-y-6 leading-[1.85] selection:bg-primary-fixed selection:text-on-primary-fixed" id="journal-content-editor">
+<p class="">
+          There is a particular stillness that settles over the city around eight in the evening, when the rush of commutes fades into the quiet murmur of dinner tables and warm lamplight. The frantic cadence that commands the morning slowly dismantles itself, letting the room breathe once again.
+        </p>
+<p class="">
+          I walked through St. James Park on my way home tonight. The mist off the pond carried the sharp, earthy fragrance of damp fallen leaves. For the first time in weeks, my mind felt unburdened by upcoming deadlines, detached from the subtle hum of perpetual urgency that usually trails me like an uninvited shadow.
+        </p>
+<!-- Editorial Callout Blockquote -->
+<blockquote class="my-space-xl py-space-md px-space-lg bg-surface-container-low rounded-xl text-on-surface font-headline-sm text-headline-sm italic text-center relative overflow-hidden">
+<span class="absolute -top-3 left-4 text-6xl text-primary/10 select-none pointer-events-none font-headline-lg">“</span>
+<p class="relative z-10 leading-relaxed text-primary">
+            “In the midst of winter, I found there was, within me, an invincible summer.”
+          </p>
+<cite class="block mt-2 font-label-md text-label-md not-italic text-secondary tracking-widest uppercase">— Albert Camus</cite>
+</blockquote>
+<p class="">
+          I want to remember this sensation: the feeling that nothing needs immediate fixing, that existing in this hour is entirely sufficient. The ink on this page dries slowly, just like the evening. I watched an amber moth flutter against the library lamp and realized how rare it has become to simply witness time rather than frantically account for it.
+        </p>
+<div class="py-space-md flex items-center justify-center gap-3 text-secondary select-none">
+<span class="h-px w-12 bg-surface-container-highest"></span>
+<span class="font-headline-sm text-base">• • •</span>
+<span class="h-px w-12 bg-surface-container-highest"></span>
+</div>
+<p class="text-on-surface-variant">
+          Tomorrow will bring its own demands, yet tonight remains unblemished. A quiet victory over noise.
+        </p>
+</article>
+<!-- Organic Inline Audio Note Attachment Component -->
+
+</main>
+<!-- Bottom Distraction-Free Controls & Autosave Drawer Bar -->
+<footer class="w-full flex flex-wrap items-center justify-between gap-space-md py-space-md px-space-lg bg-surface-container-lowest rounded-xl shadow-sm mb-space-xl">
+<!-- Left Mode Toggles -->
+<div class="flex items-center gap-space-md">
+<!-- Focus Mode Toggle -->
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input class="sr-only peer" id="focus-mode-chk" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary relative"></div>
+<span class="font-label-md text-label-md text-on-surface-variant peer-checked:text-on-surface">Focus Mode</span>
+</label>
+<span class="h-4 w-px bg-surface-container-highest"></span>
+<!-- Typewriter Scrolling Toggle -->
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input checked="" class="sr-only peer" id="typewriter-mode-chk" type="checkbox">
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary relative"></div>
+<span class="font-label-md text-label-md text-on-surface-variant peer-checked:text-on-surface">Typewriter Centering</span>
+</label>
+</div>
+<!-- Right Autosave Timestamp & Archival Badge -->
+
+</footer>
+</div>
+<!-- Interactive Client-side Script for Zen Mode, Mood Selection, and Live Counter -->
+<script>
+    (function initJournalEditor() {
+      // Mood Pill Toggling
+      const moodPills = document.querySelectorAll('.mood-pill');
+      moodPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          moodPills.forEach(p => {
+            p.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'shadow-sm');
+            p.classList.add('bg-surface-container', 'text-on-surface-variant');
+          });
+          pill.classList.remove('bg-surface-container', 'text-on-surface-variant');
+          pill.classList.add('bg-secondary-container', 'text-on-secondary-container', 'shadow-sm');
+        });
+      });
+
+      // Word Counter Calculation
+      const contentEditor = document.getElementById('journal-content-editor');
+      const wordCountBadge = document.getElementById('word-count-badge');
+      const liveSaveStatus = document.getElementById('live-save-status');
+
+      function updateStats() {
+        if (!contentEditor || !wordCountBadge) return;
+        const text = contentEditor.innerText || '';
+        const words = text.trim().split(/\s+/).filter(Boolean).length;
+        wordCountBadge.textContent = words + ' words';
+        
+        // Minor autosave pulse update
+        if (liveSaveStatus) {
+          const now = new Date();
+          const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          liveSaveStatus.textContent = 'Saved to cloud · ' + timeStr;
+        }
+      }
+
+      if (contentEditor) {
+        contentEditor.addEventListener('input', () => {
+          updateStats();
+        });
+      }
+
+      // Zen / Focus Mode Micro-interaction
+      const zenBtn = document.getElementById('zen-mode-toggle');
+      const focusChk = document.getElementById('focus-mode-chk');
+      let isZen = false;
+
+      function applyZen(state) {
+        isZen = state;
+        const metadataSec = document.querySelector('section');
+        const visualPill = document.querySelector('.relative.w-full.h-44');
+        if (metadataSec) metadataSec.style.display = isZen ? 'none' : 'flex';
+        if (visualPill) visualPill.style.display = isZen ? 'none' : 'block';
+      }
+
+      if (zenBtn) {
+        zenBtn.addEventListener('click', () => {
+          applyZen(!isZen);
+          if (focusChk) focusChk.checked = isZen;
+        });
+      }
+
+      if (focusChk) {
+        focusChk.addEventListener('change', (e) => {
+          applyZen(e.target.checked);
+        });
+      }
+    })();
+  </script>
+</div></div></main></div>
+
+</body></html>
