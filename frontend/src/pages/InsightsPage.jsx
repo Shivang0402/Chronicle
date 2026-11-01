@@ -48,6 +48,8 @@ const RANGE_OPTIONS = [
   { value: "all", label: "All time" },
 ];
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 const MOOD_COLORS = [
   "#50614B",
   "#7D9177",
@@ -106,15 +108,15 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
   const topPercent = total ? Math.round((topMood.count / total) * 100) : 0;
 
   return (
-    <section className="flex h-full flex-col rounded-2xl border border-hairline bg-paper p-6 shadow-paper sm:p-7">
+    <section className="flex h-full flex-col rounded-2xl border border-hairline bg-paper p-6 shadow-paper transition-shadow duration-300 hover:shadow-paper-lg sm:p-7">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h2 className="font-serif text-xl tracking-tight text-charcoal">
-            Mood weather
+            Mood distribution
           </h2>
           <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-gray">
             <Smile className="h-3.5 w-3.5 text-sage" />
-            Emotional patterns across your pages
+            Breakdown of moods tagged in your entries
           </p>
         </div>
         <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
@@ -206,6 +208,10 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
           </div>
         </div>
       )}
+
+      <p className="mt-6 border-t border-hairline/70 pt-3 text-[10px] leading-relaxed text-muted-gray">
+        Moods are self-assigned when you complete an entry.
+      </p>
     </section>
   );
 }
@@ -222,15 +228,15 @@ function TrendChart({ trend = [], loading }) {
     : null;
 
   return (
-    <section className="flex h-full flex-col rounded-2xl border border-hairline bg-paper p-6 shadow-paper sm:p-7">
+    <section className="flex h-full flex-col rounded-2xl border border-hairline bg-paper p-6 shadow-paper transition-shadow duration-300 hover:shadow-paper-lg sm:p-7">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h2 className="font-serif text-xl tracking-tight text-charcoal">
-            Writing volume
+            Writing volume trends
           </h2>
           <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-gray">
             <TrendingUp className="h-3.5 w-3.5 text-sage" />
-            Words gathered across the selected range
+            Words and entries across the selected range
           </p>
         </div>
         <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
@@ -318,15 +324,15 @@ function TrendChart({ trend = [], loading }) {
 
 function TagCloud({ tags = [], loading }) {
   return (
-    <section className="rounded-2xl border border-hairline bg-paper p-6 shadow-paper sm:p-7">
+    <section className="rounded-2xl border border-hairline bg-paper p-6 shadow-paper transition-shadow duration-300 hover:shadow-paper-lg sm:p-7">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h2 className="font-serif text-xl tracking-tight text-charcoal">
-            Recurring themes
+            Frequent topics &amp; tags
           </h2>
           <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-gray">
             <Tags className="h-3.5 w-3.5 text-sage" />
-            The ideas that keep returning to your pages
+            The themes that keep returning to your pages
           </p>
         </div>
         <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
@@ -371,6 +377,10 @@ function TagCloud({ tags = [], loading }) {
           ))}
         </div>
       )}
+
+      <p className="mt-6 border-t border-hairline/70 pt-3 text-[10px] leading-relaxed text-muted-gray">
+        Gathered from every entry in your archive.
+      </p>
     </section>
   );
 }
@@ -393,7 +403,7 @@ function ReflectionCard({ stats, loading }) {
     : "Write a first entry to begin noticing patterns in your mood, volume, and cadence. Every page adds a little more shape to the story.";
 
   return (
-    <section className="rounded-2xl border border-hairline bg-sage-subtle/60 p-6 shadow-paper sm:p-7">
+    <section className="rounded-2xl border border-hairline bg-sage-subtle/60 p-6 shadow-paper transition-shadow duration-300 hover:shadow-paper-lg sm:p-7">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-paper text-sage-deep shadow-sm">
           <Sparkles className="h-4 w-4" />
@@ -413,6 +423,10 @@ function ReflectionCard({ stats, loading }) {
               </h2>
               <p className="mt-2 max-w-2xl text-[12px] leading-relaxed text-charcoal-muted sm:text-[13px]">
                 {body}
+              </p>
+              <p className="mt-4 border-t border-sage/15 pt-3 text-[10px] uppercase tracking-wider text-muted-gray">
+                All analytics are computed directly from your saved
+                reflections.
               </p>
             </>
           )}
@@ -621,69 +635,79 @@ export default function InsightsPage() {
           <main className="relative min-h-screen pt-16">
             <div className="pointer-events-none absolute inset-0 paper-texture opacity-50" />
             <div className="pointer-events-none absolute -right-24 top-24 h-80 w-80 rounded-full bg-sage-light/20 blur-3xl" />
+            <div className="pointer-events-none absolute left-1/4 top-1/3 h-[28rem] w-[28rem] rounded-full bg-sage-light/10 blur-3xl" />
 
-            <div className="relative mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+            <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
+                className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"
               >
-                <div>
+                <div className="max-w-2xl">
                   <span className="eyebrow mb-3 block">
-                    Insights &amp; analytics
+                    Personal reflections &amp; archive metrics
                   </span>
-                  <h1 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-4xl">
-                    Your writing, in perspective.
+                  <h1 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl">
+                    Your Journey
                   </h1>
-                  <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-charcoal-muted">
-                    Patterns gathered from your private archive — a quiet look
-                    at how you write.
+                  <p className="mt-3 max-w-xl text-[13px] leading-relaxed text-charcoal-muted sm:text-[15px]">
+                    A calm perspective on your writing rhythms, emotional
+                    cadence, and evolving thoughts across time.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleExport}
-                  disabled={exporting}
-                  className="btn-ghost self-start border border-hairline !px-5 !py-3 text-[11px] sm:self-auto"
-                >
-                  {exporting ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Download className="h-3.5 w-3.5" />
-                  )}
-                  {exporting ? "Preparing..." : "Export archive"}
-                </button>
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="inline-flex w-fit flex-wrap gap-1 rounded-full border border-hairline bg-warm-beige/60 p-1">
+                    {RANGE_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => changeRange(option.value)}
+                        className={`rounded-full px-3.5 py-1.5 text-[10px] font-medium uppercase tracking-wider transition-colors ${
+                          range === option.value
+                            ? "bg-paper text-charcoal shadow-sm"
+                            : "text-charcoal-muted hover:text-charcoal"
+                        }`}
+                      >
+                        {option.value === "year"
+                          ? `Year (${CURRENT_YEAR})`
+                          : option.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleExport}
+                    disabled={exporting}
+                    className="btn-ghost self-start border border-hairline !px-4 !py-2.5 text-[11px] sm:self-auto"
+                  >
+                    {exporting ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Download className="h-3.5 w-3.5" />
+                    )}
+                    {exporting ? "Preparing..." : "Export archive"}
+                  </button>
+                </div>
               </motion.div>
 
-              <div className="mt-7 flex flex-col gap-4 rounded-2xl border border-hairline bg-paper p-4 shadow-paper sm:flex-row sm:items-center sm:justify-between sm:p-5">
-                <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-gray">
+              <div className="mt-7 flex flex-col gap-2 rounded-xl border border-hairline bg-paper px-4 py-3 text-[11px] text-muted-gray shadow-paper sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-2">
                   <CalendarDays className="h-4 w-4 text-sage" />
                   <span className="font-medium uppercase tracking-wide2 text-charcoal">
-                    Chart scope
+                    Active scope
                   </span>
                   <span className="h-1 w-1 rounded-full bg-hairline" />
                   <span>
                     {loading ? "Gathering your pages..." : scopeLabel}
                   </span>
                 </div>
-
-                <div className="flex flex-wrap gap-1 rounded-full border border-hairline bg-warm-beige/60 p-1">
-                  {RANGE_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => changeRange(option.value)}
-                      className={`rounded-full px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider transition-colors ${
-                        range === option.value
-                          ? "bg-sage text-white shadow-sm"
-                          : "text-charcoal-muted hover:text-charcoal"
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
+                <span className="uppercase tracking-wider">
+                  Private ledger · {formatNumber(stats.totalChronicles)}{" "}
+                  {stats.totalChronicles === 1 ? "entry" : "entries"}
+                </span>
               </div>
 
               {error && (
@@ -699,7 +723,7 @@ export default function InsightsPage() {
                 </div>
               )}
 
-              <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 {statCards.map((card, index) => (
                   <StatCard
                     key={card.label}
@@ -715,22 +739,20 @@ export default function InsightsPage() {
                   activity={allActivity}
                   loading={loading}
                   weeks={52}
-                  title="Writing cadence"
+                  title="Writing cadence heatmap"
                   subtitle="A year of preserved pages"
                   id="writing-rhythms"
+                  lessLabel="Fewer entries"
+                  moreLabel="More entries"
                 />
 
-                <div className="grid gap-6 lg:grid-cols-5">
-                  <div className="lg:col-span-2">
-                    <MoodDonut
-                      moodBreakdown={stats.moodBreakdown}
-                      mostCommonMood={stats.mostCommonMood}
-                      loading={loading}
-                    />
-                  </div>
-                  <div className="lg:col-span-3">
-                    <TrendChart trend={stats.trend} loading={loading} />
-                  </div>
+                <div className="grid gap-6 lg:grid-cols-2">
+                  <MoodDonut
+                    moodBreakdown={stats.moodBreakdown}
+                    mostCommonMood={stats.mostCommonMood}
+                    loading={loading}
+                  />
+                  <TrendChart trend={stats.trend} loading={loading} />
                 </div>
 
                 <TagCloud tags={tags} loading={loading} />

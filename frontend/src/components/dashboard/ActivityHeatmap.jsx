@@ -53,6 +53,8 @@ export default function ActivityHeatmap({
   title = "Writing rhythms",
   subtitle = "A 12-week archival habit tracker",
   id = "writing-rhythms",
+  lessLabel = "Less",
+  moreLabel = "More",
 }) {
   const builtWeeks = buildWeeks(activity, weeks);
   const gridStyle = {
@@ -97,14 +99,14 @@ export default function ActivityHeatmap({
 
         <div className="flex flex-wrap items-center gap-4 text-[10px] text-muted-gray">
           <div className="flex items-center gap-1.5">
-            <span>Less</span>
+            <span>{lessLabel}</span>
             {intensityClasses.map((className, index) => (
               <span
                 key={index}
                 className={`h-2.5 w-2.5 rounded-[2px] ${className}`}
               />
             ))}
-            <span>More</span>
+            <span>{moreLabel}</span>
           </div>
           <span className="h-1 w-1 rounded-full bg-hairline" />
           <span className="font-medium text-sage-deep">{cadence}% cadence</span>
@@ -143,6 +145,7 @@ export default function ActivityHeatmap({
                 <span>Mon</span>
                 <span>Wed</span>
                 <span>Fri</span>
+                <span>Sun</span>
               </div>
 
               <div className="grid flex-1 gap-1.5" style={gridStyle}>

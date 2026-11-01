@@ -17,7 +17,7 @@ export default function StatCard({
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-col justify-between rounded-2xl border border-hairline bg-paper p-5 shadow-paper"
+      className="flex flex-col justify-between rounded-2xl border border-hairline bg-paper p-5 shadow-paper transition-shadow duration-300 hover:border-sage/30 hover:shadow-paper-lg"
     >
       <div className="flex items-center justify-between gap-3">
         <span className="text-[9px] font-medium uppercase tracking-wide2 text-muted-gray">
