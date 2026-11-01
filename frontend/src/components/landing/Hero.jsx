@@ -9,13 +9,6 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
 import Reveal, { RevealImage } from "../ui/Reveal";
-import RotatingWord from "../ui/RotatingWord";
-
-const provenance = [
-  "Archival Vol. IV",
-  "Handcrafted Digital Folio",
-  "Designed for Lifelong Introspection",
-];
 
 export default function Hero() {
   const imageRef = useRef(null);
@@ -46,9 +39,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="pointer-events-none mb-6 select-none text-center text-[13vw] font-serif font-normal uppercase leading-none tracking-tight text-charcoal/[0.045] md:mb-0 md:text-left lg:text-[168px]"
+          className="pointer-events-none mb-6 select-none text-center font-serif text-[13vw] font-medium uppercase leading-none tracking-[0.12em] text-charcoal/[0.11] md:mb-0 md:text-left lg:text-[150px]"
         >
-          Chronicle
+          CHRONICLE
         </motion.div>
 
         <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-8">
@@ -60,21 +53,22 @@ export default function Hero() {
               className="mb-6 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-mega text-sage"
             >
               <span className="h-px w-8 origin-left animate-draw-line bg-sage" />
-              The Quiet Sanctuary for Thoughts
+              A journal for the life you’re living
             </motion.span>
 
             <AnimatedText
               onMount
+              once={false}
               delay={0.22}
               stagger={0.045}
               lineStagger={0.16}
               as="h1"
               className="max-w-4xl font-serif text-[42px] leading-[1.08] tracking-tight text-charcoal sm:text-6xl lg:text-[74px]"
               lines={[
-                [{ text: "Some moments deserve" }],
+                [{ text: "Make room for what" }],
                 [
-                  { text: "more", italic: true, className: "text-sage" },
-                  { text: "than a memory." },
+                  { text: "matters", italic: true, className: "text-sage" },
+                  { text: "to you." },
                 ],
               ]}
             />
@@ -86,12 +80,8 @@ export default function Hero() {
               className="mt-8 max-w-2xl"
             >
               <p className="text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-                A personal space for your{" "}
-                <RotatingWord
-                  words={["thoughts", "memories", "feelings", "moments"]}
-                  className="font-serif italic text-sage"
-                />, and everything worth remembering. Chronicle offers them a
-                peaceful, lasting place to live.
+                Put the day into your own words. Chronicle gives your thoughts
+                room to settle, and your memories a place to return to.
               </p>
             </Reveal>
 
@@ -119,32 +109,17 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.9 }}
-            className="flex flex-col gap-1 pb-2 text-[11px] uppercase tracking-wide2 text-muted-gray lg:col-span-4 lg:items-end lg:text-right"
-          >
-            {provenance.map((line, index) => (
-              <motion.span
-                key={line}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1 + index * 0.1 }}
-                className={index === 0 ? "font-medium text-charcoal" : ""}
-              >
-                {line}
-              </motion.span>
-            ))}
-          </motion.div>
+          <motion.p initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 1 }} className="max-w-xs text-sm font-light leading-relaxed text-charcoal-muted lg:col-span-4 lg:justify-self-end lg:text-right">
+            A few quiet minutes can change how you remember an ordinary day.
+          </motion.p>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 items-center gap-8 md:mt-24 lg:grid-cols-12">
+        <div className="mt-12 grid grid-cols-1 items-stretch overflow-hidden border border-hairline bg-paper shadow-paper md:mt-16 lg:grid-cols-12">
           <div
             className="group relative lg:col-span-7"
             ref={imageRef}
           >
-            <RevealImage onMount delay={0.75} y={0} duration={1}>
+            <RevealImage onMount delay={0.75} y={0} duration={1} className="h-full">
               <div className="aspect-[16/10] overflow-hidden bg-hairline">
                 <motion.img
                   src="/images/hero-journal.jpg"
@@ -158,7 +133,7 @@ export default function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.15 }}
-              className="mt-3 flex items-center justify-between gap-4 text-[11px] text-muted-gray"
+              className="flex items-center justify-between gap-4 px-4 py-3 text-[11px] text-muted-gray sm:px-6"
             >
               <span className="font-serif italic text-charcoal">
                 Study of morning light and desk journal
@@ -172,12 +147,12 @@ export default function Hero() {
             delay={0.95}
             y={24}
             duration={1.05}
-            className="relative z-10 lg:col-span-5 lg:-ml-12"
+            className="relative z-10 flex items-center lg:col-span-5"
           >
-            <div className="relative border border-hairline/80 bg-paper p-8 shadow-paper sm:p-10 lg:p-12">
-              <div className="absolute -top-3 right-7 flex items-center gap-2 rounded-full border border-hairline bg-paper px-3 py-1.5 text-[10px] uppercase tracking-wider text-sage shadow-sm">
+            <div className="relative w-full p-7 sm:p-9 lg:p-10">
+              <div className="mb-7 flex items-center gap-2 text-[10px] uppercase tracking-wider text-sage">
                 <span className="h-1.5 w-1.5 animate-soft-pulse rounded-full bg-sage" />
-                Sample entry
+                A page from the journal
               </div>
 
               <div className="flex items-center justify-between border-b border-hairline pb-6 text-[11px]">
@@ -206,20 +181,11 @@ export default function Hero() {
                 </div>
                 <span className="flex items-center gap-1.5 text-sage">
                   <BookOpen className="h-3 w-3" />
-                  Entry preview
+                  Entry
                 </span>
               </div>
             </div>
 
-            <motion.div
-              aria-hidden="true"
-              className="absolute -bottom-8 -left-8 hidden items-center gap-2 rounded-full border border-hairline bg-ivory px-4 py-2 text-[10px] uppercase tracking-wider text-muted-gray shadow-sm lg:flex"
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <BookOpen className="h-3.5 w-3.5 text-sage" />
-              A quiet place to write
-            </motion.div>
           </RevealImage>
         </div>
 
@@ -227,7 +193,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.6, duration: 0.8 }}
-          className="mt-20 hidden justify-center md:flex"
+          className="mt-12 hidden justify-center md:flex"
         >
           <a
             href="#experience"

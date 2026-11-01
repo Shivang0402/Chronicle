@@ -1,161 +1,76 @@
-import { motion } from "framer-motion";
-import {
-  ArrowUpRight,
-  BookOpen,
-  FileJson,
-  FileText,
-} from "lucide-react";
+import { FileJson, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
-import Reveal, {
-  RevealGroup,
-  RevealImage,
-  RevealItem,
-} from "../ui/Reveal";
+import Reveal, { RevealGroup, RevealImage, RevealItem } from "../ui/Reveal";
 
 const formats = [
-  { label: "PDF (.pdf)", icon: FileText },
-  { label: "Markdown (.md)", icon: FileText },
-  { label: "JSON (.json)", icon: FileJson },
+  { label: "PDF", description: "For reading", icon: FileText },
+  { label: "Markdown", description: "For writing tools", icon: FileText },
+  { label: "JSON", description: "For your records", icon: FileJson },
 ];
 
 export default function Preservation() {
   return (
-    <section
-      id="export"
-      className="scroll-mt-24 bg-warm-beige/40 py-24 md:py-36"
-    >
-      <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
-        <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-6">
-            <Reveal y={14} blur={false}>
-              <span className="eyebrow mb-3 block">Lifelong Preservation</span>
-            </Reveal>
-            <AnimatedText
-              as="h2"
-              delay={0.1}
-              lineStagger={0.16}
-              className="mb-6 font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl"
-              lines={[
-                [{ text: "Your words belong to you." }],
-                [
-                  {
-                    text: "Take them with you.",
-                    italic: true,
-                    className: "text-sage",
-                  },
-                ],
-              ]}
-            />
-            <Reveal delay={0.24} y={16} blur={false}>
-              <p className="mb-8 max-w-xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-                Export your complete archive at any time. Choose PDF for
-                reading, Markdown for writing tools, or JSON for your own
-                records.
-              </p>
-            </Reveal>
-
-            <RevealGroupFormats />
-
-            <Reveal delay={0.55} y={12} blur={false}>
-              <p className="mt-6 text-xs font-light leading-relaxed text-muted-gray">
-                Markdown opens in tools like Obsidian. PDF and JSON files stay
-                yours to keep offline.
-              </p>
-            </Reveal>
-          </div>
-
-          <RevealImage
-            className="lg:col-span-6"
-            y={20}
-            delay={0.22}
-            amount={0.15}
-          >
-            <motion.div
-              whileHover={{ rotateY: -2.5, rotateX: 1.2, y: -5 }}
-              transition={{ type: "spring", stiffness: 180, damping: 20 }}
-              className="relative border border-hairline bg-paper p-7 shadow-paper sm:p-10 lg:p-12"
-              style={{ transformStyle: "preserve-3d" }}
-            >
-              <div className="flex items-center justify-between border-b border-hairline pb-4 text-[10px] uppercase tracking-widest text-muted-gray">
-                <span>PDF Export — Sample Volume</span>
-                <span>A4 Document</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6 py-9 text-charcoal sm:gap-8 sm:py-10">
-                <div className="space-y-3 border-r border-hairline pr-5 text-[11px] font-light leading-relaxed sm:pr-6">
-                  <span className="block font-serif text-sm italic">
-                    Chapter IV: Autumn Rhythms
-                  </span>
-                  <p className="text-charcoal-muted">
-                    The tea steeped quietly as thoughts began to settle. There
-                    is a deep, quiet gratitude found in this unhurried space...
-                  </p>
-                  <span className="block pt-4 text-[10px] text-muted-gray">
-                    Sample page 42
-                  </span>
-                </div>
-                <div className="space-y-3 text-[11px] font-light leading-relaxed">
-                  <span className="block font-serif text-sm italic">
-                    October 22, 2025
-                  </span>
-                  <p className="text-charcoal-muted">
-                    Walked down by the river canal right as dusk began falling.
-                    The maple leaves are turning deep burnt ochre...
-                  </p>
-                  <span className="block pt-4 text-[10px] text-muted-gray">
-                    Sample page 43
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-hairline pt-4 text-[11px]">
-                <span className="text-muted-gray">
-                  Sample preview of a complete archive
-                </span>
-                <Link
-                  to="/auth?mode=register"
-                  className="group flex items-center gap-1.5 font-medium text-charcoal transition-colors hover:text-sage"
-                >
-                  <span>Start your archive</span>
-                  <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </Link>
-              </div>
-
-              <motion.div
-                aria-hidden="true"
-                className="absolute -right-4 -top-4 hidden h-12 w-12 place-items-center rounded-full border border-hairline bg-ivory text-sage shadow-sm sm:grid"
-                animate={{ rotate: [0, 6, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <BookOpen className="h-4 w-4" />
-              </motion.div>
-            </motion.div>
-          </RevealImage>
+    <section id="export" className="scroll-mt-24 bg-warm-beige/40 py-20 md:py-28">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 sm:px-10 lg:grid-cols-12 lg:gap-16 lg:px-16">
+        <div className="lg:col-span-5">
+          <Reveal y={12} blur={false}>
+            <span className="eyebrow mb-3 block">Keep what you write</span>
+          </Reveal>
+          <AnimatedText
+            as="h2"
+            once={false}
+            delay={0.1}
+            lineStagger={0.14}
+            className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl"
+            lines={[
+              [{ text: "Your words" }],
+              [{ text: "stay yours.", italic: true, className: "text-sage" }],
+            ]}
+          />
+          <Reveal delay={0.22} y={12} blur={false}>
+            <p className="mt-5 max-w-md text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
+              Take your journal with you. Export it as a PDF, Markdown file, or JSON archive.
+            </p>
+          </Reveal>
+          <Reveal delay={0.32} y={10} blur={false}>
+            <Link to="/auth?mode=register" className="link-underline mt-6 text-sm font-medium">
+              Start writing
+            </Link>
+          </Reveal>
         </div>
+
+        <RevealImage className="lg:col-span-7" y={14} delay={0.18} amount={0.15}>
+          <div className="relative mx-auto max-w-2xl py-5 sm:py-8">
+            <div aria-hidden="true" className="absolute bottom-0 right-0 top-10 w-[82%] border border-sage/20 bg-sage-subtle/60 sm:right-4" />
+            <div className="relative mr-8 border border-hairline bg-paper p-6 shadow-paper sm:mr-12 sm:p-10">
+              <div className="flex items-center justify-between border-b border-hairline pb-4 text-[10px] uppercase tracking-wider text-muted-gray">
+                <span>Chronicle · Your journal</span>
+                <span>Export formats</span>
+              </div>
+              <div className="py-3">
+                <RevealGroup stagger={0.1} delay={0.16}>
+                  {formats.map(({ label, description, icon: Icon }, index) => (
+                    <RevealItem key={label} y={8}>
+                      <div className="grid grid-cols-[2rem_1fr_auto] items-center gap-3 border-b border-hairline/80 py-4 last:border-0 sm:grid-cols-[2.5rem_1fr_auto]">
+                        <span className="font-serif text-xs italic text-sage">0{index + 1}</span>
+                        <span className="flex items-center gap-3 font-serif text-lg text-charcoal sm:text-xl">
+                          <Icon className="h-4 w-4 text-sage" />
+                          {label}
+                        </span>
+                        <span className="text-right text-[10px] text-muted-gray sm:text-xs">{description}</span>
+                      </div>
+                    </RevealItem>
+                  ))}
+                </RevealGroup>
+              </div>
+              <div className="border-t border-hairline pt-4 font-serif text-sm italic text-charcoal-muted">
+                A copy to keep, in a format that fits your life.
+              </div>
+            </div>
+          </div>
+        </RevealImage>
       </div>
     </section>
-  );
-}
-
-function RevealGroupFormats() {
-  return (
-    <RevealGroup
-      className="flex flex-wrap items-center gap-3"
-      delay={0.36}
-      stagger={0.1}
-    >
-      {formats.map((format) => {
-        const Icon = format.icon;
-        return (
-          <RevealItem key={format.label} y={8}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-hairline bg-paper/80 px-4 py-2 text-xs text-charcoal-muted">
-              <Icon className="h-3.5 w-3.5 text-sage" />
-              {format.label}
-            </span>
-          </RevealItem>
-        );
-      })}
-    </RevealGroup>
   );
 }

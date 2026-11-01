@@ -13,13 +13,12 @@ const exploreLinks = [
 export default function Footer() {
   return (
     <footer className="border-t border-hairline bg-ivory">
-      <div className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16">
-        <div className="grid grid-cols-1 gap-12 pb-12 md:grid-cols-12">
+      <div className="mx-auto max-w-7xl px-6 py-10 sm:px-10 md:py-12 lg:px-16">
+        <div className="grid grid-cols-1 gap-8 pb-8 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-5">
             <Wordmark />
             <p className="mt-4 max-w-sm text-sm font-light leading-relaxed text-charcoal-muted">
-              A quiet sanctuary for reflective thinkers, unhurried clarity, and
-              the timeless ritual of prose.
+              A journal for the moments, thoughts, and small details worth keeping.
             </p>
             <p className="mt-6 text-[11px] uppercase tracking-wide2 text-muted-gray">
               A quiet space · Calming by design
@@ -75,7 +74,7 @@ export default function Footer() {
               </li>
             </ul>
             <p className="mt-6 max-w-xs text-xs font-light leading-relaxed text-muted-gray">
-              Your words remain yours. Export in open formats, at any time.
+              Take your writing with you as a PDF, Markdown file, or JSON archive.
             </p>
           </div>
         </div>
@@ -83,7 +82,7 @@ export default function Footer() {
         <div className="flex flex-col items-center justify-between gap-3 border-t border-hairline pt-8 text-[11px] text-muted-gray sm:flex-row">
           <p>© {currentYear} Chronicle Journaling Co.</p>
           <p className="uppercase tracking-wide2">
-            Archival quality digital canvas
+            A journal for everyday life
           </p>
         </div>
       </div>

@@ -7,7 +7,7 @@ const thresholdFor = (amount) => {
 };
 
 export default function useInViewOnce({
-  once = true,
+  once = false,
   amount = 0.15,
   margin = "0px 0px -10% 0px",
 } = {}) {

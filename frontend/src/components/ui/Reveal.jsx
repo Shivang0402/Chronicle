@@ -8,7 +8,7 @@ export default function Reveal({
   className = "",
   delay = 0,
   y = 20,
-  once = true,
+  once = false,
   amount = 0.15,
   blur = true,
   as = "div",
@@ -46,7 +46,7 @@ export function RevealGroup({
   className = "",
   delay = 0,
   stagger = 0.12,
-  once = true,
+  once = false,
   amount = 0.15,
 }) {
   const reduce = useReducedMotion();
@@ -104,7 +104,7 @@ export function RevealImage({
   className = "",
   delay = 0,
   y = 16,
-  once = true,
+  once = false,
   amount = 0.15,
   duration = 0.9,
   onMount = false,

@@ -19,6 +19,7 @@ export default function WritingCanvas() {
           </Reveal>
           <AnimatedText
             as="h2"
+            once={false}
             delay={0.1}
             className="font-serif text-3xl tracking-tight text-charcoal sm:text-5xl"
             parts={[{ text: "Give your thoughts room to unfold." }]}
