@@ -170,7 +170,9 @@ export default function JournalPage() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
   const [composerPrompt, setComposerPrompt] = useState("");
+  const [composerEntry, setComposerEntry] = useState(null);
   const [readerEntry, setReaderEntry] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useDocumentTitle("My Journal");
 
@@ -269,7 +271,15 @@ export default function JournalPage() {
   };
 
   const openComposer = () => {
+    setComposerEntry(null);
     setComposerPrompt("");
+    setComposerOpen(true);
+  };
+
+  const handleEdit = (entry) => {
+    setReaderEntry(null);
+    setComposerPrompt("");
+    setComposerEntry(entry);
     setComposerOpen(true);
   };
 
@@ -281,6 +291,33 @@ export default function JournalPage() {
   const handleCreated = () => {
     setNotice("Entry preserved in your archive.");
     setReloadKey((value) => value + 1);
+  };
+
+  const handleUpdated = () => {
+    setNotice("Changes saved to your entry.");
+    setReloadKey((value) => value + 1);
+  };
+
+  const handleDelete = async (entry) => {
+    if (!token || deleting) return;
+
+    setDeleting(true);
+
+    try {
+      await chronicleApi.deleteEntry(entry._id, token);
+      setReaderEntry(null);
+      setNotice("Entry removed from your archive.");
+
+      if (entries.length === 1 && page > 1) {
+        setPage((value) => value - 1);
+      }
+
+      setReloadKey((value) => value + 1);
+    } catch (deleteError) {
+      setError(deleteError?.message || "Could not delete this entry.");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const handleExport = async () => {
@@ -688,15 +725,28 @@ export default function JournalPage() {
         </div>
 
         <EntryComposer
-          key={composerOpen ? composerPrompt || "blank" : "closed"}
+          key={
+            composerOpen
+              ? composerEntry?._id || composerPrompt || "blank"
+              : "closed"
+          }
           open={composerOpen}
           onClose={() => setComposerOpen(false)}
           token={token}
           onCreated={handleCreated}
+          onUpdated={handleUpdated}
           initialPrompt={composerPrompt}
+          entry={composerEntry}
         />
 
-        <EntryReader entry={readerEntry} onClose={() => setReaderEntry(null)} />
+        <EntryReader
+          key={readerEntry?._id || "closed"}
+          entry={readerEntry}
+          onClose={() => setReaderEntry(null)}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          deleting={deleting}
+        />
 
         {notice && (
           <motion.div

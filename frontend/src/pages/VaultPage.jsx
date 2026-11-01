@@ -359,7 +359,11 @@ export default function VaultPage() {
           initialPrompt={composerPrompt}
         />
 
-        <EntryReader entry={readerEntry} onClose={() => setReaderEntry(null)} />
+        <EntryReader
+          key={readerEntry?._id || "closed"}
+          entry={readerEntry}
+          onClose={() => setReaderEntry(null)}
+        />
 
         {notice && (
           <motion.div

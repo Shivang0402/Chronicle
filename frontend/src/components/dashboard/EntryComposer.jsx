@@ -2,7 +2,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays, Hash, Loader2, PenLine, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { chronicleApi } from "../../lib/api";
-import { countWords, todayLabel } from "../../lib/journal";
+import {
+  countWords,
+  formatLongDate,
+  todayLabel,
+} from "../../lib/journal";
 
 const moods = [
   "Peaceful",
@@ -18,19 +22,29 @@ export default function EntryComposer({
   onClose,
   token,
   onCreated,
+  onUpdated,
   initialPrompt = "",
+  entry = null,
 }) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState(() =>
-    initialPrompt ? `${initialPrompt}\n\n` : "",
+  const isEditing = Boolean(entry?._id);
+  const [title, setTitle] = useState(entry?.title || "");
+  const [content, setContent] = useState(() => {
+    if (entry?.content) return entry.content;
+    return initialPrompt ? `${initialPrompt}\n\n` : "";
+  });
+  const [mood, setMood] = useState(entry?.mood || "");
+  const [tagsInput, setTagsInput] = useState(
+    Array.isArray(entry?.tags) ? entry.tags.join(", ") : "",
   );
-  const [mood, setMood] = useState("");
-  const [tagsInput, setTagsInput] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
   const words = countWords(content);
   const canSave = content.trim().length >= 10 && !saving;
+  const moodOptions =
+    entry?.mood && !moods.includes(entry.mood)
+      ? [entry.mood, ...moods]
+      : moods;
 
   useEffect(() => {
     if (!open) return undefined;
@@ -64,23 +78,38 @@ export default function EntryComposer({
       .map((tag) => tag.trim().replace(/^#/, ""))
       .filter(Boolean);
 
-    setSaving(true);
-
-    try {
-      const data = await chronicleApi.createEntry(
-        {
+    const payload = isEditing
+      ? {
+          title: title.trim(),
+          content: trimmed,
+          mood: mood.trim(),
+          tags,
+        }
+      : {
           title: title.trim() || undefined,
           content: trimmed,
           mood: mood.trim() || undefined,
           tags,
-        },
-        token,
-      );
+        };
 
-      onCreated?.(data?.chronicle);
+    setSaving(true);
+
+    try {
+      if (isEditing) {
+        const data = await chronicleApi.updateEntry(
+          entry._id,
+          payload,
+          token,
+        );
+        onUpdated?.(data?.chronicle);
+      } else {
+        const data = await chronicleApi.createEntry(payload, token);
+        onCreated?.(data?.chronicle);
+      }
+
       onClose();
-    } catch (createError) {
-      setError(createError?.message || "Could not save this entry.");
+    } catch (saveError) {
+      setError(saveError?.message || "Could not save this entry.");
     } finally {
       setSaving(false);
     }
@@ -111,16 +140,18 @@ export default function EntryComposer({
           >
             <div className="flex items-start justify-between gap-4 border-b border-hairline px-6 py-5 sm:px-8">
               <div>
-                <span className="eyebrow mb-2 block">New entry</span>
+                <span className="eyebrow mb-2 block">
+                  {isEditing ? "Edit entry" : "New entry"}
+                </span>
                 <h2
                   id="composer-title"
                   className="font-serif text-2xl tracking-tight text-charcoal"
                 >
-                  Capture the moment
+                  {isEditing ? "Refine the page" : "Capture the moment"}
                 </h2>
                 <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-gray">
                   <CalendarDays className="h-3 w-3" />
-                  {todayLabel()}
+                  {isEditing ? formatLongDate(entry.date) : todayLabel()}
                 </p>
               </div>
               <button
@@ -144,7 +175,7 @@ export default function EntryComposer({
               />
 
               <div className="mt-5 flex flex-wrap gap-2">
-                {moods.map((item) => (
+                {moodOptions.map((item) => (
                   <button
                     key={item}
                     type="button"
@@ -204,7 +235,9 @@ export default function EntryComposer({
                 {words === 1 ? "word" : "words"} ·{" "}
                 {content.trim().length < 10
                   ? "at least 10 characters"
-                  : "ready to preserve"}
+                  : isEditing
+                    ? "ready to save"
+                    : "ready to preserve"}
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -212,7 +245,7 @@ export default function EntryComposer({
                   onClick={onClose}
                   className="btn-ghost !px-4 !py-2 text-[11px]"
                 >
-                  Discard
+                  Cancel
                 </button>
                 <button
                   type="submit"
@@ -224,7 +257,13 @@ export default function EntryComposer({
                   ) : (
                     <PenLine className="h-3.5 w-3.5" />
                   )}
-                  {saving ? "Preserving..." : "Preserve entry"}
+                  {saving
+                    ? isEditing
+                      ? "Saving..."
+                      : "Preserving..."
+                    : isEditing
+                      ? "Save changes"
+                      : "Preserve entry"}
                 </button>
               </div>
             </div>
