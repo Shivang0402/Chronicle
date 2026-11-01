@@ -7,15 +7,7 @@ import {
   formatLongDate,
   todayLabel,
 } from "../../lib/journal";
-
-const moods = [
-  "Peaceful",
-  "Grateful",
-  "Inspired",
-  "Contemplative",
-  "Reflective",
-  "Hopeful",
-];
+import { MOODS } from "../../lib/moods";
 
 export default function EntryComposer({
   open,
@@ -42,9 +34,9 @@ export default function EntryComposer({
   const words = countWords(content);
   const canSave = content.trim().length >= 10 && !saving;
   const moodOptions =
-    entry?.mood && !moods.includes(entry.mood)
-      ? [entry.mood, ...moods]
-      : moods;
+    entry?.mood && !MOODS.includes(entry.mood)
+      ? [entry.mood, ...MOODS]
+      : MOODS;
 
   useEffect(() => {
     if (!open) return undefined;

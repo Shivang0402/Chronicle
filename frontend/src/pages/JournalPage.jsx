@@ -14,10 +14,9 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
-import EntryComposer from "../components/dashboard/EntryComposer";
 import EntryReader from "../components/dashboard/EntryReader";
 import PageTransition from "../components/ui/PageTransition";
 import { useAuth } from "../hooks/useAuth";
@@ -148,6 +147,7 @@ function ArchiveEntryCard({ entry, view, onOpen }) {
 export default function JournalPage() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [entries, setEntries] = useState([]);
   const [total, setTotal] = useState(0);
@@ -164,13 +164,12 @@ export default function JournalPage() {
   const [moods, setMoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
+  const [notice, setNotice] = useState(
+    () => location.state?.notice || "",
+  );
   const [reloadKey, setReloadKey] = useState(0);
   const [exporting, setExporting] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [composerOpen, setComposerOpen] = useState(false);
-  const [composerPrompt, setComposerPrompt] = useState("");
-  const [composerEntry, setComposerEntry] = useState(null);
   const [readerEntry, setReaderEntry] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -250,6 +249,12 @@ export default function JournalPage() {
     return () => window.clearTimeout(timer);
   }, [notice]);
 
+  useEffect(() => {
+    if (!location.state?.notice) return;
+
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, navigate]);
+
   const hasFilters = Boolean(query || mood || tag || date);
   const groups = groupEntries(entries);
   const pageNumbers = getPageNumbers(page, totalPages);
@@ -270,32 +275,18 @@ export default function JournalPage() {
     setLoading(true);
   };
 
-  const openComposer = () => {
-    setComposerEntry(null);
-    setComposerPrompt("");
-    setComposerOpen(true);
+  const openEditor = () => {
+    navigate("/journal/new");
   };
 
   const handleEdit = (entry) => {
     setReaderEntry(null);
-    setComposerPrompt("");
-    setComposerEntry(entry);
-    setComposerOpen(true);
+    navigate(`/journal/${entry._id}/edit`);
   };
 
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
-  };
-
-  const handleCreated = () => {
-    setNotice("Entry preserved in your archive.");
-    setReloadKey((value) => value + 1);
-  };
-
-  const handleUpdated = () => {
-    setNotice("Changes saved to your entry.");
-    setReloadKey((value) => value + 1);
   };
 
   const handleDelete = async (entry) => {
@@ -362,7 +353,7 @@ export default function JournalPage() {
             setPage(1);
             setLoading(true);
           }}
-          onNewEntry={openComposer}
+          onNewEntry={openEditor}
           onExport={handleExport}
           onLogout={handleLogout}
           exporting={exporting}
@@ -374,7 +365,7 @@ export default function JournalPage() {
           user={user}
           title="My Journal"
           onOpenMenu={() => setMobileNavOpen(true)}
-          onNewEntry={openComposer}
+          onNewEntry={openEditor}
         />
 
         <div className="lg:pl-72">
@@ -404,7 +395,7 @@ export default function JournalPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={openComposer}
+                  onClick={openEditor}
                   className="btn-sage self-start !px-5 !py-3 sm:self-auto"
                 >
                   <PenLine className="h-4 w-4" />
@@ -584,7 +575,7 @@ export default function JournalPage() {
                     ) : (
                       <button
                         type="button"
-                        onClick={openComposer}
+                        onClick={openEditor}
                         className="btn-sage mt-5 !px-5 !py-2.5 text-[10px]"
                       >
                         <PenLine className="h-3.5 w-3.5" />
@@ -723,21 +714,6 @@ export default function JournalPage() {
             </div>
           </main>
         </div>
-
-        <EntryComposer
-          key={
-            composerOpen
-              ? composerEntry?._id || composerPrompt || "blank"
-              : "closed"
-          }
-          open={composerOpen}
-          onClose={() => setComposerOpen(false)}
-          token={token}
-          onCreated={handleCreated}
-          onUpdated={handleUpdated}
-          initialPrompt={composerPrompt}
-          entry={composerEntry}
-        />
 
         <EntryReader
           key={readerEntry?._id || "closed"}
