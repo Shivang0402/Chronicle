@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ScrollToTop from "./components/layout/ScrollToTop";
 import ScrollProgress from "./components/ui/ScrollProgress";
@@ -25,8 +25,9 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/vault" element={<Navigate to="/dashboard" replace />} />
           <Route
-            path="/vault"
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <VaultPage />

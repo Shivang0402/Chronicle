@@ -63,7 +63,8 @@ export default function AuthPage() {
     setSearchParams(params, { replace: true });
   };
 
-  const safeRedirect = redirect && redirect.startsWith("/") ? redirect : "/vault";
+  const safeRedirect =
+    redirect && redirect.startsWith("/") ? redirect : "/dashboard";
 
   const handleLogin = async (event) => {
     event.preventDefault();

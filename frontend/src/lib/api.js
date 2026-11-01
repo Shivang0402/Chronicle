@@ -3,6 +3,18 @@ export const API_BASE = rawBase.replace(/\/$/, "");
 
 const buildUrl = (path) => `${API_BASE}/api${path}`;
 
+const buildQuery = (params = {}) => {
+  const search = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    search.set(key, value);
+  });
+
+  const query = search.toString();
+  return query ? `?${query}` : "";
+};
+
 export class ApiError extends Error {
   constructor(message, status, data) {
     super(message);
@@ -89,7 +101,43 @@ export const authApi = {
 };
 
 export const chronicleApi = {
-  getStats: (token) => request("/chronicle/stats", { token }),
-  getChronicles: (token) => request("/chronicle/getchronicles", { token }),
+  getStats: (token, params) =>
+    request(`/chronicle/stats${buildQuery(params)}`, { token }),
+  getChronicles: (token, params) =>
+    request(`/chronicle/getchronicles${buildQuery(params)}`, { token }),
   getEntry: (id, token) => request(`/chronicle/${id}`, { token }),
+  createEntry: (payload, token) =>
+    request("/chronicle", { method: "POST", body: payload, token }),
+  updateEntry: (id, payload, token) =>
+    request(`/chronicle/${id}`, { method: "PATCH", body: payload, token }),
+  deleteEntry: (id, token) =>
+    request(`/chronicle/${id}`, { method: "DELETE", token }),
+  search: (query, token) =>
+    request(`/chronicle/search${buildQuery({ query })}`, { token }),
+  getMoods: (token) => request("/chronicle/moods", { token }),
+  getTags: (token) => request("/chronicle/tags", { token }),
+  exportEntries: async (token, params = {}) => {
+    const response = await fetch(
+      buildUrl(`/chronicle/export${buildQuery(params)}`),
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+
+    if (!response.ok) {
+      let data = null;
+
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
+
+      throw new ApiError(
+        data?.message || "Could not export your chronicles.",
+        response.status,
+        data,
+      );
+    }
+
+    return response.blob();
+  },
 };

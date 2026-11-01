@@ -78,7 +78,7 @@ export default function Navbar() {
               >
                 Sign out
               </button>
-              <Link to="/vault" className="btn-primary !px-5 !py-2.5">
+              <Link to="/dashboard" className="btn-primary !px-5 !py-2.5">
                 Open Journal
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
@@ -136,7 +136,7 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <>
                   <Link
-                    to="/vault"
+                    to="/dashboard"
                     onClick={closeMenu}
                     className="btn-primary w-full"
                   >
