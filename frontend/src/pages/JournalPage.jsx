@@ -156,7 +156,9 @@ export default function JournalPage() {
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
   const [mood, setMood] = useState("");
-  const [tag, setTag] = useState("");
+  const [tag, setTag] = useState(
+    () => new URLSearchParams(location.search).get("tag") || "",
+  );
   const [date, setDate] = useState("");
   const [sort, setSort] = useState("newest");
   const [view, setView] = useState("grid");
@@ -254,6 +256,29 @@ export default function JournalPage() {
 
     navigate(location.pathname, { replace: true, state: null });
   }, [location.state, location.pathname, navigate]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const currentTag = params.get("tag") || "";
+
+    if (currentTag === tag) return;
+
+    if (tag) {
+      params.set("tag", tag);
+    } else {
+      params.delete("tag");
+    }
+
+    const search = params.toString();
+
+    navigate(
+      {
+        pathname: location.pathname,
+        search: search ? `?${search}` : "",
+      },
+      { replace: true },
+    );
+  }, [tag, location.pathname, location.search, navigate]);
 
   const hasFilters = Boolean(query || mood || tag || date);
   const groups = groupEntries(entries);

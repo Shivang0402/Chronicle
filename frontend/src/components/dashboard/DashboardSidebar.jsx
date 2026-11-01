@@ -27,9 +27,9 @@ const navItems = [
   },
   {
     label: "Insights",
-    to: "/dashboard#writing-rhythms",
+    to: "/insights",
     icon: BarChart3,
-    isActive: () => false,
+    isActive: (pathname) => pathname === "/insights",
   },
 ];
 

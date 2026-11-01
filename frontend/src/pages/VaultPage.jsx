@@ -338,12 +338,12 @@ export default function VaultPage() {
                     My Journal
                   </a>
                   <span>•</span>
-                  <a
-                    href="#writing-rhythms"
+                  <Link
+                    to="/insights"
                     className="transition-colors hover:text-charcoal"
                   >
                     Insights
-                  </a>
+                  </Link>
                 </div>
               </footer>
             </div>

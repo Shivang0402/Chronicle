@@ -1,7 +1,6 @@
 import { CalendarDays } from "lucide-react";
 import { formatEntryDate, formatMonth, dayKey } from "../../lib/journal";
 
-const WEEKS = 12;
 const intensityClasses = [
   "bg-warm-beige",
   "bg-sage-light",
@@ -10,18 +9,18 @@ const intensityClasses = [
   "bg-sage",
 ];
 
-const buildWeeks = (activity = []) => {
+const buildWeeks = (activity = [], weekCount = 12) => {
   const activityByDay = new Map(activity.map((item) => [item.date, item]));
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const offsetToMonday = (today.getDay() + 6) % 7;
   const start = new Date(today);
-  start.setDate(today.getDate() - offsetToMonday - (WEEKS - 1) * 7);
+  start.setDate(today.getDate() - offsetToMonday - (weekCount - 1) * 7);
 
   const weeks = [];
 
-  for (let weekIndex = 0; weekIndex < WEEKS; weekIndex += 1) {
+  for (let weekIndex = 0; weekIndex < weekCount; weekIndex += 1) {
     const days = [];
 
     for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
@@ -47,9 +46,21 @@ const buildWeeks = (activity = []) => {
   return weeks;
 };
 
-export default function ActivityHeatmap({ activity = [], loading = false }) {
-  const weeks = buildWeeks(activity);
-  const visibleDays = weeks.flatMap((week) => week.days).filter((day) => !day.future);
+export default function ActivityHeatmap({
+  activity = [],
+  loading = false,
+  weeks = 12,
+  title = "Writing rhythms",
+  subtitle = "A 12-week archival habit tracker",
+  id = "writing-rhythms",
+}) {
+  const builtWeeks = buildWeeks(activity, weeks);
+  const gridStyle = {
+    gridTemplateColumns: `repeat(${weeks}, minmax(0, 1fr))`,
+  };
+  const visibleDays = builtWeeks
+    .flatMap((week) => week.days)
+    .filter((day) => !day.future);
   const activeDays = visibleDays.filter((day) => day.entries > 0).length;
   const cadence = visibleDays.length
     ? Math.round((activeDays / visibleDays.length) * 100)
@@ -70,17 +81,17 @@ export default function ActivityHeatmap({ activity = [], loading = false }) {
 
   return (
     <section
-      id="writing-rhythms"
+      id={id}
       className="scroll-mt-24 rounded-2xl border border-hairline bg-paper p-6 shadow-paper sm:p-7"
     >
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="font-serif text-xl tracking-tight text-charcoal sm:text-2xl">
-            Writing rhythms
+            {title}
           </h2>
           <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-gray">
             <CalendarDays className="h-3.5 w-3.5 text-sage" />
-            A 12-week archival habit tracker
+            {subtitle}
           </p>
         </div>
 
@@ -107,15 +118,19 @@ export default function ActivityHeatmap({ activity = [], loading = false }) {
         </div>
       ) : (
         <div className="overflow-x-auto pb-1">
-          <div className="min-w-[540px]">
+          <div
+            className="min-w-[540px]"
+            style={{ minWidth: `${Math.max(weeks * 16, 540)}px` }}
+          >
             <div className="mb-2 flex pl-8">
-              <div className="grid flex-1 grid-cols-12 gap-1.5">
-                {weeks.map((week, index) => (
+              <div className="grid flex-1 gap-1.5" style={gridStyle}>
+                {builtWeeks.map((week, index) => (
                   <span
                     key={week.days[0].key}
                     className="text-[9px] uppercase tracking-wider text-muted-gray"
                   >
-                    {index === 0 || week.label !== weeks[index - 1].label
+                    {index === 0 ||
+                    week.label !== builtWeeks[index - 1].label
                       ? week.label
                       : ""}
                   </span>
@@ -130,15 +145,15 @@ export default function ActivityHeatmap({ activity = [], loading = false }) {
                 <span>Fri</span>
               </div>
 
-              <div className="grid flex-1 grid-cols-12 gap-1.5">
-                {weeks.map((week) => (
+              <div className="grid flex-1 gap-1.5" style={gridStyle}>
+                {builtWeeks.map((week) => (
                   <div
                     key={week.days[0].key}
                     className="flex flex-col items-center gap-1.5"
                   >
                     {week.days.map((day) => {
                       const level = intensity(day);
-                      const title = day.future
+                      const dayTitle = day.future
                         ? ""
                         : `${formatEntryDate(day.date)} · ${day.entries} ${
                             day.entries === 1 ? "entry" : "entries"
@@ -147,9 +162,11 @@ export default function ActivityHeatmap({ activity = [], loading = false }) {
                       return (
                         <span
                           key={day.key}
-                          title={title}
+                          title={dayTitle}
                           className={`h-3.5 w-3.5 justify-self-center rounded-[3px] ${intensityClasses[level]} ${
-                            day.today ? "ring-1 ring-sage ring-offset-1 ring-offset-paper" : ""
+                            day.today
+                              ? "ring-1 ring-sage ring-offset-1 ring-offset-paper"
+                              : ""
                           } ${day.future ? "opacity-35" : ""}`}
                         />
                       );

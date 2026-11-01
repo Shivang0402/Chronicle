@@ -6,6 +6,7 @@ import ScrollProgress from "./components/ui/ScrollProgress";
 import AuthPage from "./pages/AuthPage";
 import EditorPage from "./pages/EditorPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import InsightsPage from "./pages/InsightsPage";
 import JournalPage from "./pages/JournalPage";
 import LandingPage from "./pages/LandingPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -33,6 +34,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <VaultPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/insights"
+            element={
+              <ProtectedRoute>
+                <InsightsPage />
               </ProtectedRoute>
             }
           />
