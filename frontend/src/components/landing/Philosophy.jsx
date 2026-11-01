@@ -17,29 +17,14 @@ export default function Philosophy() {
                 className="aspect-[4/3] w-full object-cover"
                 loading="eager"
               />
-              <span
-                aria-hidden="true"
-                className="absolute bottom-4 right-4 font-serif text-sm italic text-charcoal/75 sm:bottom-6 sm:right-6"
-              >
-                a thought, kept
-              </span>
             </div>
           </RevealImage>
-          <div className="mt-4 grid grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] items-center gap-4 sm:gap-6">
-            <RevealImage onMount y={10} amount={0.12} delay={0.12} duration={0.8}>
-              <img
-                src="/images/hero-journal.jpg"
-                alt="Handwritten journal page and pen beside a cup of tea"
-                className="aspect-[4/3] w-full object-cover"
-                loading="eager"
-              />
-            </RevealImage>
-            <Reveal delay={0.22} y={8} blur={false}>
-              <p className="max-w-[15rem] font-serif text-sm italic leading-relaxed text-charcoal-muted sm:text-base">
-                A page begins with whatever is on your mind.
-              </p>
-            </Reveal>
-          </div>
+          <Reveal delay={0.2} y={8} blur={false}>
+            <p className="mt-4 flex max-w-md items-start gap-3 text-sm leading-relaxed text-charcoal-muted">
+              <span aria-hidden="true" className="mt-2 h-px w-8 shrink-0 bg-sage/60" />
+              A page begins with whatever is on your mind.
+            </p>
+          </Reveal>
         </div>
 
         <div className="max-w-xl md:justify-self-start md:pl-5 lg:pl-8">
@@ -76,14 +61,12 @@ export default function Philosophy() {
             </p>
             <div className="grid gap-3">
               <RevealItem y={8}>
-                <p className="grid grid-cols-[2rem_1fr] items-baseline font-serif text-base leading-snug text-charcoal sm:text-lg">
-                  <span className="font-sans text-[10px] text-sage">01</span>
+                <p className="font-serif text-base leading-snug text-charcoal sm:text-lg">
                   What stayed with you today?
                 </p>
               </RevealItem>
               <RevealItem y={8}>
-                <p className="grid grid-cols-[2rem_1fr] items-baseline font-serif text-base leading-snug text-charcoal sm:text-lg">
-                  <span className="font-sans text-[10px] text-sage">02</span>
+                <p className="font-serif text-base leading-snug text-charcoal sm:text-lg">
                   What do you want to remember?
                 </p>
               </RevealItem>
