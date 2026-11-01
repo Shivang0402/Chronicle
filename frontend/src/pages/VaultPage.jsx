@@ -12,6 +12,7 @@ import ActivityHeatmap from "../components/dashboard/ActivityHeatmap";
 import DailyPrompt from "../components/dashboard/DailyPrompt";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
+import ExportDialog from "../components/dashboard/ExportDialog";
 import EntryComposer from "../components/dashboard/EntryComposer";
 import EntryReader from "../components/dashboard/EntryReader";
 import RecentEntries from "../components/dashboard/RecentEntries";
@@ -67,6 +68,8 @@ export default function VaultPage() {
   const [composerPrompt, setComposerPrompt] = useState("");
   const [readerEntry, setReaderEntry] = useState(null);
   const [exporting, setExporting] = useState(false);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportError, setExportError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
 
   useDocumentTitle("Dashboard");
@@ -180,26 +183,32 @@ export default function VaultPage() {
     setReloadKey((value) => value + 1);
   };
 
-  const handleExport = async () => {
+  const handleExport = () => {
+    setExportError("");
+    setExportDialogOpen(true);
+  };
+
+  const handleExportDownload = async (filters) => {
     if (!token || exporting) return;
 
     setExporting(true);
 
     try {
-      const blob = await chronicleApi.exportEntries(token, { format: "json" });
+      const blob = await chronicleApi.exportEntries(token, { ...filters, format: "pdf" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       const date = new Date().toISOString().slice(0, 10);
 
       link.href = url;
-      link.download = `chronicles-${date}.json`;
+      link.download = `chronicles-${date}.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(url);
-      setNotice("Your archive has been exported.");
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setNotice("Your PDF is ready.");
+      setExportDialogOpen(false);
     } catch (exportError) {
-      setError(exportError?.message || "Could not export your archive.");
+      setExportError(exportError?.message || "Could not export your PDF.");
     } finally {
       setExporting(false);
     }
@@ -363,6 +372,15 @@ export default function VaultPage() {
           key={readerEntry?._id || "closed"}
           entry={readerEntry}
           onClose={() => setReaderEntry(null)}
+        />
+
+        <ExportDialog
+          open={exportDialogOpen}
+          token={token}
+          exporting={exporting}
+          exportError={exportError}
+          onClose={() => setExportDialogOpen(false)}
+          onExport={handleExportDownload}
         />
 
         {notice && (

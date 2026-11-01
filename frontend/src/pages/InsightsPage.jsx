@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ActivityHeatmap from "../components/dashboard/ActivityHeatmap";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
+import ExportDialog from "../components/dashboard/ExportDialog";
 import StatCard from "../components/dashboard/StatCard";
 import PageTransition from "../components/ui/PageTransition";
 import { useAuth } from "../hooks/useAuth";
@@ -448,6 +449,8 @@ export default function InsightsPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [exporting, setExporting] = useState(false);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportError, setExportError] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -577,26 +580,32 @@ export default function InsightsPage() {
     navigate(nextTag ? `/journal?tag=${encodeURIComponent(nextTag)}` : "/journal");
   };
 
-  const handleExport = async () => {
+  const handleExport = () => {
+    setExportError("");
+    setExportDialogOpen(true);
+  };
+
+  const handleExportDownload = async (filters) => {
     if (!token || exporting) return;
 
     setExporting(true);
 
     try {
-      const blob = await chronicleApi.exportEntries(token, { format: "json" });
+      const blob = await chronicleApi.exportEntries(token, { ...filters, format: "pdf" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       const today = new Date().toISOString().slice(0, 10);
 
       link.href = url;
-      link.download = `chronicles-${today}.json`;
+      link.download = `chronicles-${today}.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(url);
-      setNotice("Your archive has been exported.");
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setNotice("Your PDF is ready.");
+      setExportDialogOpen(false);
     } catch (exportError) {
-      setError(exportError?.message || "Could not export your archive.");
+      setExportError(exportError?.message || "Could not export your PDF.");
     } finally {
       setExporting(false);
     }
@@ -791,6 +800,15 @@ export default function InsightsPage() {
             </div>
           </main>
         </div>
+
+        <ExportDialog
+          open={exportDialogOpen}
+          token={token}
+          exporting={exporting}
+          exportError={exportError}
+          onClose={() => setExportDialogOpen(false)}
+          onExport={handleExportDownload}
+        />
 
         {notice && (
           <motion.div
