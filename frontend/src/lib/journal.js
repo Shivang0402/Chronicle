@@ -20,6 +20,12 @@ export const formatLongDate = (value) =>
     year: "numeric",
   });
 
+export const formatTime = (value) =>
+  new Date(value).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
 export const formatMonth = (value) =>
   new Date(value).toLocaleDateString("en-US", { month: "short" });
 

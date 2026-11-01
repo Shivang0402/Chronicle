@@ -5,6 +5,7 @@ import ScrollToTop from "./components/layout/ScrollToTop";
 import ScrollProgress from "./components/ui/ScrollProgress";
 import AuthPage from "./pages/AuthPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import JournalPage from "./pages/JournalPage";
 import LandingPage from "./pages/LandingPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -31,6 +32,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <VaultPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/journal"
+            element={
+              <ProtectedRoute>
+                <JournalPage />
               </ProtectedRoute>
             }
           />

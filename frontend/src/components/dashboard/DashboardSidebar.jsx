@@ -9,12 +9,28 @@ import {
   X,
 } from "lucide-react";
 import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Wordmark from "../ui/Wordmark";
 
 const navItems = [
-  { label: "Dashboard", href: "#dashboard-top", icon: LayoutDashboard },
-  { label: "My Journal", href: "#recent-entries", icon: BookOpen },
-  { label: "Insights", href: "#writing-rhythms", icon: BarChart3 },
+  {
+    label: "Dashboard",
+    to: "/dashboard",
+    icon: LayoutDashboard,
+    isActive: (pathname) => pathname === "/dashboard",
+  },
+  {
+    label: "My Journal",
+    to: "/journal",
+    icon: BookOpen,
+    isActive: (pathname) => pathname.startsWith("/journal"),
+  },
+  {
+    label: "Insights",
+    to: "/dashboard#writing-rhythms",
+    icon: BarChart3,
+    isActive: () => false,
+  },
 ];
 
 const dotColors = [
@@ -37,6 +53,7 @@ function SidebarContent({
   exporting,
   onNavigate,
 }) {
+  const { pathname } = useLocation();
   const initial = (user?.name || user?.email || "C").charAt(0).toUpperCase();
   const displayTags = tags.slice(0, 5);
 
@@ -63,23 +80,24 @@ function SidebarContent({
           Journal navigation
         </span>
         <nav className="mb-8 flex flex-col gap-1">
-          {navItems.map((item, index) => {
+          {navItems.map((item) => {
             const Icon = item.icon;
+            const active = item.isActive(pathname);
 
             return (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
+                to={item.to}
                 onClick={onNavigate}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] transition-colors ${
-                  index === 0
+                  active
                     ? "bg-paper font-medium text-charcoal shadow-sm"
                     : "text-charcoal-muted hover:bg-paper/70 hover:text-charcoal"
                 }`}
               >
                 <Icon className="h-4 w-4" />
                 {item.label}
-              </a>
+              </Link>
             );
           })}
           <button

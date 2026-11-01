@@ -1,7 +1,12 @@
 import { CalendarDays, Menu, PenLine } from "lucide-react";
 import { todayLabel } from "../../lib/journal";
 
-export default function DashboardTopbar({ user, onOpenMenu, onNewEntry }) {
+export default function DashboardTopbar({
+  user,
+  onOpenMenu,
+  onNewEntry,
+  title = "Dashboard",
+}) {
   const initial = (user?.name || user?.email || "C").charAt(0).toUpperCase();
 
   return (
@@ -17,7 +22,7 @@ export default function DashboardTopbar({ user, onOpenMenu, onNewEntry }) {
             <Menu className="h-4 w-4" />
           </button>
           <h1 className="font-serif text-lg tracking-tight text-charcoal">
-            Dashboard
+            {title}
           </h1>
           <span className="hidden h-4 w-px bg-hairline sm:block" />
           <span className="hidden items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-gray sm:flex">

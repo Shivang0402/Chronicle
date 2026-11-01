@@ -157,6 +157,7 @@ const createChronicle = async (req, res) => {
 };
 
 const getChronicles = async (req, res) => {
+  const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
   const mood = typeof req.query.mood === "string" ? req.query.mood : "";
   const tag = typeof req.query.tag === "string" ? req.query.tag : "";
   const date = typeof req.query.date === "string" ? req.query.date : "";
@@ -167,6 +168,28 @@ const getChronicles = async (req, res) => {
   const sortOption = { date: req.query.sort === "oldest" ? 1 : -1 };
 
   try {
+    if (q) {
+      filter.$or = [
+        {
+          title: {
+            $regex: escapeRegex(q),
+            $options: "i",
+          },
+        },
+        {
+          content: {
+            $regex: escapeRegex(q),
+            $options: "i",
+          },
+        },
+        {
+          tags: {
+            $regex: escapeRegex(q),
+            $options: "i",
+          },
+        },
+      ];
+    }
     if (mood) {
       filter.mood = {
         $regex: escapeRegex(mood),
