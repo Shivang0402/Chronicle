@@ -312,6 +312,7 @@ export default function VaultPage() {
           open={composerOpen}
           onClose={() => setComposerOpen(false)}
           token={token}
+          user={user}
           onCreated={handleCreated}
           initialPrompt={composerPrompt}
         />

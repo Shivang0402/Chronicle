@@ -18,6 +18,12 @@ import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
 import {
+  clearDraft,
+  getDraftOwner,
+  readDraft,
+  writeDraft,
+} from "../lib/drafts";
+import {
   countWords,
   formatLongDate,
   formatTime,
@@ -29,14 +35,19 @@ import { MOODS } from "../lib/moods";
 export default function EditorPage() {
   const { id } = useParams();
   const isEditing = Boolean(id);
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
+  const draftOwner = getDraftOwner(user);
+
+  const [initialDraft] = useState(() =>
+    !isEditing && token ? readDraft(draftOwner, null) : null,
+  );
 
   const [entry, setEntry] = useState(null);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [mood, setMood] = useState("");
-  const [tags, setTags] = useState([]);
+  const [title, setTitle] = useState(initialDraft?.title || "");
+  const [content, setContent] = useState(initialDraft?.content || "");
+  const [mood, setMood] = useState(initialDraft?.mood || "");
+  const [tags, setTags] = useState(initialDraft?.tags || []);
   const [tagInput, setTagInput] = useState("");
   const [availableTags, setAvailableTags] = useState([]);
   const [loading, setLoading] = useState(isEditing);
@@ -44,11 +55,19 @@ export default function EditorPage() {
   const [loadKey, setLoadKey] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [dirty, setDirty] = useState(false);
+  const [dirty, setDirty] = useState(Boolean(initialDraft));
   const [savedAt, setSavedAt] = useState(null);
+  const [draftRestoredAt, setDraftRestoredAt] = useState(() =>
+    initialDraft ? new Date(initialDraft.updatedAt) : null,
+  );
+  const [draftSavedAt, setDraftSavedAt] = useState(() =>
+    initialDraft ? new Date(initialDraft.updatedAt) : null,
+  );
   const [focusMode, setFocusMode] = useState(false);
 
   const textareaRef = useRef(null);
+  const draftSnapshotRef = useRef(null);
+  const dirtyRef = useRef(Boolean(initialDraft));
 
   useDocumentTitle(
     isEditing ? entry?.title || "Edit Entry" : "New Entry",
@@ -70,14 +89,42 @@ export default function EditorPage() {
           throw new Error("This entry could not be found.");
         }
 
+        const baseTitle = next.title || "";
+        const baseContent = next.content || "";
+        const baseMood = next.mood || "";
+        const baseTags = Array.isArray(next.tags) ? next.tags : [];
+        const draft = readDraft(draftOwner, id);
+        const hasRestorableDraft =
+          draft &&
+          (draft.title !== baseTitle ||
+            draft.content !== baseContent ||
+            draft.mood !== baseMood ||
+            JSON.stringify(draft.tags) !== JSON.stringify(baseTags));
+
         setEntry(next);
-        setTitle(next.title || "");
-        setContent(next.content || "");
-        setMood(next.mood || "");
-        setTags(Array.isArray(next.tags) ? next.tags : []);
-        setDirty(false);
         setSavedAt(null);
         setLoading(false);
+
+        if (hasRestorableDraft) {
+          setTitle(draft.title);
+          setContent(draft.content);
+          setMood(draft.mood);
+          setTags(draft.tags);
+          setDraftRestoredAt(new Date(draft.updatedAt));
+          setDraftSavedAt(new Date(draft.updatedAt));
+        } else {
+          setTitle(baseTitle);
+          setContent(baseContent);
+          setMood(baseMood);
+          setTags(baseTags);
+          setDraftRestoredAt(null);
+          setDraftSavedAt(null);
+
+          if (draft) clearDraft(draftOwner, id);
+        }
+
+        dirtyRef.current = Boolean(hasRestorableDraft);
+        setDirty(Boolean(hasRestorableDraft));
       })
       .catch((loadFailure) => {
         if (!active) return;
@@ -90,7 +137,7 @@ export default function EditorPage() {
     return () => {
       active = false;
     };
-  }, [id, isEditing, token, loadKey]);
+  }, [draftOwner, id, isEditing, token, loadKey]);
 
   useEffect(() => {
     if (!token) return undefined;
@@ -124,13 +171,54 @@ export default function EditorPage() {
     if (!dirty) return undefined;
 
     const handleBeforeUnload = (event) => {
+      if (draftSnapshotRef.current) {
+        writeDraft(draftOwner, id || null, draftSnapshotRef.current);
+      }
+
       event.preventDefault();
       event.returnValue = "";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    return () =>
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [dirty, draftOwner, id]);
+
+  useEffect(() => {
+    draftSnapshotRef.current = { title, content, mood, tags };
+  }, [content, mood, tags, title]);
+
+  useEffect(() => {
+    dirtyRef.current = dirty;
   }, [dirty]);
+
+  useEffect(
+    () => () => {
+      if (!dirtyRef.current || !draftSnapshotRef.current) return;
+
+      writeDraft(draftOwner, id || null, draftSnapshotRef.current);
+    },
+    [draftOwner, id],
+  );
+
+  useEffect(() => {
+    if (!token || !dirty) return undefined;
+
+    const timeout = window.setTimeout(() => {
+      if (!dirtyRef.current) return;
+
+      const stored = writeDraft(draftOwner, id || null, {
+        title,
+        content,
+        mood,
+        tags,
+      });
+
+      setDraftSavedAt(stored ? new Date(stored.updatedAt) : null);
+    }, 700);
+
+    return () => window.clearTimeout(timeout);
+  }, [content, dirty, draftOwner, id, mood, tags, title, token]);
 
   const words = countWords(content);
   const reading = readingTime(words);
@@ -144,8 +232,40 @@ export default function EditorPage() {
     .slice(0, 8);
 
   const markDirty = () => {
+    dirtyRef.current = true;
     setDirty(true);
     setSavedAt(null);
+  };
+
+  const handleDiscardDraft = () => {
+    if (
+      !window.confirm(
+        "Discard this draft? Your unsaved changes cannot be recovered.",
+      )
+    ) {
+      return;
+    }
+
+    clearDraft(draftOwner, id || null);
+    dirtyRef.current = false;
+    setDirty(false);
+    setDraftRestoredAt(null);
+    setDraftSavedAt(null);
+    setSavedAt(null);
+    setError("");
+    setTagInput("");
+
+    if (isEditing && entry) {
+      setTitle(entry.title || "");
+      setContent(entry.content || "");
+      setMood(entry.mood || "");
+      setTags(Array.isArray(entry.tags) ? entry.tags : []);
+    } else {
+      setTitle("");
+      setContent("");
+      setMood("");
+      setTags([]);
+    }
   };
 
   const addTag = (raw) => {
@@ -188,7 +308,9 @@ export default function EditorPage() {
   const handleBack = () => {
     if (
       dirty &&
-      !window.confirm("You have unsaved changes. Leave without saving?")
+      !window.confirm(
+        "Leave without saving to your journal? Your draft will be kept.",
+      )
     ) {
       return;
     }
@@ -227,10 +349,19 @@ export default function EditorPage() {
       if (isEditing) {
         const data = await chronicleApi.updateEntry(id, payload, token);
         setEntry(data?.chronicle || entry);
+        clearDraft(draftOwner, id);
+        dirtyRef.current = false;
         setDirty(false);
         setSavedAt(new Date());
+        setDraftRestoredAt(null);
+        setDraftSavedAt(null);
       } else {
         await chronicleApi.createEntry(payload, token);
+        clearDraft(draftOwner, null);
+        dirtyRef.current = false;
+        setDirty(false);
+        setDraftRestoredAt(null);
+        setDraftSavedAt(null);
         navigate("/journal", {
           state: { notice: "Entry preserved in your archive." },
         });
@@ -242,6 +373,7 @@ export default function EditorPage() {
     }
   }, [
     content,
+    draftOwner,
     entry,
     id,
     isEditing,
@@ -270,7 +402,9 @@ export default function EditorPage() {
     : error
       ? "Save failed"
       : dirty
-        ? "Unsaved changes"
+        ? draftSavedAt
+          ? `Draft saved at ${formatTime(draftSavedAt)}`
+          : "Unsaved changes"
         : savedAt
           ? `Saved at ${formatTime(savedAt)}`
           : isEditing
@@ -457,6 +591,22 @@ export default function EditorPage() {
               </div>
             )}
 
+            {draftRestoredAt && (
+              <div className="flex flex-col gap-2 border-b border-sage/20 bg-sage-subtle/50 px-6 py-3 text-[11px] text-sage-deep sm:flex-row sm:items-center sm:justify-between sm:px-10">
+                <span>
+                  Draft restored from {formatTime(draftRestoredAt)}. Keep
+                  writing or discard it.
+                </span>
+                <button
+                  type="button"
+                  onClick={handleDiscardDraft}
+                  className="self-start font-medium underline decoration-sage/40 underline-offset-4 transition-colors hover:text-charcoal sm:self-auto"
+                >
+                  Discard draft
+                </button>
+              </div>
+            )}
+
             {!focusMode && (
               <section className="border-b border-hairline px-6 py-5 sm:px-10">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -595,7 +745,7 @@ export default function EditorPage() {
                 <span>{reading} min read</span>
                 {dirty && (
                   <span className="rounded-full bg-sage-subtle px-2 py-0.5 text-sage-deep">
-                    Unsaved
+                    {draftSavedAt ? "Draft saved" : "Unsaved"}
                   </span>
                 )}
               </div>

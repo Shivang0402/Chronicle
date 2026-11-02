@@ -1,10 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays, Hash, Loader2, PenLine, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { chronicleApi } from "../../lib/api";
+import {
+  clearDraft,
+  getDraftOwner,
+  readDraft,
+  writeDraft,
+} from "../../lib/drafts";
 import {
   countWords,
   formatLongDate,
+  formatTime,
   todayLabel,
 } from "../../lib/journal";
 import { MOODS } from "../../lib/moods";
@@ -13,23 +20,63 @@ export default function EntryComposer({
   open,
   onClose,
   token,
+  user = null,
   onCreated,
   onUpdated,
   initialPrompt = "",
   entry = null,
 }) {
   const isEditing = Boolean(entry?._id);
-  const [title, setTitle] = useState(entry?.title || "");
-  const [content, setContent] = useState(() => {
-    if (entry?.content) return entry.content;
-    return initialPrompt ? `${initialPrompt}\n\n` : "";
+  const draftOwner = getDraftOwner(user);
+  const draftEntryId = entry?._id || null;
+  const baselineTitle = entry?.title || "";
+  const baselineContent = entry?.content
+    ? entry.content
+    : initialPrompt
+      ? `${initialPrompt}\n\n`
+      : "";
+  const baselineMood = entry?.mood || "";
+  const baselineTagsInput = Array.isArray(entry?.tags)
+    ? entry.tags.join(", ")
+    : "";
+
+  const [initialDraft] = useState(() => {
+    if (!open) return null;
+
+    const draft = readDraft(draftOwner, draftEntryId);
+
+    if (!draft) return null;
+
+    const draftTagsInput = draft.tags.join(", ");
+    const differs =
+      draft.title !== baselineTitle ||
+      draft.content !== baselineContent ||
+      draft.mood !== baselineMood ||
+      draftTagsInput !== baselineTagsInput;
+
+    return differs ? draft : null;
   });
-  const [mood, setMood] = useState(entry?.mood || "");
+
+  const [title, setTitle] = useState(initialDraft?.title ?? baselineTitle);
+  const [content, setContent] = useState(
+    initialDraft?.content ?? baselineContent,
+  );
+  const [mood, setMood] = useState(initialDraft?.mood ?? baselineMood);
   const [tagsInput, setTagsInput] = useState(
-    Array.isArray(entry?.tags) ? entry.tags.join(", ") : "",
+    initialDraft ? initialDraft.tags.join(", ") : baselineTagsInput,
   );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(Boolean(initialDraft));
+  const [draftRestoredAt, setDraftRestoredAt] = useState(() =>
+    initialDraft ? new Date(initialDraft.updatedAt) : null,
+  );
+  const [draftSavedAt, setDraftSavedAt] = useState(() =>
+    initialDraft ? new Date(initialDraft.updatedAt) : null,
+  );
+
+  const draftSnapshotRef = useRef(null);
+  const dirtyRef = useRef(Boolean(initialDraft));
 
   const words = countWords(content);
   const canSave = content.trim().length >= 10 && !saving;
@@ -53,6 +100,96 @@ export default function EntryComposer({
       document.body.style.overflow = "";
     };
   }, [open, onClose]);
+
+  useEffect(() => {
+    draftSnapshotRef.current = {
+      title,
+      content,
+      mood,
+      tags: tagsInput,
+    };
+  }, [content, mood, tagsInput, title]);
+
+  useEffect(() => {
+    dirtyRef.current = dirty;
+  }, [dirty]);
+
+  useEffect(() => {
+    if (!open || !dirty) return undefined;
+
+    const handleBeforeUnload = () => {
+      if (draftSnapshotRef.current) {
+        writeDraft(draftOwner, draftEntryId, draftSnapshotRef.current);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () =>
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [dirty, draftEntryId, draftOwner, open]);
+
+  useEffect(
+    () => () => {
+      if (!dirtyRef.current || !draftSnapshotRef.current) return;
+
+      writeDraft(draftOwner, draftEntryId, draftSnapshotRef.current);
+    },
+    [draftEntryId, draftOwner],
+  );
+
+  useEffect(() => {
+    if (!open || !dirty) return undefined;
+
+    const timeout = window.setTimeout(() => {
+      if (!dirtyRef.current) return;
+
+      const stored = writeDraft(draftOwner, draftEntryId, {
+        title,
+        content,
+        mood,
+        tags: tagsInput,
+      });
+
+      setDraftSavedAt(stored ? new Date(stored.updatedAt) : null);
+    }, 700);
+
+    return () => window.clearTimeout(timeout);
+  }, [
+    content,
+    dirty,
+    draftEntryId,
+    draftOwner,
+    mood,
+    open,
+    tagsInput,
+    title,
+  ]);
+
+  const markDirty = () => {
+    dirtyRef.current = true;
+    setDirty(true);
+  };
+
+  const handleDiscardDraft = () => {
+    if (
+      !window.confirm(
+        "Discard this draft? Your unsaved changes cannot be recovered.",
+      )
+    ) {
+      return;
+    }
+
+    clearDraft(draftOwner, draftEntryId);
+    dirtyRef.current = false;
+    setDirty(false);
+    setDraftRestoredAt(null);
+    setDraftSavedAt(null);
+    setError("");
+    setTitle(baselineTitle);
+    setContent(baselineContent);
+    setMood(baselineMood);
+    setTagsInput(baselineTagsInput);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -94,11 +231,17 @@ export default function EntryComposer({
           token,
         );
         onUpdated?.(data?.chronicle);
+        clearDraft(draftOwner, draftEntryId);
       } else {
         const data = await chronicleApi.createEntry(payload, token);
         onCreated?.(data?.chronicle);
+        clearDraft(draftOwner, draftEntryId);
       }
 
+      dirtyRef.current = false;
+      setDirty(false);
+      setDraftRestoredAt(null);
+      setDraftSavedAt(null);
       onClose();
     } catch (saveError) {
       setError(saveError?.message || "Could not save this entry.");
@@ -150,17 +293,36 @@ export default function EntryComposer({
                 type="button"
                 onClick={onClose}
                 className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-hairline bg-paper text-charcoal-muted transition-colors hover:text-charcoal"
-                aria-label="Close editor"
+                aria-label={dirty ? "Close and keep draft" : "Close editor"}
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
+            {draftRestoredAt && (
+              <div className="flex flex-col gap-2 border-b border-sage/20 bg-sage-subtle/50 px-6 py-3 text-[11px] text-sage-deep sm:flex-row sm:items-center sm:justify-between sm:px-8">
+                <span>
+                  Draft restored from {formatTime(draftRestoredAt)}. Keep
+                  writing or discard it.
+                </span>
+                <button
+                  type="button"
+                  onClick={handleDiscardDraft}
+                  className="self-start font-medium underline decoration-sage/40 underline-offset-4 transition-colors hover:text-charcoal sm:self-auto"
+                >
+                  Discard draft
+                </button>
+              </div>
+            )}
+
             <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8">
               <input
                 type="text"
                 value={title}
-                onChange={(event) => setTitle(event.target.value)}
+                onChange={(event) => {
+                  setTitle(event.target.value);
+                  markDirty();
+                }}
                 placeholder="Give this page a title (optional)"
                 maxLength={120}
                 className="w-full border-0 bg-transparent font-serif text-2xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/60"
@@ -171,7 +333,10 @@ export default function EntryComposer({
                   <button
                     key={item}
                     type="button"
-                    onClick={() => setMood(mood === item ? "" : item)}
+                    onClick={() => {
+                      setMood(mood === item ? "" : item);
+                      markDirty();
+                    }}
                     className={`rounded-full px-3 py-1.5 text-[10px] font-medium transition-colors ${
                       mood === item
                         ? "bg-sage text-white shadow-sm"
@@ -186,7 +351,10 @@ export default function EntryComposer({
               <div className="mt-6 border-t border-hairline pt-6">
                 <textarea
                   value={content}
-                  onChange={(event) => setContent(event.target.value)}
+                  onChange={(event) => {
+                    setContent(event.target.value);
+                    markDirty();
+                  }}
                   placeholder="Let the thought unfold, exactly as it came to you..."
                   autoFocus
                   className="min-h-[210px] w-full resize-none border-0 bg-transparent font-serif text-lg font-light leading-[1.8] text-charcoal outline-none placeholder:text-muted-gray/60"
@@ -205,7 +373,10 @@ export default function EntryComposer({
                   id="entry-tags"
                   type="text"
                   value={tagsInput}
-                  onChange={(event) => setTagsInput(event.target.value)}
+                  onChange={(event) => {
+                    setTagsInput(event.target.value);
+                    markDirty();
+                  }}
                   placeholder="Reflections, Gratitude, MorningPages"
                   className="field-input !bg-warm-beige/50 !py-2.5 !text-[13px]"
                 />
@@ -222,14 +393,27 @@ export default function EntryComposer({
             </div>
 
             <div className="flex flex-col gap-3 border-t border-hairline bg-warm-beige/30 px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-              <div className="text-[10px] text-muted-gray">
-                <span className="font-medium text-charcoal">{words}</span>{" "}
-                {words === 1 ? "word" : "words"} ·{" "}
-                {content.trim().length < 10
-                  ? "at least 10 characters"
-                  : isEditing
-                    ? "ready to save"
-                    : "ready to preserve"}
+              <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted-gray">
+                <span>
+                  <span className="font-medium text-charcoal">{words}</span>{" "}
+                  {words === 1 ? "word" : "words"}
+                </span>
+                <span className="h-1 w-1 rounded-full bg-hairline" />
+                <span>
+                  {content.trim().length < 10
+                    ? "at least 10 characters"
+                    : isEditing
+                      ? "ready to save"
+                      : "ready to preserve"}
+                </span>
+                {dirty && (
+                  <>
+                    <span className="h-1 w-1 rounded-full bg-hairline" />
+                    <span className="rounded-full bg-sage-subtle px-2 py-0.5 text-sage-deep">
+                      {draftSavedAt ? "Draft saved" : "Unsaved"}
+                    </span>
+                  </>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -237,7 +421,7 @@ export default function EntryComposer({
                   onClick={onClose}
                   className="btn-ghost !px-4 !py-2 text-[11px]"
                 >
-                  Cancel
+                  {dirty ? "Keep draft" : "Cancel"}
                 </button>
                 <button
                   type="submit"
