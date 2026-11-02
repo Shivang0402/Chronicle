@@ -1,14 +1,8 @@
 import { motion } from "framer-motion";
-import {
-  BookOpen,
-  Feather,
-  Flame,
-  PenLine,
-  Smile,
-} from "lucide-react";
+import { PenLine } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import ActivityHeatmap from "../components/dashboard/ActivityHeatmap";
+import DailyDesk from "../components/dashboard/DailyDesk";
 import DailyPrompt from "../components/dashboard/DailyPrompt";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
@@ -16,7 +10,6 @@ import ExportDialog from "../components/dashboard/ExportDialog";
 import EntryComposer from "../components/dashboard/EntryComposer";
 import EntryReader from "../components/dashboard/EntryReader";
 import RecentEntries from "../components/dashboard/RecentEntries";
-import StatCard from "../components/dashboard/StatCard";
 import PageTransition from "../components/ui/PageTransition";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
@@ -116,46 +109,6 @@ export default function VaultPage() {
 
   const firstName = user?.name?.split(" ")[0] || "wanderer";
   const greeting = greetingForNow();
-  const topMood = stats.moodBreakdown?.[0];
-
-  const statCards = [
-    {
-      label: "Total entries",
-      value: stats.totalChronicles,
-      icon: BookOpen,
-      footerLabel: "This month",
-      footerValue: `${stats.entriesThisMonth} ${
-        stats.entriesThisMonth === 1 ? "entry" : "entries"
-      }`,
-    },
-    {
-      label: "Total words",
-      value: stats.totalWords,
-      icon: Feather,
-      footerLabel: "Average per entry",
-      footerValue: `${stats.averageWords} words`,
-    },
-    {
-      label: "Current streak",
-      value: stats.currentStreak,
-      suffix: stats.currentStreak === 1 ? " day" : " days",
-      icon: Flame,
-      footerLabel: "Longest streak",
-      footerValue: `${stats.longestStreak} ${
-        stats.longestStreak === 1 ? "day" : "days"
-      }`,
-    },
-    {
-      label: "Most common mood",
-      value: stats.mostCommonMood || "—",
-      icon: Smile,
-      isText: true,
-      footerLabel: "Mood patterns",
-      footerValue: topMood
-        ? `${topMood.count} ${topMood.count === 1 ? "entry" : "entries"}`
-        : "No mood yet",
-    },
-  ];
 
   const openComposer = () => {
     setComposerPrompt("");
@@ -292,23 +245,18 @@ export default function VaultPage() {
                 </div>
               )}
 
-              <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {statCards.map((card, index) => (
-                  <StatCard
-                    key={card.label}
-                    {...card}
-                    loading={statsLoading}
-                    delay={0.15 + index * 0.06}
-                  />
-                ))}
+              <div className="mt-8">
+                <DailyDesk
+                  stats={stats}
+                  entries={entries}
+                  loading={statsLoading || entriesLoading}
+                  onWrite={openComposer}
+                  onReadEntry={setReaderEntry}
+                  onOpenJournal={() => navigate("/journal")}
+                />
               </div>
 
               <div className="mt-8 space-y-8">
-                <ActivityHeatmap
-                  activity={stats.activity}
-                  loading={statsLoading}
-                />
-
                 <RecentEntries
                   entries={entries}
                   totalChronicles={entriesTotal}
