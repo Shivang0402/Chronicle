@@ -7,7 +7,6 @@ const User = require("../src/models/userModel");
 
 const credentials = {
   name: "Test User",
-  username: "testuser",
   email: "test@example.com",
   password: "password123",
 };
@@ -78,15 +77,9 @@ describe("auth", () => {
 
     const duplicateEmail = await register({
       ...credentials,
-      username: "anotheruser",
+      email: credentials.email.toUpperCase(),
     });
     assert.equal(duplicateEmail.status, 400);
-
-    const duplicateUsername = await register({
-      ...credentials,
-      email: "another@example.com",
-    });
-    assert.equal(duplicateUsername.status, 400);
   });
 
   it("verifies an email with a single-use token", async () => {

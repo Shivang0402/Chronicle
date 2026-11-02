@@ -314,7 +314,7 @@ export default function SettingsPage() {
                         {user?.name || "Chronicle writer"}
                       </p>
                       <p className="mt-0.5 truncate text-[11px] text-muted-gray">
-                        @{user?.username || "writer"}
+                        Your private journal
                       </p>
                     </div>
                   </div>
@@ -332,12 +332,6 @@ export default function SettingsPage() {
                         {user?.isEmailVerified && (
                           <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-sage-deep" />
                         )}
-                      </dd>
-                    </div>
-                    <div className="flex items-start justify-between gap-4 border-b border-hairline/70 pb-3">
-                      <dt className="text-muted-gray">Username</dt>
-                      <dd className="text-charcoal">
-                        @{user?.username || "writer"}
                       </dd>
                     </div>
                     <div className="flex items-start justify-between gap-4">

@@ -24,13 +24,11 @@ let accountCount = 0;
 const createAccount = async () => {
   accountCount += 1;
   const email = `writer${accountCount}@example.com`;
-  const username = `writer${accountCount}`;
   const password = "password123";
 
   const logs = await captureLogs(() =>
     request(app).post("/api/auth/register").send({
       name: "Writer",
-      username,
       email,
       password,
     }),

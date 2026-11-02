@@ -42,15 +42,14 @@ const startPasswordReset = async (user) => {
 };
 
 const registerUser = async (req, res) => {
-  const { name, username, email, password } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!name || !username || !email || !password) {
+  if (!name || !email || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   if (
     typeof name !== "string" ||
-    typeof username !== "string" ||
     typeof email !== "string" ||
     typeof password !== "string"
   ) {
@@ -65,22 +64,16 @@ const registerUser = async (req, res) => {
 
   try {
     const existingUser = await userModel.findOne({
-      $or: [
-        { username: username.trim() },
-        { email: email.trim().toLowerCase() },
-      ],
+      email: email.trim().toLowerCase(),
     });
 
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ message: "Username or email already exists" });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new userModel({
       name,
-      username,
       email,
       password: hashedPassword,
     });
@@ -93,15 +86,12 @@ const registerUser = async (req, res) => {
       user: {
         id: newUser._id,
         name: newUser.name,
-        username: newUser.username,
         email: newUser.email,
       },
     });
   } catch (err) {
     if (err.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "Username or email already exists" });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     return res.status(500).json({ message: "Registration failed" });

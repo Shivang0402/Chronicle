@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
   ArrowRight,
-  AtSign,
   CheckCircle2,
   Eye,
   EyeOff,
@@ -37,7 +36,6 @@ export default function AuthPage() {
   });
   const [registerForm, setRegisterForm] = useState({
     name: "",
-    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -116,14 +114,12 @@ export default function AuthPage() {
     try {
       const data = await authApi.register({
         name: registerForm.name.trim(),
-        username: registerForm.username.trim(),
         email: registerForm.email.trim(),
         password: registerForm.password,
       });
       setRegisteredEmail(data?.user?.email || registerForm.email.trim());
       setRegisterForm({
         name: "",
-        username: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -429,53 +425,27 @@ export default function AuthPage() {
               className="mt-6 space-y-4"
               noValidate
             >
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="field-label" htmlFor="register-name">
-                    Your Name
-                  </label>
-                  <div className={inputWrap}>
-                    <User className="pointer-events-none absolute left-3.5 h-4 w-4 text-muted-gray" />
-                    <input
-                      id="register-name"
-                      type="text"
-                      autoComplete="name"
-                      required
-                      value={registerForm.name}
-                      onChange={(event) =>
-                        setRegisterForm((form) => ({
-                          ...form,
-                          name: event.target.value,
-                        }))
-                      }
-                      placeholder="Eleanor Hart"
-                      className="field-input pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label" htmlFor="register-username">
-                    Username
-                  </label>
-                  <div className={inputWrap}>
-                    <AtSign className="pointer-events-none absolute left-3.5 h-4 w-4 text-muted-gray" />
-                    <input
-                      id="register-username"
-                      type="text"
-                      autoComplete="username"
-                      required
-                      value={registerForm.username}
-                      onChange={(event) =>
-                        setRegisterForm((form) => ({
-                          ...form,
-                          username: event.target.value,
-                        }))
-                      }
-                      placeholder="eleanor"
-                      className="field-input pl-10"
-                    />
-                  </div>
+              <div>
+                <label className="field-label" htmlFor="register-name">
+                  Your Name
+                </label>
+                <div className={inputWrap}>
+                  <User className="pointer-events-none absolute left-3.5 h-4 w-4 text-muted-gray" />
+                  <input
+                    id="register-name"
+                    type="text"
+                    autoComplete="name"
+                    required
+                    value={registerForm.name}
+                    onChange={(event) =>
+                      setRegisterForm((form) => ({
+                        ...form,
+                        name: event.target.value,
+                      }))
+                    }
+                    placeholder="Eleanor Hart"
+                    className="field-input pl-10"
+                  />
                 </div>
               </div>
 

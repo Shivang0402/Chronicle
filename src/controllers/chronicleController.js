@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const Chronicle = require("../models/chronicleModel"); // model
+const Chronicle = require("../models/chronicleModel");
 const { renderJournalHtml } = require("../templates/journalExport");
 
 const MIN_CONTENT_LENGTH = 10;
@@ -34,8 +34,10 @@ const buildPdf = async (entries, exportedOn) => {
       format: "A4",
       printBackground: true,
       displayHeaderFooter: true,
-      headerTemplate: '<div style="width:100%;margin:0 18mm;color:#82947c;font:8px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;">Chronicle <span style="float:right;color:#85857d;letter-spacing:1px;">Personal journal</span></div>',
-      footerTemplate: '<div style="width:100%;margin:0 18mm;color:#85857d;font:8px Arial,sans-serif;border-top:1px solid #e8e6df;padding-top:5px;">A personal record <span style="float:right;">Page <span class="pageNumber"></span> / <span class="totalPages"></span></span></div>',
+      headerTemplate:
+        '<div style="width:100%;margin:0 18mm;color:#82947c;font:8px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;">Chronicle <span style="float:right;color:#85857d;letter-spacing:1px;">Personal journal</span></div>',
+      footerTemplate:
+        '<div style="width:100%;margin:0 18mm;color:#85857d;font:8px Arial,sans-serif;border-top:1px solid #e8e6df;padding-top:5px;">A personal record <span style="float:right;">Page <span class="pageNumber"></span> / <span class="totalPages"></span></span></div>',
       margin: { top: "24mm", right: "18mm", bottom: "22mm", left: "18mm" },
     });
 
