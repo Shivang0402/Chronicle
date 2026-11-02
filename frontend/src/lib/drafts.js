@@ -89,3 +89,67 @@ export function clearDraft(owner, entryId) {
     // Storage can be unavailable in private browsing modes.
   }
 }
+
+const safeParse = (raw) => {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+};
+
+export function listDrafts(owner) {
+  if (typeof window === "undefined") return [];
+
+  const prefix = `${DRAFT_PREFIX}.${encodeURIComponent(owner)}.`;
+  const results = [];
+
+  try {
+    for (let i = 0; i < window.localStorage.length; i += 1) {
+      const key = window.localStorage.key(i);
+
+      if (!key || !key.startsWith(prefix)) continue;
+
+      const raw = window.localStorage.getItem(key);
+
+      if (!raw) continue;
+
+      const parsed = safeParse(raw);
+      const draft = normalizeDraft(parsed);
+
+      if (!hasDraftContent(draft)) {
+        try {
+          window.localStorage.removeItem(key);
+        } catch {
+          // Ignore cleanup failures.
+        }
+        continue;
+      }
+
+      const entryIdSuffix = key.slice(prefix.length);
+      const entryId = entryIdSuffix === "new" ? null : entryIdSuffix;
+      const updatedAt =
+        typeof parsed?.updatedAt === "string"
+          ? parsed.updatedAt
+          : new Date().toISOString();
+
+      results.push({
+        ...draft,
+        entryId,
+        key,
+        updatedAt,
+        isNew: entryId === null,
+      });
+    }
+  } catch {
+    return [];
+  }
+
+  results.sort((a, b) => {
+    const aTime = new Date(a.updatedAt).getTime();
+    const bTime = new Date(b.updatedAt).getTime();
+    return bTime - aTime;
+  });
+
+  return results;
+}

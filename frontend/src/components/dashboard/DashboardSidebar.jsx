@@ -3,6 +3,7 @@ import {
   BarChart3,
   BookOpen,
   Download,
+  FileText,
   LayoutDashboard,
   LogOut,
   PenLine,
@@ -25,6 +26,12 @@ const navItems = [
     to: "/journal",
     icon: BookOpen,
     isActive: (pathname) => pathname.startsWith("/journal"),
+  },
+  {
+    label: "Drafts",
+    to: "/drafts",
+    icon: FileText,
+    isActive: (pathname) => pathname === "/drafts",
   },
   {
     label: "Insights",

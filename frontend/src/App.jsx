@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ScrollToTop from "./components/layout/ScrollToTop";
 import ScrollProgress from "./components/ui/ScrollProgress";
 import AuthPage from "./pages/AuthPage";
+import DraftsPage from "./pages/DraftsPage";
 import EditorPage from "./pages/EditorPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import InsightsPage from "./pages/InsightsPage";
@@ -51,6 +52,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <JournalPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/drafts"
+            element={
+              <ProtectedRoute>
+                <DraftsPage />
               </ProtectedRoute>
             }
           />
