@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   LogOut,
   PenLine,
+  Settings,
   X,
 } from "lucide-react";
 import { useEffect } from "react";
@@ -30,6 +31,12 @@ const navItems = [
     to: "/insights",
     icon: BarChart3,
     isActive: (pathname) => pathname === "/insights",
+  },
+  {
+    label: "Settings",
+    to: "/settings",
+    icon: Settings,
+    isActive: (pathname) => pathname === "/settings",
   },
 ];
 

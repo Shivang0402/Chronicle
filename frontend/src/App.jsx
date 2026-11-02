@@ -11,6 +11,7 @@ import JournalPage from "./pages/JournalPage";
 import LandingPage from "./pages/LandingPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import SettingsPage from "./pages/SettingsPage";
 import VaultPage from "./pages/VaultPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 
@@ -66,6 +67,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <EditorPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
               </ProtectedRoute>
             }
           />
