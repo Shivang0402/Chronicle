@@ -11,8 +11,8 @@ import InsightsPage from "./pages/InsightsPage";
 import JournalPage from "./pages/JournalPage";
 import LandingPage from "./pages/LandingPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ProfilePage from "./pages/ProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import SettingsPage from "./pages/SettingsPage";
 import VaultPage from "./pages/VaultPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 
@@ -80,13 +80,14 @@ export default function App() {
             }
           />
           <Route
-            path="/settings"
+            path="/profile"
             element={
               <ProtectedRoute>
-                <SettingsPage />
+                <ProfilePage />
               </ProtectedRoute>
             }
           />
+          <Route path="/settings" element={<Navigate to="/profile" replace />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>

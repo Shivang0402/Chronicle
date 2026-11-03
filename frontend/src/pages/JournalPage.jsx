@@ -400,10 +400,11 @@ export default function JournalPage() {
           title="My Journal"
           onOpenMenu={() => setMobileNavOpen(true)}
           onNewEntry={openEditor}
+          onLogout={handleLogout}
         />
 
         <div className="lg:pl-72">
-          <main className="relative min-h-screen pt-16">
+          <main className="relative min-h-screen overflow-x-clip pt-16">
             <div className="pointer-events-none absolute inset-0 paper-texture opacity-50" />
             <div className="pointer-events-none absolute -right-24 top-24 h-80 w-80 rounded-full bg-sage-light/20 blur-3xl" />
 

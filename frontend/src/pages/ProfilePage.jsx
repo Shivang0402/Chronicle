@@ -2,12 +2,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
   ArrowRight,
-  BookOpen,
   CalendarDays,
   CheckCircle2,
   Download,
-  FileJson,
-  FileText,
   Hash,
   KeyRound,
   Loader2,
@@ -42,24 +39,18 @@ const EXPORT_FORMATS = [
     label: "PDF journal",
     dialogLabel: "PDF",
     dialogHint: "A typeset keepsake ready to print",
-    description: "A beautifully typeset copy of your pages, ready to print or keep.",
-    icon: BookOpen,
   },
   {
     id: "markdown",
     label: "Markdown",
     dialogLabel: "Markdown",
     dialogHint: "Plain text for any writing app",
-    description: "Plain-text pages you can open, edit, or re-import anywhere.",
-    icon: FileText,
   },
   {
     id: "json",
     label: "JSON archive",
     dialogLabel: "JSON",
     dialogHint: "Structured data for backup",
-    description: "Structured data for a complete backup or moving your journal.",
-    icon: FileJson,
   },
 ];
 
@@ -112,7 +103,7 @@ function StatBlock({ label, value }) {
   );
 }
 
-export default function SettingsPage() {
+export default function ProfilePage() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
   const securityRef = useRef(null);
@@ -342,10 +333,11 @@ export default function SettingsPage() {
           title="Profile"
           onOpenMenu={() => setMobileNavOpen(true)}
           onNewEntry={handleNewEntry}
+          onLogout={handleLogout}
         />
 
         <div className="lg:pl-72">
-          <main className="relative min-h-screen pt-16">
+          <main className="relative min-h-screen overflow-x-clip pt-16">
             <div className="pointer-events-none absolute inset-0 paper-texture opacity-50" />
             <div className="pointer-events-none absolute -right-24 top-24 h-80 w-80 rounded-full bg-sage-light/20 blur-3xl" />
 
@@ -390,13 +382,8 @@ export default function SettingsPage() {
 
                       <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-4 sm:gap-5">
-                          <span className="relative grid h-20 w-20 shrink-0 place-items-center rounded-full border border-white/30 bg-white/10 font-serif text-3xl text-white shadow-inner backdrop-blur">
+                          <span className="grid h-20 w-20 shrink-0 place-items-center rounded-full border border-white/30 bg-white/10 font-serif text-3xl text-white shadow-inner backdrop-blur">
                             {initial}
-                            {verified && (
-                              <span className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full border-4 border-sage-deep bg-paper text-sage-deep">
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                              </span>
-                            )}
                           </span>
                           <div className="min-w-0">
                             <span className="text-[9px] uppercase tracking-mega text-white/60">
@@ -447,16 +434,10 @@ export default function SettingsPage() {
                       ))}
                     </div>
 
-                    <div className="flex flex-col gap-2 p-5 text-[11px] text-muted-gray sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-2 p-5 text-[11px] text-muted-gray sm:flex-row sm:items-center">
                       <span className="flex items-center gap-2">
                         <CalendarDays className="h-3.5 w-3.5 text-sage" />
                         Member since {memberSince}
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <ShieldCheck className="h-3.5 w-3.5 text-sage" />
-                        {verified
-                          ? "Your account is verified and protected"
-                          : "Verify your email to secure your account"}
                       </span>
                     </div>
                   </motion.section>
@@ -471,48 +452,32 @@ export default function SettingsPage() {
                     }}
                     className="rounded-3xl border border-hairline bg-paper p-6 shadow-paper sm:p-7"
                   >
-                    <SectionHeading
-                      icon={Download}
-                      title="Exports"
-                      description="Your words belong to you. Take them with you in the format that fits."
-                    />
-
-                    <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                      {EXPORT_FORMATS.map((item) => {
-                        const Icon = item.icon;
-                        const isBusy = exporting === item.id;
-
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => handleOpenExport(item.id)}
-                            disabled={Boolean(exporting)}
-                            className="group flex flex-col rounded-2xl border border-hairline bg-ivory/60 p-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-sage/40 hover:bg-paper hover:shadow-paper disabled:cursor-wait disabled:opacity-60"
-                          >
-                            <span className="flex items-center justify-between">
-                              <span className="grid h-10 w-10 place-items-center rounded-xl bg-sage-subtle text-sage-deep transition-colors group-hover:bg-sage group-hover:text-white">
-                                <Icon className="h-4 w-4" />
-                              </span>
-                              {isBusy ? (
-                                <Loader2 className="h-4 w-4 animate-spin text-sage-deep" />
-                              ) : (
-                                <ArrowRight className="h-4 w-4 text-muted-gray transition-all group-hover:translate-x-0.5 group-hover:text-sage-deep" />
-                              )}
-                            </span>
-                            <span className="mt-4 text-[13px] font-medium text-charcoal">
-                              {item.label}
-                            </span>
-                            <span className="mt-1 text-[11px] leading-relaxed text-muted-gray">
-                              {item.description}
-                            </span>
-                            <span className="mt-3 text-[10px] font-medium uppercase tracking-wide2 text-sage-deep">
-                              {isBusy ? "Preparing…" : "Export"}
-                            </span>
-                          </button>
-                        );
-                      })}
+                    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                      <SectionHeading
+                        icon={Download}
+                        title="Exports"
+                        description="Take a copy of your journal whenever you need it."
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleOpenExport("pdf")}
+                        disabled={Boolean(exporting)}
+                        className="btn-sage shrink-0 self-start !px-5 !py-3 text-[10px] disabled:cursor-wait sm:self-auto"
+                      >
+                        {exporting ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Download className="h-3.5 w-3.5" />
+                        )}
+                        {exporting ? "Preparing..." : "Export journal"}
+                      </button>
                     </div>
+
+                    <p className="mt-5 flex items-start gap-2 border-t border-hairline/70 pt-4 text-[10px] leading-relaxed text-muted-gray">
+                      <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sage" />
+                      Choose PDF, Markdown, or JSON in the export dialog, then
+                      pick the part of your journal to include.
+                    </p>
 
                     {exportError && (
                       <p
@@ -523,12 +488,6 @@ export default function SettingsPage() {
                         {exportError}
                       </p>
                     )}
-
-                    <p className="mt-5 flex items-start gap-2 border-t border-hairline/70 pt-4 text-[10px] leading-relaxed text-muted-gray">
-                      <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sage" />
-                      Every export is scoped to your account. Choose an entire
-                      archive, a year, a date range, or individual entries.
-                    </p>
                   </motion.section>
 
                   <motion.section

@@ -1,14 +1,14 @@
 import { CalendarDays, Menu, PenLine } from "lucide-react";
 import { todayLabel } from "../../lib/journal";
+import AccountMenu from "./AccountMenu";
 
 export default function DashboardTopbar({
   user,
   onOpenMenu,
   onNewEntry,
+  onLogout,
   title = "Dashboard",
 }) {
-  const initial = (user?.name || user?.email || "C").charAt(0).toUpperCase();
-
   return (
     <header className="fixed inset-x-0 top-0 z-30 h-16 border-b border-hairline bg-ivory/85 backdrop-blur-xl lg:left-72">
       <div className="flex h-full items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -41,9 +41,7 @@ export default function DashboardTopbar({
             Write
           </button>
           <span className="h-4 w-px bg-hairline" />
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-sage-subtle font-serif text-sm text-sage-deep">
-            {initial}
-          </span>
+          <AccountMenu user={user} onLogout={onLogout} variant="topbar" />
         </div>
       </div>
     </header>

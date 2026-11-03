@@ -5,13 +5,12 @@ import {
   Download,
   FileText,
   LayoutDashboard,
-  LogOut,
   PenLine,
-  Settings,
   X,
 } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import AccountMenu from "./AccountMenu";
 import Wordmark from "../ui/Wordmark";
 
 const navItems = [
@@ -39,12 +38,6 @@ const navItems = [
     icon: BarChart3,
     isActive: (pathname) => pathname === "/insights",
   },
-  {
-    label: "Settings",
-    to: "/settings",
-    icon: Settings,
-    isActive: (pathname) => pathname === "/settings",
-  },
 ];
 
 const dotColors = [
@@ -68,12 +61,11 @@ function SidebarContent({
   onNavigate,
 }) {
   const { pathname } = useLocation();
-  const initial = (user?.name || user?.email || "C").charAt(0).toUpperCase();
   const displayTags = tags.slice(0, 5);
 
   return (
-    <div className="flex h-full flex-col justify-between overflow-y-auto">
-      <div className="p-6">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-6">
         <div className="mb-9 flex flex-col gap-1">
           <Wordmark to="/dashboard" mark size="sm" />
           <span className="pl-[46px] text-[9px] uppercase tracking-wide2 text-muted-gray">
@@ -175,29 +167,12 @@ function SidebarContent({
         </div>
       </div>
 
-      <div className="border-t border-hairline p-6">
-        <div className="flex items-center gap-3">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-sage-subtle font-serif text-sm text-sage-deep">
-            {initial}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px] font-medium text-charcoal">
-              {user?.name || "Chronicle writer"}
-            </p>
-            <p className="truncate text-[10px] text-muted-gray">
-              {user?.email || "Private folio"}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onLogout}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-charcoal-muted transition-colors hover:bg-paper hover:text-charcoal"
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
-        </div>
+      <div className="shrink-0 border-t border-hairline bg-paper/40 p-3">
+        <AccountMenu
+          user={user}
+          onLogout={onLogout}
+          onNavigate={onNavigate}
+        />
       </div>
     </div>
   );
