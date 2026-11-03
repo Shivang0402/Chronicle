@@ -1,14 +1,17 @@
 import { motion } from "framer-motion";
 import {
+  ArrowDownUp,
   ArrowUpRight,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  Hash,
   LayoutGrid,
   List,
   PenLine,
   Search,
   SearchX,
+  Smile,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -17,6 +20,8 @@ import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
 import ExportDialog from "../components/dashboard/ExportDialog";
 import EntryReader from "../components/dashboard/EntryReader";
+import FilterDatePicker from "../components/ui/FilterDatePicker";
+import FilterSelect from "../components/ui/FilterSelect";
 import PageTransition from "../components/ui/PageTransition";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
@@ -30,8 +35,10 @@ import {
 
 const PAGE_SIZE = 8;
 
-const selectClass =
-  "rounded-full border border-hairline bg-warm-beige/60 px-3 py-2 text-[11px] text-charcoal-muted outline-none transition-colors hover:border-sage/30 focus:border-sage/60 focus:bg-paper";
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+];
 
 const groupEntries = (entries) => {
   const groups = [];
@@ -284,6 +291,22 @@ export default function JournalPage() {
   const hasFilters = Boolean(query || mood || tag || date);
   const groups = groupEntries(entries);
   const pageNumbers = getPageNumbers(page, totalPages);
+  const moodOptions = [
+    { value: "", label: "All moods" },
+    ...moods.map((item) => ({
+      value: item.mood,
+      label: item.mood,
+      meta: item.count,
+    })),
+  ];
+  const tagOptions = [
+    { value: "", label: "All topics" },
+    ...tags.map((item) => ({
+      value: item.tag,
+      label: `#${item.tag}`,
+      meta: item.count,
+    })),
+  ];
 
   const clearFilters = () => {
     setSearchInput("");
@@ -295,8 +318,8 @@ export default function JournalPage() {
     setLoading(true);
   };
 
-  const changeFilter = (setter) => (event) => {
-    setter(event.target.value);
+  const changeFilter = (setter) => (value) => {
+    setter(value);
     setPage(1);
     setLoading(true);
   };
@@ -460,40 +483,25 @@ export default function JournalPage() {
 
                 <div className="mt-4 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                   <div className="flex flex-wrap items-center gap-2">
-                    <select
+                    <FilterSelect
+                      label="Mood"
                       value={mood}
+                      options={moodOptions}
                       onChange={changeFilter(setMood)}
-                      className={selectClass}
-                      aria-label="Filter by mood"
-                    >
-                      <option value="">Mood: All</option>
-                      {moods.map((item) => (
-                        <option key={item.mood} value={item.mood}>
-                          {item.mood} ({item.count})
-                        </option>
-                      ))}
-                    </select>
+                      icon={Smile}
+                    />
 
-                    <select
+                    <FilterSelect
+                      label="Topic"
                       value={tag}
+                      options={tagOptions}
                       onChange={changeFilter(setTag)}
-                      className={selectClass}
-                      aria-label="Filter by tag"
-                    >
-                      <option value="">Topic: All</option>
-                      {tags.map((item) => (
-                        <option key={item.tag} value={item.tag}>
-                          #{item.tag} ({item.count})
-                        </option>
-                      ))}
-                    </select>
+                      icon={Hash}
+                    />
 
-                    <input
-                      type="date"
+                    <FilterDatePicker
                       value={date}
                       onChange={changeFilter(setDate)}
-                      className={selectClass}
-                      aria-label="Filter by date"
                     />
 
                     {hasFilters && (
@@ -536,15 +544,14 @@ export default function JournalPage() {
                       </button>
                     </div>
 
-                    <select
+                    <FilterSelect
+                      label="Order"
                       value={sort}
+                      options={SORT_OPTIONS}
                       onChange={changeFilter(setSort)}
-                      className={selectClass}
-                      aria-label="Sort entries"
-                    >
-                      <option value="newest">Newest first</option>
-                      <option value="oldest">Oldest first</option>
-                    </select>
+                      icon={ArrowDownUp}
+                      align="right"
+                    />
                   </div>
                 </div>
               </div>

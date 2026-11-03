@@ -122,7 +122,12 @@ const getChronicles = async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
   const skip = (page - 1) * limit;
   const filter = { user: req.user.id };
-  const sortOption = { date: req.query.sort === "oldest" ? 1 : -1 };
+  const sortDirection = req.query.sort === "oldest" ? 1 : -1;
+  const sortOption = {
+    date: sortDirection,
+    createdAt: sortDirection,
+    _id: sortDirection,
+  };
 
   try {
     if (q) {
