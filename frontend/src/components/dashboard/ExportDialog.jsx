@@ -10,6 +10,13 @@ const scopes = [
   { id: "range", label: "Date range", description: "Choose a start and end date" },
   { id: "selected", label: "Choose entries", description: "Select individual pages" },
 ];
+const DEFAULT_FORMATS = [
+  {
+    id: "pdf",
+    label: "PDF",
+    description: "A typeset keepsake ready to print",
+  },
+];
 const CURRENT_YEAR = new Date().getFullYear();
 
 export default function ExportDialog({
@@ -19,7 +26,10 @@ export default function ExportDialog({
   onClose,
   onExport,
   exportError = "",
+  formats = DEFAULT_FORMATS,
+  initialFormat = "pdf",
 }) {
+  const [format, setFormat] = useState(initialFormat);
   const [scope, setScope] = useState("all");
   const [year, setYear] = useState(String(CURRENT_YEAR));
   const [from, setFrom] = useState("");
@@ -34,11 +44,16 @@ export default function ExportDialog({
 
   const closeDialog = useCallback(() => {
     setScope("all");
+    setFormat(initialFormat);
     setPage(1);
     setSelectedIds([]);
     setLoadingEntries(false);
     onClose();
-  }, [onClose]);
+  }, [onClose, initialFormat]);
+
+  const showFormatPicker = formats.length > 1;
+  const selectedFormat =
+    formats.find((item) => item.id === format) || formats[0] || DEFAULT_FORMATS[0];
 
   useEffect(() => {
     if (!open || scope !== "selected" || !token) return undefined;
@@ -91,7 +106,7 @@ export default function ExportDialog({
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validationError || exporting) return;
-    const filters = { format: "pdf" };
+    const filters = { format };
     if (scope === "year") filters.year = year;
     if (scope === "range") {
       filters.from = from;
@@ -128,10 +143,12 @@ export default function ExportDialog({
               <div>
                 <span className="eyebrow">Take your writing with you</span>
                 <h2 id="export-dialog-title" className="mt-2 font-serif text-2xl text-charcoal sm:text-3xl">
-                  Export as PDF
+                  {showFormatPicker
+                    ? "Export your journal"
+                    : `Export as ${selectedFormat.label}`}
                 </h2>
                 <p className="mt-2 text-sm leading-relaxed text-charcoal-muted">
-                  Choose which journal entries to include.
+                  Choose a format and which journal entries to include.
                 </p>
               </div>
               <button
@@ -144,6 +161,38 @@ export default function ExportDialog({
                 <X className="h-4 w-4" />
               </button>
             </div>
+
+            {showFormatPicker && (
+              <div className="mt-5">
+                <span className="field-label">Format</span>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {formats.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setFormat(item.id)}
+                      className={`rounded-xl border px-3 py-3 text-left transition-colors ${
+                        format === item.id
+                          ? "border-sage/50 bg-sage-subtle/60"
+                          : "border-hairline bg-paper/70 hover:border-sage/30"
+                      }`}
+                    >
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium text-charcoal">
+                          {item.label}
+                        </span>
+                        {format === item.id && (
+                          <Check className="h-4 w-4 text-sage-deep" />
+                        )}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] leading-relaxed text-muted-gray">
+                        {item.description}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <fieldset className="mt-6 space-y-2">
               <legend className="sr-only">Entries to export</legend>
@@ -258,7 +307,9 @@ export default function ExportDialog({
               </button>
               <button type="submit" disabled={Boolean(validationError) || exporting || (scope === "selected" && loadingEntries)} className="btn-primary justify-center disabled:cursor-wait">
                 <Download className="h-4 w-4" />
-                {exporting ? "Preparing PDF…" : "Download PDF"}
+                {exporting
+                  ? `Preparing ${selectedFormat.label}…`
+                  : `Download ${selectedFormat.label}`}
               </button>
             </div>
           </motion.form>
