@@ -4,10 +4,8 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Download,
   LayoutGrid,
   List,
-  Loader2,
   PenLine,
   Search,
   SearchX,
@@ -717,35 +715,6 @@ export default function JournalPage() {
                 </div>
               )}
 
-              <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-hairline bg-warm-beige/50 p-5 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-paper text-sage-deep shadow-sm">
-                    <Download className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <h3 className="font-serif text-lg text-charcoal">
-                      Looking for a specific entry?
-                    </h3>
-                    <p className="mt-0.5 text-[11px] leading-relaxed text-charcoal-muted">
-                      Filter by mood, tag, or date — or back up your entire
-                      journal anytime.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleExport}
-                  disabled={exporting}
-                  className="btn-ghost self-start border border-hairline !px-4 !py-2.5 text-[11px] sm:self-auto"
-                >
-                  {exporting ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Download className="h-3.5 w-3.5" />
-                  )}
-                  {exporting ? "Preparing..." : "Export Journal"}
-                </button>
-              </div>
             </div>
           </main>
         </div>

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import LeaveDraftDialog from "../components/dashboard/LeaveDraftDialog";
 import PageTransition from "../components/ui/PageTransition";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
@@ -64,6 +65,7 @@ export default function EditorPage() {
     initialDraft ? new Date(initialDraft.updatedAt) : null,
   );
   const [focusMode, setFocusMode] = useState(false);
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
   const textareaRef = useRef(null);
   const draftSnapshotRef = useRef(null);
@@ -305,17 +307,48 @@ export default function EditorPage() {
     }
   };
 
+  const closeLeaveDialog = useCallback(() => {
+    setLeaveDialogOpen(false);
+  }, []);
+
   const handleBack = () => {
-    if (
-      dirty &&
-      !window.confirm(
-        "Leave without saving to your journal? Your draft will be kept.",
-      )
-    ) {
+    if (dirty) {
+      setLeaveDialogOpen(true);
       return;
     }
 
     navigate("/journal");
+  };
+
+  const handleSaveDraftAndLeave = () => {
+    writeDraft(
+      draftOwner,
+      id || null,
+      draftSnapshotRef.current || { title, content, mood, tags },
+    );
+    dirtyRef.current = false;
+    setDirty(false);
+    setLeaveDialogOpen(false);
+    navigate("/journal", {
+      state: { notice: "Draft saved. Continue whenever you're ready." },
+    });
+  };
+
+  const handleAbandonWriting = () => {
+    clearDraft(draftOwner, id || null);
+    dirtyRef.current = false;
+    setDirty(false);
+    setDraftRestoredAt(null);
+    setDraftSavedAt(null);
+    setSavedAt(null);
+    setLeaveDialogOpen(false);
+    navigate("/journal", {
+      state: {
+        notice: isEditing
+          ? "Changes discarded. No draft was saved."
+          : "Writing abandoned. No draft was saved.",
+      },
+    });
   };
 
   const handleSave = useCallback(async () => {
@@ -793,6 +826,14 @@ export default function EditorPage() {
             </p>
           )}
         </main>
+
+        <LeaveDraftDialog
+          open={leaveDialogOpen}
+          isEditing={isEditing}
+          onClose={closeLeaveDialog}
+          onSaveDraft={handleSaveDraftAndLeave}
+          onAbandon={handleAbandonWriting}
+        />
       </div>
     </PageTransition>
   );
