@@ -85,6 +85,43 @@ const getScopeLabel = (range, rangeStart) => {
   return `${formatEntryDate(rangeStart)} – ${formatEntryDate(new Date())}`;
 };
 
+const RANGE_META = {
+  week: {
+    label: "This week",
+    phrase: "this week",
+    heatmapSubtitle: "Entries from this week",
+  },
+  month: {
+    label: "This month",
+    phrase: "this month",
+    heatmapSubtitle: "Entries from this month",
+  },
+  year: {
+    label: "This year",
+    phrase: "this year",
+    heatmapSubtitle: "Entries from this year",
+  },
+  all: {
+    label: "All time",
+    phrase: "your archive",
+    heatmapSubtitle: "Your last 52 weeks at a glance",
+  },
+};
+
+const getHeatmapWeeks = (range, rangeStart) => {
+  if (range === "all" || !rangeStart) return 52;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const start = new Date(rangeStart);
+  start.setHours(0, 0, 0, 0);
+  const monday = new Date(start);
+  monday.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+  const days = Math.floor((today - monday) / (24 * 60 * 60 * 1000)) + 1;
+
+  return Math.max(1, Math.ceil(days / 7));
+};
+
 function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
   const total = moodBreakdown.reduce((sum, item) => sum + item.count, 0);
   const radius = 52;
@@ -386,22 +423,31 @@ function TagCloud({ tags = [], loading }) {
   );
 }
 
-function ReflectionCard({ stats, loading }) {
+function ReflectionCard({ stats, range, loading }) {
+  const rangeMeta = RANGE_META[range] || RANGE_META.year;
   const hasEntries = stats.totalChronicles > 0;
   const heading = hasEntries
-    ? "Your archive has a rhythm."
-    : "Your story is just beginning.";
+    ? range === "all"
+      ? "Your archive has a rhythm."
+      : "This range has a rhythm."
+    : range === "all"
+      ? "Your story is just beginning."
+      : "This range is waiting for its first page.";
   const body = hasEntries
-    ? `You have preserved ${formatNumber(stats.totalChronicles)} ${
-        stats.totalChronicles === 1 ? "entry" : "entries"
-      } and ${formatNumber(stats.totalWords)} words. ${
+    ? `In ${rangeMeta.phrase}, you have preserved ${formatNumber(
+        stats.totalChronicles,
+      )} ${stats.totalChronicles === 1 ? "entry" : "entries"} and ${formatNumber(
+        stats.totalWords,
+      )} words. ${
         stats.mostCommonMood
           ? `“${stats.mostCommonMood}” appears most often in your pages.`
           : "Your moods are still taking shape."
-      } Your longest streak is ${formatNumber(stats.longestStreak)} ${
+      } Your longest streak overall is ${formatNumber(stats.longestStreak)} ${
         stats.longestStreak === 1 ? "day" : "days"
       }.`
-    : "Write a first entry to begin noticing patterns in your mood, volume, and cadence. Every page adds a little more shape to the story.";
+    : `Write a first entry ${
+        range === "all" ? "" : "in this range "
+      }to begin noticing patterns in your mood, volume, and cadence. Every page adds a little more shape to the story.`;
 
   return (
     <section className="rounded-2xl border border-hairline bg-sage-subtle/60 p-6 shadow-paper transition-shadow duration-300 hover:shadow-paper-lg sm:p-7">
@@ -442,7 +488,6 @@ export default function InsightsPage() {
   const navigate = useNavigate();
 
   const [stats, setStats] = useState(emptyStats);
-  const [allStats, setAllStats] = useState(emptyStats);
   const [tags, setTags] = useState([]);
   const [range, setRange] = useState("year");
   const [loading, setLoading] = useState(true);
@@ -462,23 +507,19 @@ export default function InsightsPage() {
     let active = true;
 
     const loadInsights = async () => {
-      const [statsData, allStatsData, tagsData] = await Promise.all([
+      const [statsData, tagsData] = await Promise.all([
         chronicleApi.getStats(token, { range }),
-        range === "all"
-          ? Promise.resolve(null)
-          : chronicleApi.getStats(token, { range: "all" }),
         chronicleApi.getTags(token),
       ]);
 
-      return { statsData, allStatsData, tagsData };
+      return { statsData, tagsData };
     };
 
     loadInsights()
-      .then(({ statsData, allStatsData, tagsData }) => {
+      .then(({ statsData, tagsData }) => {
         if (!active) return;
 
         setStats({ ...emptyStats, ...(statsData || {}) });
-        setAllStats({ ...emptyStats, ...(allStatsData || statsData || {}) });
         setTags(Array.isArray(tagsData) ? tagsData : []);
         setError("");
       })
@@ -506,31 +547,48 @@ export default function InsightsPage() {
     return () => window.clearTimeout(timer);
   }, [notice]);
 
+  const rangeMeta = RANGE_META[range] || RANGE_META.year;
+  const rangeEntries = stats.trend.reduce(
+    (sum, item) => sum + item.entries,
+    0,
+  );
+  const rangeWords = stats.trend.reduce((sum, item) => sum + item.words, 0);
+  const rangeAverageWords = rangeEntries
+    ? Math.round(rangeWords / rangeEntries)
+    : 0;
+  const rangeMood = stats.moodBreakdown[0]?.mood || "";
+  const heatmapWeeks = getHeatmapWeeks(range, stats.rangeStart);
+  const rangeStats = {
+    ...stats,
+    totalChronicles: rangeEntries,
+    totalWords: rangeWords,
+    averageWords: rangeAverageWords,
+    mostCommonMood: rangeMood,
+  };
+
   const statCards = [
     {
-      label: "Total entries",
-      value: stats.totalChronicles,
+      label: "Entries",
+      value: rangeEntries,
       icon: BookOpen,
-      footerLabel: "This year",
-      footerValue: `${formatNumber(stats.entriesThisYear)} ${
-        stats.entriesThisYear === 1 ? "entry" : "entries"
-      }`,
+      footerLabel: "In range",
+      footerValue: rangeMeta.label,
     },
     {
-      label: "Total words",
-      value: stats.totalWords,
+      label: "Words written",
+      value: rangeWords,
       icon: Feather,
       footerLabel: "Approx. pages",
-      footerValue: `${formatNumber(Math.round(stats.totalWords / 250))} pages`,
+      footerValue: `${formatNumber(Math.round(rangeWords / 250))} pages`,
     },
     {
       label: "Average entry",
-      value: stats.averageWords,
+      value: rangeAverageWords,
       suffix: " words",
       icon: AlignLeft,
-      footerLabel: "This month",
-      footerValue: `${formatNumber(stats.entriesThisMonth)} ${
-        stats.entriesThisMonth === 1 ? "entry" : "entries"
+      footerLabel: "Entries in range",
+      footerValue: `${formatNumber(rangeEntries)} ${
+        rangeEntries === 1 ? "entry" : "entries"
       }`,
     },
     {
@@ -549,7 +607,7 @@ export default function InsightsPage() {
       suffix: stats.longestStreak === 1 ? " day" : " days",
       icon: Trophy,
       footerLabel: "Most common mood",
-      footerValue: stats.mostCommonMood || "No mood yet",
+      footerValue: rangeMood || "No mood yet",
     },
   ];
 
@@ -612,9 +670,6 @@ export default function InsightsPage() {
   };
 
   const scopeLabel = getScopeLabel(range, stats.rangeStart);
-  const allActivity = allStats.activity?.length
-    ? allStats.activity
-    : stats.activity;
 
   return (
     <PageTransition>
@@ -715,8 +770,8 @@ export default function InsightsPage() {
                   </span>
                 </div>
                 <span className="uppercase tracking-wider">
-                  Private ledger · {formatNumber(stats.totalChronicles)}{" "}
-                  {stats.totalChronicles === 1 ? "entry" : "entries"}
+                  Private ledger · {formatNumber(rangeEntries)}{" "}
+                  {rangeEntries === 1 ? "entry" : "entries"}
                 </span>
               </div>
 
@@ -746,11 +801,11 @@ export default function InsightsPage() {
 
               <div className="mt-8 space-y-6">
                 <ActivityHeatmap
-                  activity={allActivity}
+                  activity={stats.activity}
                   loading={loading}
-                  weeks={52}
+                  weeks={heatmapWeeks}
                   title="Writing cadence heatmap"
-                  subtitle="A year of preserved pages"
+                  subtitle={rangeMeta.heatmapSubtitle}
                   id="writing-rhythms"
                   lessLabel="Fewer entries"
                   moreLabel="More entries"
@@ -767,7 +822,11 @@ export default function InsightsPage() {
 
                 <TagCloud tags={tags} loading={loading} />
 
-                <ReflectionCard stats={stats} loading={loading} />
+                <ReflectionCard
+                  stats={rangeStats}
+                  range={range}
+                  loading={loading}
+                />
               </div>
 
               <footer className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between">
