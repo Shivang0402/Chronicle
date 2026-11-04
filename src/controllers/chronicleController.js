@@ -17,6 +17,29 @@ const dayKey = (value) => {
   return `${date.getFullYear()}-${month}-${day}`;
 };
 
+const RANGE_VALUES = ["week", "month", "year", "all"];
+
+const getRangeStart = (range) => {
+  const now = new Date();
+
+  if (range === "week") {
+    const start = new Date(now);
+    start.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    start.setHours(0, 0, 0, 0);
+    return start;
+  }
+
+  if (range === "month") {
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+
+  if (range === "year") {
+    return new Date(now.getFullYear(), 0, 1);
+  }
+
+  return null;
+};
+
 const buildPdf = async (entries, exportedOn) => {
   const html = renderJournalHtml(entries, exportedOn);
 
@@ -481,7 +504,20 @@ const getMoods = async (req, res) => {
 
 const getTags = async (req, res) => {
   try {
-    const entries = await Chronicle.find({ user: req.user.id }).select("tags");
+    const range = req.query.range || "all";
+
+    if (!RANGE_VALUES.includes(range)) {
+      return res.status(400).json({ message: "Invalid range" });
+    }
+
+    const rangeStart = getRangeStart(range);
+    const query = { user: req.user.id };
+
+    if (rangeStart) {
+      query.date = { $gte: rangeStart };
+    }
+
+    const entries = await Chronicle.find(query).select("tags");
     const counts = {};
 
     for (const { tags = [] } of entries) {
@@ -604,22 +640,11 @@ const getChronicleStats = async (req, res) => {
 
     const range = req.query.range || "month";
 
-    if (!["week", "month", "year", "all"].includes(range)) {
+    if (!RANGE_VALUES.includes(range)) {
       return res.status(400).json({ message: "Invalid range" });
     }
 
-    const now = new Date();
-    let rangeStart = null;
-
-    if (range === "week") {
-      rangeStart = new Date(now);
-      rangeStart.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-      rangeStart.setHours(0, 0, 0, 0);
-    } else if (range === "month") {
-      rangeStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    } else if (range === "year") {
-      rangeStart = new Date(now.getFullYear(), 0, 1);
-    }
+    const rangeStart = getRangeStart(range);
 
     const ranged = rangeStart
       ? chronicles.filter((chronicle) => new Date(chronicle.date) >= rangeStart)

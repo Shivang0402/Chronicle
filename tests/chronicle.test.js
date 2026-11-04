@@ -348,6 +348,33 @@ describe("chronicles", () => {
     assert.deepEqual(otherMoods.body, []);
   });
 
+  it("filters tags by the selected range", async () => {
+    const token = await createAccount();
+
+    await createEntry(token, { date: daysAgo(400), tags: ["archive"] });
+    await createEntry(token, { date: daysAgo(0), tags: ["recent"] });
+
+    const all = await request(app)
+      .get("/api/chronicle/tags?range=all")
+      .set(auth(token));
+    assert.equal(all.status, 200);
+    assert.deepEqual(
+      Object.fromEntries(all.body.map((item) => [item.tag, item.count])),
+      { archive: 1, recent: 1 },
+    );
+
+    const week = await request(app)
+      .get("/api/chronicle/tags?range=week")
+      .set(auth(token));
+    assert.equal(week.status, 200);
+    assert.deepEqual(week.body, [{ tag: "recent", count: 1 }]);
+
+    const invalid = await request(app)
+      .get("/api/chronicle/tags?range=decade")
+      .set(auth(token));
+    assert.equal(invalid.status, 400);
+  });
+
   it("returns range insights: activity, mood breakdown and trend", async () => {
     const token = await createAccount();
 

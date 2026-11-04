@@ -9,18 +9,34 @@ const intensityClasses = [
   "bg-sage",
 ];
 
-const buildWeeks = (activity = [], weekCount = 12) => {
+const buildWeeks = (activity = [], weekCount = 12, startDate = null) => {
   const activityByDay = new Map(activity.map((item) => [item.date, item]));
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const offsetToMonday = (today.getDay() + 6) % 7;
-  const start = new Date(today);
-  start.setDate(today.getDate() - offsetToMonday - (weekCount - 1) * 7);
+  let rangeStart = null;
+  let start = null;
+  let weeksToBuild = weekCount;
+
+  if (startDate) {
+    rangeStart = new Date(startDate);
+    rangeStart.setHours(0, 0, 0, 0);
+
+    start = new Date(rangeStart);
+    start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+
+    const days =
+      Math.floor((today - start) / (24 * 60 * 60 * 1000)) + 1;
+    weeksToBuild = Math.max(1, Math.ceil(days / 7));
+  } else {
+    const offsetToMonday = (today.getDay() + 6) % 7;
+    start = new Date(today);
+    start.setDate(today.getDate() - offsetToMonday - (weekCount - 1) * 7);
+  }
 
   const weeks = [];
 
-  for (let weekIndex = 0; weekIndex < weekCount; weekIndex += 1) {
+  for (let weekIndex = 0; weekIndex < weeksToBuild; weekIndex += 1) {
     const days = [];
 
     for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
@@ -36,6 +52,7 @@ const buildWeeks = (activity = [], weekCount = 12) => {
         entries: record?.entries || 0,
         words: record?.words || 0,
         future: date > today,
+        outside: Boolean(rangeStart && date < rangeStart),
         today: key === dayKey(today),
       });
     }
@@ -50,19 +67,21 @@ export default function ActivityHeatmap({
   activity = [],
   loading = false,
   weeks = 12,
+  startDate = null,
+  onSelectDay,
   title = "Writing rhythms",
   subtitle = "A 12-week archival habit tracker",
   id = "writing-rhythms",
   lessLabel = "Less",
   moreLabel = "More",
 }) {
-  const builtWeeks = buildWeeks(activity, weeks);
+  const builtWeeks = buildWeeks(activity, weeks, startDate);
   const gridStyle = {
-    gridTemplateColumns: `repeat(${weeks}, minmax(0, 1fr))`,
+    gridTemplateColumns: `repeat(${builtWeeks.length}, 16px)`,
   };
   const visibleDays = builtWeeks
     .flatMap((week) => week.days)
-    .filter((day) => !day.future);
+    .filter((day) => !day.future && !day.outside);
   const activeDays = visibleDays.filter((day) => day.entries > 0).length;
   const cadence = visibleDays.length
     ? Math.round((activeDays / visibleDays.length) * 100)
@@ -70,7 +89,7 @@ export default function ActivityHeatmap({
   const maxWords = Math.max(...visibleDays.map((day) => day.words), 0);
 
   const intensity = (day) => {
-    if (day.future || !day.entries) return 0;
+    if (day.future || day.outside || !day.entries) return 0;
     if (!maxWords) return 1;
 
     const ratio = day.words / maxWords;
@@ -103,7 +122,7 @@ export default function ActivityHeatmap({
             {intensityClasses.map((className, index) => (
               <span
                 key={index}
-                className={`h-2.5 w-2.5 rounded-[2px] ${className}`}
+                className={`h-3 w-3 rounded-[3px] ${className}`}
               />
             ))}
             <span>{moreLabel}</span>
@@ -118,20 +137,17 @@ export default function ActivityHeatmap({
       {loading ? (
         <div className="space-y-2">
           <div className="h-3 w-24 animate-pulse rounded bg-hairline/60" />
-          <div className="h-[134px] w-full animate-pulse rounded-lg bg-warm-beige/70" />
+          <div className="h-[148px] w-full animate-pulse rounded-lg bg-warm-beige/70" />
         </div>
       ) : (
         <div className="overflow-x-auto pb-1">
-          <div
-            className="min-w-[540px]"
-            style={{ minWidth: `${Math.max(weeks * 16, 540)}px` }}
-          >
+          <div className="w-max">
             <div className="mb-2 flex pl-8">
-              <div className="grid flex-1 gap-1.5" style={gridStyle}>
+              <div className="grid gap-1.5" style={gridStyle}>
                 {builtWeeks.map((week, index) => (
                   <span
                     key={week.days[0].key}
-                    className="text-[9px] uppercase tracking-wider text-muted-gray"
+                    className="whitespace-nowrap text-[9px] uppercase tracking-wider text-muted-gray"
                   >
                     {index === 0 ||
                     week.label !== builtWeeks[index - 1].label
@@ -143,37 +159,62 @@ export default function ActivityHeatmap({
             </div>
 
             <div className="flex gap-2">
-              <div className="flex h-[134px] flex-col justify-between pr-1 text-[9px] text-muted-gray">
-                <span>Mon</span>
-                <span>Wed</span>
-                <span>Fri</span>
-                <span>Sun</span>
+              <div className="grid h-[148px] grid-rows-[repeat(7,1fr)] gap-1.5 pr-1 text-[9px] text-muted-gray">
+                {["Mon", "", "Wed", "", "Fri", "", "Sun"].map(
+                  (label, index) => (
+                    <span
+                      key={index}
+                      className="flex h-4 items-center justify-end"
+                    >
+                      {label}
+                    </span>
+                  ),
+                )}
               </div>
 
-              <div className="grid flex-1 gap-1.5" style={gridStyle}>
+              <div className="grid gap-1.5" style={gridStyle}>
                 {builtWeeks.map((week) => (
                   <div
                     key={week.days[0].key}
-                    className="flex flex-col items-center gap-1.5"
+                    className="grid h-[148px] grid-rows-[repeat(7,1fr)] gap-1.5"
                   >
                     {week.days.map((day) => {
                       const level = intensity(day);
-                      const dayTitle = day.future
+                      const interactive =
+                        Boolean(onSelectDay) &&
+                        day.entries > 0 &&
+                        !day.future &&
+                        !day.outside;
+                      const dayTitle = day.future || day.outside
                         ? ""
-                        : `${formatEntryDate(day.date)} · ${day.entries} ${
+                        : `${formatEntryDate(day.date)} - ${day.entries} ${
                             day.entries === 1 ? "entry" : "entries"
-                          } · ${day.words.toLocaleString("en-US")} words`;
+                          } - ${day.words.toLocaleString("en-US")} words`;
 
                       return (
                         <span
                           key={day.key}
                           title={dayTitle}
-                          className={`h-3.5 w-3.5 justify-self-center rounded-[3px] ${intensityClasses[level]} ${
-                            day.today
-                              ? "ring-1 ring-sage ring-offset-1 ring-offset-paper"
-                              : ""
-                          } ${day.future ? "opacity-35" : ""}`}
-                        />
+                          className="flex h-4 w-4 items-center justify-center justify-self-center"
+                        >
+                          <button
+                            type="button"
+                            disabled={!interactive}
+                            onClick={() => onSelectDay?.(day.key)}
+                            aria-label={dayTitle}
+                            className={`h-4 w-4 rounded-[3px] transition-transform ${intensityClasses[level]} ${
+                              day.today
+                                ? "ring-1 ring-sage ring-offset-1 ring-offset-paper"
+                                : ""
+                            } ${
+                              day.future || day.outside ? "opacity-30" : ""
+                            } ${
+                              interactive
+                                ? "cursor-pointer hover:scale-110 hover:ring-1 hover:ring-sage/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-1 focus-visible:ring-offset-paper"
+                                : "pointer-events-none cursor-default"
+                            }`}
+                          />
+                        </span>
                       );
                     })}
                   </div>
@@ -183,6 +224,12 @@ export default function ActivityHeatmap({
           </div>
         </div>
       )}
+
+      <p className="mt-5 border-t border-hairline/70 pt-3 text-[10px] leading-relaxed text-muted-gray">
+        {onSelectDay
+          ? "Select a day with entries to open that date in your journal."
+          : "Each square represents one day. Darker squares hold more words."}
+      </p>
     </section>
   );
 }

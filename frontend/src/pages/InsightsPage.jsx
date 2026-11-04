@@ -24,7 +24,7 @@ import PageTransition from "../components/ui/PageTransition";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
-import { formatEntryDate } from "../lib/journal";
+import { dayKey, formatEntryDate } from "../lib/journal";
 
 const emptyStats = {
   totalChronicles: 0,
@@ -85,6 +85,27 @@ const getScopeLabel = (range, rangeStart) => {
   return `${formatEntryDate(rangeStart)} – ${formatEntryDate(new Date())}`;
 };
 
+const getRangeStartForLabel = (range) => {
+  const now = new Date();
+
+  if (range === "week") {
+    const start = new Date(now);
+    start.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    start.setHours(0, 0, 0, 0);
+    return start;
+  }
+
+  if (range === "month") {
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+
+  if (range === "year") {
+    return new Date(now.getFullYear(), 0, 1);
+  }
+
+  return null;
+};
+
 const RANGE_META = {
   week: {
     label: "This week",
@@ -120,6 +141,54 @@ const getHeatmapWeeks = (range, rangeStart) => {
   const days = Math.floor((today - monday) / (24 * 60 * 60 * 1000)) + 1;
 
   return Math.max(1, Math.ceil(days / 7));
+};
+
+const buildTrendSeries = (trend, range, rangeStart, activity) => {
+  if (!trend.length && !rangeStart) return [];
+
+  const byLabel = new Map(trend.map((item) => [item.label, item]));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let start = rangeStart ? new Date(rangeStart) : null;
+
+  if (!start && activity.length) {
+    start = new Date(activity[0].date);
+  }
+
+  if (!start) start = today;
+
+  start.setHours(0, 0, 0, 0);
+
+  const monthly = range === "year" || range === "all";
+  const series = [];
+
+  if (monthly) {
+    const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+    const end = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    while (cursor <= end) {
+      const label = `${cursor.getFullYear()}-${String(
+        cursor.getMonth() + 1,
+      ).padStart(2, "0")}`;
+      series.push(byLabel.get(label) || { label, entries: 0, words: 0 });
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+  } else {
+    const cursor = new Date(start);
+    cursor.setDate(cursor.getDate() - ((cursor.getDay() + 6) % 7));
+
+    const end = new Date(today);
+    end.setDate(end.getDate() - ((end.getDay() + 6) % 7));
+
+    while (cursor <= end) {
+      const label = dayKey(cursor);
+      series.push(byLabel.get(label) || { label, entries: 0, words: 0 });
+      cursor.setDate(cursor.getDate() + 7);
+    }
+  }
+
+  return series;
 };
 
 function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
@@ -213,7 +282,12 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
                   strokeWidth="18"
                   strokeDasharray={segment.dasharray}
                   strokeDashoffset={segment.dashoffset}
-                />
+                >
+                  <title>
+                    {segment.mood}: {segment.count}{" "}
+                    {segment.count === 1 ? "entry" : "entries"}
+                  </title>
+                </circle>
               ))}
             </svg>
             <div className="absolute inset-0 grid place-items-center text-center">
@@ -228,17 +302,19 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
             </div>
           </div>
 
-          <div className="w-full space-y-2.5">
+          <div className="w-full space-y-1">
             {segments.map((segment) => (
-              <div
+              <Link
                 key={segment.mood}
-                className="flex items-center gap-2.5 text-[11px]"
+                to={`/journal?mood=${encodeURIComponent(segment.mood)}`}
+                aria-label={`Open entries with the mood ${segment.mood}`}
+                className="group flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[11px] transition-colors hover:bg-warm-beige/70"
               >
                 <span
                   className="h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ backgroundColor: segment.color }}
                 />
-                <span className="min-w-0 flex-1 truncate text-charcoal-muted">
+                <span className="min-w-0 flex-1 truncate text-charcoal-muted transition-colors group-hover:text-charcoal">
                   {segment.mood}
                 </span>
                 <span className="stat-number font-medium text-charcoal">
@@ -247,33 +323,71 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
                 <span className="stat-number w-9 text-right text-muted-gray">
                   {Math.round((segment.count / total) * 100)}%
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       )}
 
       <p className="mt-6 border-t border-hairline/70 pt-3 text-[10px] leading-relaxed text-muted-gray">
-        Moods are self-assigned when you complete an entry.
+        {total > 0
+          ? "Moods are self-assigned when you complete an entry. Select a mood to open those entries in your journal."
+          : "Moods are self-assigned when you complete an entry."}
       </p>
     </section>
   );
 }
 
-function TrendChart({ trend = [], loading }) {
-  const maxWords = Math.max(...trend.map((item) => item.words), 1);
-  const totalWords = trend.reduce((sum, item) => sum + item.words, 0);
-  const totalEntries = trend.reduce((sum, item) => sum + item.entries, 0);
-  const peak = trend.length
-    ? trend.reduce(
-        (best, item) => (item.words > best.words ? item : best),
-        trend[0],
+function TrendChart({
+  trend = [],
+  loading,
+  range = "year",
+  rangeStart = null,
+  activity = [],
+}) {
+  const [metric, setMetric] = useState("words");
+  const series = buildTrendSeries(trend, range, rangeStart, activity);
+  const totalWords = series.reduce((sum, item) => sum + item.words, 0);
+  const totalEntries = series.reduce((sum, item) => sum + item.entries, 0);
+  const values = series.map((item) => item[metric]);
+  const maxValue = Math.max(...values, 1);
+  const peak = totalEntries
+    ? series.reduce(
+        (best, item) => (item[metric] > best[metric] ? item : best),
+        series[0],
       )
     : null;
 
+  const width = Math.max(360, series.length * 52);
+  const height = 190;
+  const padding = { top: 20, right: 12, bottom: 26, left: 12 };
+  const innerWidth = width - padding.left - padding.right;
+  const innerHeight = height - padding.top - padding.bottom;
+  const xFor = (index) =>
+    series.length === 1
+      ? padding.left + innerWidth / 2
+      : padding.left + (index / (series.length - 1)) * innerWidth;
+  const yFor = (value) =>
+    padding.top + innerHeight - (value / maxValue) * innerHeight;
+  const points = series.map((item, index) => ({
+    x: xFor(index),
+    y: yFor(item[metric]),
+    item,
+  }));
+  const linePoints = points.map((point) => `${point.x},${point.y}`).join(" ");
+  const areaPath = points.length
+    ? `M ${points[0].x} ${padding.top + innerHeight} L ${points
+        .map((point) => `${point.x} ${point.y}`)
+        .join(" L ")} L ${points[points.length - 1].x} ${
+        padding.top + innerHeight
+      } Z`
+    : "";
+  const labelStep = Math.max(1, Math.ceil(series.length / 12));
+  const metricLabel = metric === "words" ? "words" : "entries";
+
   return (
     <section className="flex h-full flex-col rounded-2xl border border-hairline bg-paper p-6 shadow-paper transition-shadow duration-300 hover:shadow-paper-lg sm:p-7">
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="font-serif text-xl tracking-tight text-charcoal">
             Writing volume trends
@@ -283,16 +397,36 @@ function TrendChart({ trend = [], loading }) {
             Words and entries across the selected range
           </p>
         </div>
-        <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
-          {loading ? (
-            "—"
-          ) : (
-            <>
-              <span className="stat-number mr-1.5">{trend.length}</span>{" "}
-              periods
-            </>
-          )}
-        </span>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex rounded-full border border-hairline bg-warm-beige/60 p-1">
+            {["words", "entries"].map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setMetric(option)}
+                aria-pressed={metric === option}
+                className={`rounded-full px-2.5 py-1 text-[9px] font-medium uppercase tracking-wider transition-colors ${
+                  metric === option
+                    ? "bg-paper text-charcoal shadow-sm"
+                    : "text-charcoal-muted hover:text-charcoal"
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
+            {loading ? (
+              "—"
+            ) : (
+              <>
+                <span className="stat-number mr-1.5">{series.length}</span>{" "}
+                periods
+              </>
+            )}
+          </span>
+        </div>
       </div>
 
       {loading ? (
@@ -300,7 +434,7 @@ function TrendChart({ trend = [], loading }) {
           <div className="h-44 w-full animate-pulse rounded-lg bg-warm-beige/70" />
           <div className="h-3 w-48 animate-pulse rounded bg-hairline/60" />
         </div>
-      ) : trend.length === 0 ? (
+      ) : totalEntries === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-hairline bg-warm-beige/30 px-5 py-10 text-center">
           <span className="grid h-10 w-10 place-items-center rounded-full bg-paper text-sage-deep shadow-sm">
             <TrendingUp className="h-4 w-4" />
@@ -313,43 +447,109 @@ function TrendChart({ trend = [], loading }) {
       ) : (
         <div className="flex flex-1 flex-col justify-end">
           <div className="overflow-x-auto pb-1">
-            <div style={{ minWidth: `${Math.max(trend.length * 28, 280)}px` }}>
-              <div className="flex h-44 items-end gap-1.5 border-b border-hairline pb-2">
-                {trend.map((item) => {
-                  const height = Math.max(
-                    4,
-                    Math.round((item.words / maxWords) * 100),
-                  );
+            <div className="mx-auto" style={{ minWidth: `${width}px` }}>
+              <svg
+                viewBox={`0 0 ${width} ${height}`}
+                width={width}
+                height={height}
+                role="img"
+                aria-label={`Writing volume trend by ${metricLabel}`}
+                className="block"
+              >
+                <defs>
+                  <linearGradient
+                    id="trend-area-gradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor="#7D9177" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#7D9177" stopOpacity="0.02" />
+                  </linearGradient>
+                </defs>
+
+                {[0, 0.5, 1].map((ratio) => {
+                  const y = padding.top + innerHeight * ratio;
 
                   return (
-                    <div
-                      key={item.label}
-                      className="group flex h-full flex-1 flex-col justify-end"
-                    >
-                      <div
-                        className="w-full rounded-t-md bg-sage-light transition-colors group-hover:bg-sage"
-                        style={{ height: `${height}%` }}
-                        title={`${formatTrendLabel(item.label)} · ${
-                          item.entries
-                        } ${
-                          item.entries === 1 ? "entry" : "entries"
-                        } · ${formatNumber(item.words)} words`}
-                      />
-                    </div>
+                    <line
+                      key={ratio}
+                      x1={padding.left}
+                      x2={padding.left + innerWidth}
+                      y1={y}
+                      y2={y}
+                      stroke="#E8E6DF"
+                      strokeWidth="1"
+                      strokeDasharray={ratio === 1 ? "0" : "3 5"}
+                    />
                   );
                 })}
-              </div>
 
-              <div className="mt-2 flex gap-1.5">
-                {trend.map((item) => (
-                  <span
-                    key={item.label}
-                    className="flex-1 text-center text-[8px] uppercase tracking-wider text-muted-gray"
-                  >
-                    {formatTrendLabel(item.label)}
-                  </span>
-                ))}
-              </div>
+                <text
+                  x={padding.left}
+                  y={padding.top - 7}
+                  fill="#85857d"
+                  fontSize="9"
+                >
+                  {formatNumber(maxValue)}
+                </text>
+
+                <path d={areaPath} fill="url(#trend-area-gradient)" />
+                <polyline
+                  points={linePoints}
+                  fill="none"
+                  stroke="#50614B"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+
+                {points.map((point, index) => {
+                  const showLabel =
+                    index % labelStep === 0 || index === series.length - 1;
+                  const anchor =
+                    series.length === 1
+                      ? "middle"
+                      : index === 0
+                        ? "start"
+                        : index === series.length - 1
+                          ? "end"
+                          : "middle";
+
+                  return (
+                    <g key={point.item.label}>
+                      <circle
+                        cx={point.x}
+                        cy={point.y}
+                        r={series.length > 30 ? 2.5 : 3.5}
+                        fill="#FBF9F4"
+                        stroke="#50614B"
+                        strokeWidth="2"
+                      >
+                        <title>
+                          {formatTrendLabel(point.item.label)} -{" "}
+                          {point.item.entries}{" "}
+                          {point.item.entries === 1 ? "entry" : "entries"} -{" "}
+                          {formatNumber(point.item.words)} words
+                        </title>
+                      </circle>
+                      {showLabel && (
+                        <text
+                          x={point.x}
+                          y={height - 5}
+                          textAnchor={anchor}
+                          fill="#85857d"
+                          fontSize="8"
+                          letterSpacing="0.5"
+                        >
+                          {formatTrendLabel(point.item.label).toUpperCase()}
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+              </svg>
             </div>
           </div>
 
@@ -370,9 +570,9 @@ function TrendChart({ trend = [], loading }) {
                 <>
                   {formatTrendLabel(peak.label)} ·{" "}
                   <span className="stat-number mr-1.5">
-                    {formatNumber(peak.words)}
+                    {formatNumber(peak[metric])}
                   </span>{" "}
-                  words
+                  {metricLabel}
                 </>
               ) : (
                 "—"
@@ -385,7 +585,9 @@ function TrendChart({ trend = [], loading }) {
   );
 }
 
-function TagCloud({ tags = [], loading }) {
+function TagCloud({ tags = [], loading, range = "year" }) {
+  const isAllTime = range === "all";
+
   return (
     <section className="rounded-2xl border border-hairline bg-paper p-6 shadow-paper transition-shadow duration-300 hover:shadow-paper-lg sm:p-7">
       <div className="mb-6 flex items-start justify-between gap-4">
@@ -395,7 +597,9 @@ function TagCloud({ tags = [], loading }) {
           </h2>
           <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-gray">
             <Tags className="h-3.5 w-3.5 text-sage" />
-            The themes that keep returning to your pages
+            {isAllTime
+              ? "The themes that keep returning across your archive"
+              : "The themes that keep returning in this range"}
           </p>
         </div>
         <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
@@ -425,8 +629,9 @@ function TagCloud({ tags = [], loading }) {
             <Tags className="h-4 w-4" />
           </span>
           <p className="mt-3 max-w-[280px] text-[12px] leading-relaxed text-charcoal-muted">
-            Tags will gather here as you name the themes in your entries. Add a
-            few to see what keeps returning.
+            {isAllTime
+              ? "Tags will gather here as you name the themes in your entries. Add a few to see what keeps returning."
+              : "No tags appear in this range yet. Try a wider scope or add tags to your entries."}
           </p>
         </div>
       ) : (
@@ -435,11 +640,12 @@ function TagCloud({ tags = [], loading }) {
             <Link
               key={item.tag}
               to={`/journal?tag=${encodeURIComponent(item.tag)}`}
-              className={`rounded-full border border-transparent px-3 py-1.5 text-[11px] transition-colors hover:border-sage/30 ${
+              aria-label={`Open entries tagged ${item.tag}`}
+              className={`group rounded-full border border-transparent px-3 py-1.5 transition-colors hover:border-sage/30 ${
                 index < 3
                   ? "bg-sage-subtle text-sage-deep"
                   : "bg-warm-beige text-charcoal-muted hover:text-charcoal"
-              }`}
+              } ${index === 0 ? "text-[13px]" : index < 3 ? "text-[12px]" : "text-[11px]"}`}
             >
               #{item.tag}
               <span className="stat-number ml-1 text-[9px] opacity-70">
@@ -451,7 +657,13 @@ function TagCloud({ tags = [], loading }) {
       )}
 
       <p className="mt-6 border-t border-hairline/70 pt-3 text-[10px] leading-relaxed text-muted-gray">
-        Gathered from every entry in your archive.
+        {tags.length > 0
+          ? isAllTime
+            ? "Gathered from every entry in your archive. Select a tag to open matching entries."
+            : "Gathered from entries in the selected range. Select a tag to open matching entries."
+          : isAllTime
+            ? "Gathered from every entry in your archive."
+            : "Gathered from entries in the selected range."}
       </p>
     </section>
   );
@@ -460,6 +672,10 @@ function TagCloud({ tags = [], loading }) {
 function ReflectionCard({ stats, range, loading }) {
   const rangeMeta = RANGE_META[range] || RANGE_META.year;
   const hasEntries = stats.totalChronicles > 0;
+  const activeDays = new Set((stats.activity || []).map((item) => item.date))
+    .size;
+  const topMood = stats.mostCommonMood;
+  const topMoodCount = stats.moodBreakdown?.[0]?.count || 0;
   const heading = hasEntries
     ? range === "all"
       ? "Your archive has a rhythm."
@@ -467,18 +683,24 @@ function ReflectionCard({ stats, range, loading }) {
     : range === "all"
       ? "Your story is just beginning."
       : "This range is waiting for its first page.";
+  const rangePhrase =
+    range === "all" ? "in your archive" : rangeMeta.phrase;
   const body = hasEntries
-    ? `In ${rangeMeta.phrase}, you have preserved ${formatNumber(
-        stats.totalChronicles,
-      )} ${stats.totalChronicles === 1 ? "entry" : "entries"} and ${formatNumber(
-        stats.totalWords,
-      )} words. ${
-        stats.mostCommonMood
-          ? `“${stats.mostCommonMood}” appears most often in your pages.`
-          : "Your moods are still taking shape."
-      } Your longest streak overall is ${formatNumber(stats.longestStreak)} ${
-        stats.longestStreak === 1 ? "day" : "days"
-      }.`
+    ? `You wrote ${formatNumber(stats.totalChronicles)} ${
+        stats.totalChronicles === 1 ? "entry" : "entries"
+      } across ${formatNumber(activeDays)} active ${
+        activeDays === 1 ? "day" : "days"
+      } ${rangePhrase}, averaging ${formatNumber(
+        stats.averageWords,
+      )} words per entry. ${
+        topMood
+          ? `"${topMood}" was your most frequent mood, appearing in ${formatNumber(
+              topMoodCount,
+            )} ${topMoodCount === 1 ? "entry" : "entries"}.`
+          : "You have not tagged a mood yet, so the emotional thread is still emerging."
+      } Your longest recorded writing streak is ${formatNumber(
+        stats.longestStreak,
+      )} ${stats.longestStreak === 1 ? "day" : "days"}.`
     : `Write a first entry ${
         range === "all" ? "" : "in this range "
       }to begin noticing patterns in your mood, volume, and cadence. Every page adds a little more shape to the story.`;
@@ -523,6 +745,7 @@ export default function InsightsPage() {
 
   const [stats, setStats] = useState(emptyStats);
   const [tags, setTags] = useState([]);
+  const [sidebarTags, setSidebarTags] = useState([]);
   const [range, setRange] = useState("year");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -543,7 +766,7 @@ export default function InsightsPage() {
     const loadInsights = async () => {
       const [statsData, tagsData] = await Promise.all([
         chronicleApi.getStats(token, { range }),
-        chronicleApi.getTags(token),
+        chronicleApi.getTags(token, { range }).catch(() => []),
       ]);
 
       return { statsData, tagsData };
@@ -575,6 +798,26 @@ export default function InsightsPage() {
   }, [token, range, reloadKey]);
 
   useEffect(() => {
+    if (!token) return undefined;
+
+    let active = true;
+
+    chronicleApi
+      .getTags(token)
+      .then((tagsData) => {
+        if (!active) return;
+        setSidebarTags(Array.isArray(tagsData) ? tagsData : []);
+      })
+      .catch(() => {
+        if (active) setSidebarTags([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [token, reloadKey]);
+
+  useEffect(() => {
     if (!notice) return undefined;
 
     const timer = window.setTimeout(() => setNotice(""), 4000);
@@ -591,7 +834,9 @@ export default function InsightsPage() {
     ? Math.round(rangeWords / rangeEntries)
     : 0;
   const rangeMood = stats.moodBreakdown[0]?.mood || "";
-  const heatmapWeeks = getHeatmapWeeks(range, stats.rangeStart);
+  const displayRangeStart =
+    stats.rangeStart || getRangeStartForLabel(range);
+  const heatmapWeeks = getHeatmapWeeks(range, displayRangeStart);
   const rangeStats = {
     ...stats,
     totalChronicles: rangeEntries,
@@ -602,45 +847,46 @@ export default function InsightsPage() {
 
   const statCards = [
     {
-      label: "Entries",
+      label: "Total entries",
       value: rangeEntries,
       icon: BookOpen,
-      footerLabel: "In range",
-      footerValue: rangeMeta.label,
+      footerLabel: "All-time",
+      footerValue: `${formatNumber(stats.totalChronicles)} entries`,
+      to: "/journal",
     },
     {
-      label: "Words written",
+      label: "Total words written",
       value: rangeWords,
       icon: Feather,
-      footerLabel: "Approx. pages",
-      footerValue: `${formatNumber(Math.round(rangeWords / 250))} pages`,
+      footerLabel: "All-time",
+      footerValue: `${formatNumber(stats.totalWords)} words`,
+      to: "/journal",
     },
     {
-      label: "Average entry",
+      label: "Average words per entry",
       value: rangeAverageWords,
       suffix: " words",
       icon: AlignLeft,
-      footerLabel: "Entries in range",
-      footerValue: `${formatNumber(rangeEntries)} ${
-        rangeEntries === 1 ? "entry" : "entries"
-      }`,
+      footerLabel: "All-time avg.",
+      footerValue: `${formatNumber(stats.averageWords)} words`,
+      to: "/journal",
     },
     {
-      label: "Current streak",
+      label: "Current writing streak",
       value: stats.currentStreak,
       suffix: stats.currentStreak === 1 ? " day" : " days",
       icon: Flame,
-      footerLabel: "Longest streak",
+      footerLabel: "All-time longest",
       footerValue: `${formatNumber(stats.longestStreak)} ${
         stats.longestStreak === 1 ? "day" : "days"
       }`,
     },
     {
-      label: "Longest streak",
+      label: "Longest writing streak",
       value: stats.longestStreak,
       suffix: stats.longestStreak === 1 ? " day" : " days",
       icon: Trophy,
-      footerLabel: "Most common mood",
+      footerLabel: "Range mood",
       footerValue: rangeMood || "No mood yet",
     },
   ];
@@ -649,6 +895,8 @@ export default function InsightsPage() {
     if (nextRange === range) return;
 
     setRange(nextRange);
+    setStats(emptyStats);
+    setTags([]);
     setLoading(true);
     setError("");
   };
@@ -703,14 +951,14 @@ export default function InsightsPage() {
     }
   };
 
-  const scopeLabel = getScopeLabel(range, stats.rangeStart);
+  const scopeLabel = getScopeLabel(range, displayRangeStart);
 
   return (
     <PageTransition>
       <div className="min-h-screen bg-ivory">
         <DashboardSidebar
           user={user}
-          tags={tags}
+          tags={sidebarTags}
           activeTag=""
           onSelectTag={handleTagNavigate}
           onClearTag={() => navigate("/journal")}
@@ -841,6 +1089,10 @@ export default function InsightsPage() {
                   activity={stats.activity}
                   loading={loading}
                   weeks={heatmapWeeks}
+                  startDate={range === "all" ? null : displayRangeStart}
+                  onSelectDay={(date) =>
+                    navigate(`/journal?date=${encodeURIComponent(date)}`)
+                  }
                   title="Writing cadence heatmap"
                   subtitle={rangeMeta.heatmapSubtitle}
                   id="writing-rhythms"
@@ -851,13 +1103,19 @@ export default function InsightsPage() {
                 <div className="grid gap-6 lg:grid-cols-2">
                   <MoodDonut
                     moodBreakdown={stats.moodBreakdown}
-                    mostCommonMood={stats.mostCommonMood}
+                    mostCommonMood={rangeMood}
                     loading={loading}
                   />
-                  <TrendChart trend={stats.trend} loading={loading} />
+                  <TrendChart
+                    trend={stats.trend}
+                    loading={loading}
+                    range={range}
+                    rangeStart={displayRangeStart}
+                    activity={stats.activity}
+                  />
                 </div>
 
-                <TagCloud tags={tags} loading={loading} />
+                <TagCloud tags={tags} loading={loading} range={range} />
 
                 <ReflectionCard
                   stats={rangeStats}

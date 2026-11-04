@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import CountUp from "../ui/CountUp";
 
 export default function StatCard({
@@ -11,16 +12,24 @@ export default function StatCard({
   isText = false,
   loading = false,
   delay = 0,
+  to,
+  linkLabel,
 }) {
-  return (
+  const card = (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-col justify-between rounded-2xl border border-hairline bg-paper p-5 shadow-paper transition-shadow duration-300 hover:border-sage/30 hover:shadow-paper-lg"
+      className={`flex h-full flex-col justify-between rounded-2xl border border-hairline bg-paper p-5 shadow-paper transition-shadow duration-300 hover:border-sage/30 hover:shadow-paper-lg ${
+        to ? "group" : ""
+      }`}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="text-[9px] font-medium uppercase tracking-wide2 text-muted-gray">
+        <span
+          className={`text-[9px] font-medium uppercase tracking-wide2 text-muted-gray transition-colors ${
+            to ? "group-hover:text-sage-deep" : ""
+          }`}
+        >
           {label}
         </span>
         <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-warm-beige text-sage-deep">
@@ -52,5 +61,19 @@ export default function StatCard({
         </span>
       </div>
     </motion.div>
+  );
+
+  if (!to) return card;
+
+  return (
+    <Link
+      to={to}
+      aria-label={
+        linkLabel || `${label}: ${value}${suffix}. Open your journal archive.`
+      }
+      className="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2 focus-visible:ring-offset-ivory"
+    >
+      {card}
+    </Link>
   );
 }

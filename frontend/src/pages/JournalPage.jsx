@@ -166,11 +166,15 @@ export default function JournalPage() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
-  const [mood, setMood] = useState("");
+  const [mood, setMood] = useState(
+    () => new URLSearchParams(location.search).get("mood") || "",
+  );
   const [tag, setTag] = useState(
     () => new URLSearchParams(location.search).get("tag") || "",
   );
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(
+    () => new URLSearchParams(location.search).get("date") || "",
+  );
   const [sort, setSort] = useState("newest");
   const [view, setView] = useState("grid");
   const [tags, setTags] = useState([]);
@@ -273,13 +277,33 @@ export default function JournalPage() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const currentTag = params.get("tag") || "";
+    const currentMood = params.get("mood") || "";
+    const currentDate = params.get("date") || "";
 
-    if (currentTag === tag) return;
+    if (
+      currentTag === tag &&
+      currentMood === mood &&
+      currentDate === date
+    ) {
+      return;
+    }
 
     if (tag) {
       params.set("tag", tag);
     } else {
       params.delete("tag");
+    }
+
+    if (mood) {
+      params.set("mood", mood);
+    } else {
+      params.delete("mood");
+    }
+
+    if (date) {
+      params.set("date", date);
+    } else {
+      params.delete("date");
     }
 
     const search = params.toString();
@@ -291,7 +315,7 @@ export default function JournalPage() {
       },
       { replace: true },
     );
-  }, [tag, location.pathname, location.search, navigate]);
+  }, [tag, mood, date, location.pathname, location.search, navigate]);
 
   const hasFilters = Boolean(query || mood || tag || date);
   const groups = groupEntries(entries);
