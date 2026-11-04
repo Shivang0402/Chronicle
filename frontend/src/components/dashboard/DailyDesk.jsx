@@ -138,11 +138,17 @@ export default function DailyDesk({
           <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-hairline/70 pt-4 text-[10px] uppercase tracking-wider text-muted-gray">
             <span className="flex items-center gap-1.5">
               <Flame className="h-3.5 w-3.5 text-sage" />
-              {formatNumber(stats.currentStreak)} day streak
+              <span className="stat-number mr-1.5">
+                {formatNumber(stats.currentStreak)}
+              </span>{" "}
+              day streak
             </span>
             <span className="flex items-center gap-1.5">
               <Feather className="h-3.5 w-3.5 text-sage" />
-              {formatNumber(stats.entriesThisMonth)} this month
+              <span className="stat-number mr-1.5">
+                {formatNumber(stats.entriesThisMonth)}
+              </span>{" "}
+              this month
             </span>
             <span className="flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-sage" />
@@ -162,7 +168,8 @@ export default function DailyDesk({
               </p>
             </div>
             <span className="rounded-full bg-paper px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
-              {weekEntries} {weekEntries === 1 ? "entry" : "entries"}
+              <span className="stat-number mr-1.5">{weekEntries}</span>{" "}
+              {weekEntries === 1 ? "entry" : "entries"}
             </span>
           </div>
 
@@ -181,7 +188,7 @@ export default function DailyDesk({
                   {day.label}
                 </span>
                 <span
-                  className={`grid h-7 w-7 place-items-center rounded-full text-[10px] font-medium ${
+                  className={`stat-number grid h-7 w-7 place-items-center rounded-full text-[10px] font-medium ${
                     day.entries
                       ? "bg-sage text-white"
                       : day.future
@@ -201,8 +208,13 @@ export default function DailyDesk({
           </div>
 
           <p className="mt-4 border-t border-hairline/70 pt-3 text-[10px] text-muted-gray">
-            {formatNumber(weekWords)} words across{" "}
-            {formatNumber(weekEntries)}{" "}
+            <span className="stat-number mr-1.5">
+              {formatNumber(weekWords)}
+            </span>{" "}
+            words across{" "}
+            <span className="stat-number mr-1.5">
+              {formatNumber(weekEntries)}
+            </span>{" "}
             {weekEntries === 1 ? "entry" : "entries"} this week
           </p>
         </div>

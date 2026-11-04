@@ -109,7 +109,9 @@ export default function ActivityHeatmap({
             <span>{moreLabel}</span>
           </div>
           <span className="h-1 w-1 rounded-full bg-hairline" />
-          <span className="font-medium text-sage-deep">{cadence}% cadence</span>
+          <span className="font-medium text-sage-deep">
+            <span className="stat-number mr-1.5">{cadence}%</span> cadence
+          </span>
         </div>
       </div>
 

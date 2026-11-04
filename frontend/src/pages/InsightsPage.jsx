@@ -158,7 +158,13 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
           </p>
         </div>
         <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
-          {loading ? "—" : `${total} tagged`}
+          {loading ? (
+            "—"
+          ) : (
+            <>
+              <span className="stat-number mr-1.5">{total}</span> tagged
+            </>
+          )}
         </span>
       </div>
 
@@ -212,7 +218,7 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
             </svg>
             <div className="absolute inset-0 grid place-items-center text-center">
               <div>
-                <p className="font-serif text-3xl leading-none text-charcoal">
+                <p className="stat-number font-serif text-3xl leading-none text-charcoal">
                   {topPercent}%
                 </p>
                 <p className="mx-auto mt-1 max-w-[86px] truncate text-[9px] uppercase tracking-wide2 text-muted-gray">
@@ -235,10 +241,10 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
                 <span className="min-w-0 flex-1 truncate text-charcoal-muted">
                   {segment.mood}
                 </span>
-                <span className="font-medium text-charcoal">
+                <span className="stat-number font-medium text-charcoal">
                   {segment.count}
                 </span>
-                <span className="w-9 text-right text-muted-gray">
+                <span className="stat-number w-9 text-right text-muted-gray">
                   {Math.round((segment.count / total) * 100)}%
                 </span>
               </div>
@@ -278,7 +284,14 @@ function TrendChart({ trend = [], loading }) {
           </p>
         </div>
         <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
-          {loading ? "—" : `${trend.length} periods`}
+          {loading ? (
+            "—"
+          ) : (
+            <>
+              <span className="stat-number mr-1.5">{trend.length}</span>{" "}
+              periods
+            </>
+          )}
         </span>
       </div>
 
@@ -342,16 +355,28 @@ function TrendChart({ trend = [], loading }) {
 
           <div className="mt-4 flex flex-col gap-2 border-t border-hairline/70 pt-3 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between">
             <span>
-              {formatNumber(totalEntries)} entries ·{" "}
-              {formatNumber(totalWords)} words
+              <span className="stat-number mr-1.5">
+                {formatNumber(totalEntries)}
+              </span>{" "}
+              entries ·{" "}
+              <span className="stat-number mr-1.5">
+                {formatNumber(totalWords)}
+              </span>{" "}
+              words
             </span>
             <span className="font-medium text-sage-deep">
               Peak:{" "}
-              {peak
-                ? `${formatTrendLabel(peak.label)} · ${formatNumber(
-                    peak.words,
-                  )} words`
-                : "—"}
+              {peak ? (
+                <>
+                  {formatTrendLabel(peak.label)} ·{" "}
+                  <span className="stat-number mr-1.5">
+                    {formatNumber(peak.words)}
+                  </span>{" "}
+                  words
+                </>
+              ) : (
+                "—"
+              )}
             </span>
           </div>
         </div>
@@ -374,7 +399,14 @@ function TagCloud({ tags = [], loading }) {
           </p>
         </div>
         <span className="rounded-full bg-warm-beige px-2.5 py-1 text-[9px] uppercase tracking-wider text-muted-gray">
-          {loading ? "—" : `${tags.length} themes`}
+          {loading ? (
+            "—"
+          ) : (
+            <>
+              <span className="stat-number mr-1.5">{tags.length}</span>{" "}
+              themes
+            </>
+          )}
         </span>
       </div>
 
@@ -410,7 +442,9 @@ function TagCloud({ tags = [], loading }) {
               }`}
             >
               #{item.tag}
-              <span className="ml-1 text-[9px] opacity-70">{item.count}</span>
+              <span className="stat-number ml-1 text-[9px] opacity-70">
+                {item.count}
+              </span>
             </Link>
           ))}
         </div>
@@ -770,7 +804,10 @@ export default function InsightsPage() {
                   </span>
                 </div>
                 <span className="uppercase tracking-wider">
-                  Private ledger · {formatNumber(rangeEntries)}{" "}
+                  Private ledger ·{" "}
+                  <span className="stat-number mr-1.5">
+                    {formatNumber(rangeEntries)}
+                  </span>{" "}
                   {rangeEntries === 1 ? "entry" : "entries"}
                 </span>
               </div>

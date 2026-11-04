@@ -49,10 +49,15 @@ function EntryCard({ entry, onOpen }) {
         <span>
           {words.toLocaleString("en-US")} words · {readingTime(words)} min
         </span>
-        <span className="flex items-center gap-1 text-sage">
+        <button
+          type="button"
+          onClick={() => onOpen(entry)}
+          aria-label={`Read ${entry.title || "entry"}`}
+          className="flex cursor-pointer items-center gap-1 text-sage transition-colors hover:text-sage-deep"
+        >
           Read
           <ArrowUpRight className="h-3 w-3" />
-        </span>
+        </button>
       </div>
     </article>
   );

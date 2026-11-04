@@ -28,7 +28,7 @@ export default function StatCard({
         </span>
       </div>
 
-      <div className="my-4 min-h-[2.25rem] font-serif text-2xl leading-none tracking-tight text-charcoal sm:text-3xl">
+      <div className="my-4 min-h-[2.25rem] stat-number font-serif text-2xl leading-none tracking-tight text-charcoal sm:text-3xl">
         {loading ? (
           <span className="inline-block h-7 w-16 animate-pulse rounded bg-hairline/70" />
         ) : isText ? (
@@ -36,7 +36,11 @@ export default function StatCard({
         ) : (
           <>
             <CountUp value={Number(value) || 0} duration={1.2} />
-            <span className="text-sm text-muted-gray">{suffix}</span>
+            {suffix.trim() && (
+              <span className="ml-3 text-base font-normal leading-none text-muted-gray">
+                {suffix.trim()}
+              </span>
+            )}
           </>
         )}
       </div>

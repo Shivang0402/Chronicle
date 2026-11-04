@@ -133,6 +133,10 @@
     @apply font-serif italic font-normal;
   }
 
+  .stat-number {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
   .no-scrollbar {
     scrollbar-width: none;
   }

@@ -98,7 +98,9 @@ function StatBlock({ label, value }) {
       <p className="text-[9px] uppercase tracking-wide2 text-muted-gray">
         {label}
       </p>
-      <p className="mt-1 font-serif text-xl text-charcoal">{value}</p>
+      <p className="mt-1 stat-number font-serif text-xl text-charcoal">
+        {value}
+      </p>
     </div>
   );
 }
