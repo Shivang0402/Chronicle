@@ -4,6 +4,8 @@ import {
   ArrowLeft,
   CalendarDays,
   Check,
+  Clock,
+  Feather,
   Hash,
   Loader2,
   Maximize2,
@@ -29,9 +31,17 @@ import {
   formatLongDate,
   formatTime,
   readingTime,
-  todayLabel,
 } from "../lib/journal";
 import { MOODS } from "../lib/moods";
+
+const MOOD_EMOJI = {
+  Peaceful: "🌿",
+  Grateful: "✨",
+  Inspired: "💡",
+  Contemplative: "🍂",
+  Reflective: "🪞",
+  Hopeful: "🌅",
+};
 
 export default function EditorPage() {
   const { id } = useParams();
@@ -50,7 +60,7 @@ export default function EditorPage() {
   const [mood, setMood] = useState(initialDraft?.mood || "");
   const [tags, setTags] = useState(initialDraft?.tags || []);
   const [tagInput, setTagInput] = useState("");
-  const [availableTags, setAvailableTags] = useState([]);
+  const [customMoodInput, setCustomMoodInput] = useState("");
   const [loading, setLoading] = useState(isEditing);
   const [loadError, setLoadError] = useState("");
   const [loadKey, setLoadKey] = useState(0);
@@ -66,6 +76,7 @@ export default function EditorPage() {
   );
   const [focusMode, setFocusMode] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [openedAt] = useState(() => new Date());
 
   const textareaRef = useRef(null);
   const draftSnapshotRef = useRef(null);
@@ -142,31 +153,12 @@ export default function EditorPage() {
   }, [draftOwner, id, isEditing, token, loadKey]);
 
   useEffect(() => {
-    if (!token) return undefined;
-
-    let active = true;
-
-    chronicleApi
-      .getTags(token)
-      .then((data) => {
-        if (active) setAvailableTags(Array.isArray(data) ? data : []);
-      })
-      .catch(() => {
-        // Tag suggestions are optional.
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [token, loadKey]);
-
-  useEffect(() => {
     const element = textareaRef.current;
 
     if (!element) return;
 
     element.style.height = "auto";
-    element.style.height = `${Math.max(element.scrollHeight, 360)}px`;
+    element.style.height = `${Math.max(element.scrollHeight, 468)}px`;
   }, [content, focusMode, loading]);
 
   useEffect(() => {
@@ -226,12 +218,11 @@ export default function EditorPage() {
   const reading = readingTime(words);
   const canSave = content.trim().length >= 10 && !saving && !loading;
   const dateLabel =
-    isEditing && entry ? formatLongDate(entry.date) : todayLabel();
+    isEditing && entry ? formatLongDate(entry.date) : formatLongDate(openedAt);
+  const timeLabel =
+    isEditing && entry?.date ? formatTime(entry.date) : formatTime(openedAt);
   const moodOptions =
     mood && !MOODS.includes(mood) ? [mood, ...MOODS] : MOODS;
-  const suggestedTags = availableTags
-    .filter((item) => !tags.includes(item.tag))
-    .slice(0, 8);
 
   const markDirty = () => {
     dirtyRef.current = true;
@@ -256,6 +247,7 @@ export default function EditorPage() {
     setSavedAt(null);
     setError("");
     setTagInput("");
+    setCustomMoodInput("");
 
     if (isEditing && entry) {
       setTitle(entry.title || "");
@@ -293,6 +285,23 @@ export default function EditorPage() {
   const removeTag = (tag) => {
     setTags((current) => current.filter((item) => item !== tag));
     markDirty();
+  };
+
+  const addCustomMood = (raw) => {
+    const next = raw.trim();
+
+    if (!next) return;
+
+    setMood(next);
+    setCustomMoodInput("");
+    markDirty();
+  };
+
+  const handleCustomMoodKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      addCustomMood(customMoodInput);
+    }
   };
 
   const handleTagKeyDown = (event) => {
@@ -583,25 +592,169 @@ export default function EditorPage() {
           }`}
         >
           {!focusMode && (
-            <motion.div
+            <motion.section
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
+              className="relative mb-5 overflow-hidden rounded-3xl border border-hairline shadow-paper"
             >
-              <div>
-                <span className="eyebrow mb-2 block">
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: "url('/images/hero-journal.jpg')" }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ivory via-ivory/70 to-ivory/5" />
+              <div className="relative flex min-h-[168px] flex-col justify-end gap-2 p-6 sm:min-h-[196px] sm:p-8">
+                <span className="eyebrow">
                   {isEditing ? "Returning to the page" : "A fresh page"}
                 </span>
-                <h1 className="font-serif text-2xl leading-tight tracking-tight text-charcoal sm:text-3xl">
+                <h1 className="max-w-lg font-serif text-2xl leading-tight tracking-tight text-charcoal sm:text-3xl">
                   {isEditing ? "Edit your entry" : "Write what you notice"}
                 </h1>
+                <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wider text-muted-gray">
+                  <CalendarDays className="h-3 w-3 text-sage" />
+                  <span>{dateLabel}</span>
+                  <span className="h-1 w-1 rounded-full bg-muted-gray/40" />
+                  <span className="inline-flex items-center gap-1">
+                    <Clock className="h-3 w-3 text-sage" />
+                    {timeLabel}
+                  </span>
+                </div>
               </div>
-              <span className="inline-flex items-center gap-1.5 self-start text-[10px] uppercase tracking-wider text-muted-gray sm:self-auto">
-                <CalendarDays className="h-3 w-3 text-sage" />
-                {dateLabel}
-              </span>
-            </motion.div>
+            </motion.section>
+          )}
+
+          {!focusMode && (
+            <motion.section
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.05,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="mb-5 rounded-2xl border border-hairline bg-paper/90 p-5 shadow-paper sm:p-6"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline pb-4">
+                <div className="flex items-center gap-3">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-sage-subtle text-sage-deep">
+                    <CalendarDays className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <p className="font-serif text-base leading-snug text-charcoal sm:text-lg">
+                      {dateLabel}
+                    </p>
+                    <p className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-gray">
+                      <Clock className="h-3 w-3 text-sage" />
+                      {timeLabel}
+                    </p>
+                  </div>
+                </div>
+                <span className="rounded-full bg-warm-beige px-3 py-1 text-[9px] font-medium uppercase tracking-wider text-charcoal-muted">
+                  {isEditing ? "Editing archive" : "New reflection"}
+                </span>
+              </div>
+
+              <div className="mt-4">
+                <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-muted-gray">
+                  Emotional resonance
+                </span>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {moodOptions.map((item) => {
+                    const active = mood === item;
+
+                    return (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => {
+                          setMood(active ? "" : item);
+                          markDirty();
+                        }}
+                        aria-pressed={active}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-medium transition-all ${
+                          active
+                            ? "bg-sage text-white shadow-sm"
+                            : "bg-warm-beige/80 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
+                        }`}
+                      >
+                        <span aria-hidden="true">
+                          {MOOD_EMOJI[item] || "✦"}
+                        </span>
+                        {item}
+                      </button>
+                    );
+                  })}
+
+                  <div className="inline-flex items-center gap-1 rounded-full border border-dashed border-hairline bg-paper px-2.5 py-1">
+                    <input
+                      type="text"
+                      value={customMoodInput}
+                      onChange={(event) =>
+                        setCustomMoodInput(event.target.value)
+                      }
+                      onKeyDown={handleCustomMoodKeyDown}
+                      placeholder="Add your own mood"
+                      maxLength={40}
+                      className="w-28 border-0 bg-transparent text-[10px] text-charcoal outline-none placeholder:text-muted-gray/60"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => addCustomMood(customMoodInput)}
+                      className="grid h-4 w-4 place-items-center rounded-full text-muted-gray transition-colors hover:bg-warm-beige hover:text-charcoal"
+                      aria-label="Add custom mood"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <span className="flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.18em] text-muted-gray">
+                  <Hash className="h-3 w-3 text-sage" />
+                  Tag taxonomy
+                </span>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="group inline-flex items-center gap-1 rounded-full bg-warm-beige px-2.5 py-1 text-[10px] text-charcoal-muted transition-colors hover:text-charcoal"
+                    >
+                      #{tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="text-muted-gray transition-colors group-hover:text-danger"
+                        aria-label={`Remove ${tag}`}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+
+                  <div className="inline-flex items-center gap-1 rounded-full border border-dashed border-hairline bg-paper px-2.5 py-1">
+                    <input
+                      type="text"
+                      value={tagInput}
+                      onChange={(event) => setTagInput(event.target.value)}
+                      onKeyDown={handleTagKeyDown}
+                      onBlur={() => addTag(tagInput)}
+                      placeholder="Add tag"
+                      className="w-20 border-0 bg-transparent text-[10px] text-charcoal outline-none placeholder:text-muted-gray/60"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => addTag(tagInput)}
+                      className="grid h-4 w-4 place-items-center rounded-full text-muted-gray transition-colors hover:bg-warm-beige hover:text-charcoal"
+                      aria-label="Add tag"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.section>
           )}
 
           <motion.div
@@ -640,123 +793,32 @@ export default function EditorPage() {
               </div>
             )}
 
-            {!focusMode && (
-              <section className="border-b border-hairline px-6 py-5 sm:px-10">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-gray">
-                    <CalendarDays className="h-3 w-3 text-sage" />
-                    {dateLabel}
-                  </span>
-                  <span className="text-[10px] text-muted-gray">
-                    {words.toLocaleString("en-US")} words · {reading} min read
-                  </span>
-                </div>
+            <div className="px-6 pb-0 pt-7 sm:px-10 sm:pt-9">
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-2 text-[9px] uppercase tracking-[0.18em] text-muted-gray">
+                <span className="inline-flex items-center gap-1.5">
+                  <Feather className="h-3 w-3 text-sage" />
+                  Writing desk
+                </span>
+                <span>
+                  {words.toLocaleString("en-US")} words · {reading} min read
+                </span>
+              </div>
 
-                <div className="mt-4">
-                  <span className="text-[9px] font-medium uppercase tracking-wider text-muted-gray">
-                    Emotional resonance
-                  </span>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {moodOptions.map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => {
-                          setMood(mood === item ? "" : item);
-                          markDirty();
-                        }}
-                        className={`rounded-full px-3 py-1.5 text-[10px] font-medium transition-colors ${
-                          mood === item
-                            ? "bg-sage text-white shadow-sm"
-                            : "bg-warm-beige/80 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
-                        }`}
-                      >
-                        {item}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <span className="flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-wider text-muted-gray">
-                    <Hash className="h-3 w-3 text-sage" />
-                    Tags
-                  </span>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    {tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-1 rounded-full bg-warm-beige px-2.5 py-1 text-[10px] text-charcoal-muted"
-                      >
-                        #{tag}
-                        <button
-                          type="button"
-                          onClick={() => removeTag(tag)}
-                          className="text-muted-gray transition-colors hover:text-danger"
-                          aria-label={`Remove ${tag}`}
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </span>
-                    ))}
-
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="text"
-                        value={tagInput}
-                        onChange={(event) => setTagInput(event.target.value)}
-                        onKeyDown={handleTagKeyDown}
-                        onBlur={() => addTag(tagInput)}
-                        placeholder="Add a tag..."
-                        className="w-28 border-0 bg-transparent text-[11px] text-charcoal outline-none placeholder:text-muted-gray/60"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => addTag(tagInput)}
-                        className="grid h-6 w-6 place-items-center rounded-full text-muted-gray transition-colors hover:bg-warm-beige hover:text-charcoal"
-                        aria-label="Add tag"
-                      >
-                        <Plus className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {suggestedTags.length > 0 && (
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span className="text-[9px] uppercase tracking-wider text-muted-gray">
-                        Suggestions
-                      </span>
-                      {suggestedTags.map((item) => (
-                        <button
-                          key={item.tag}
-                          type="button"
-                          onClick={() => addTag(item.tag)}
-                          className="rounded-full px-2 py-0.5 text-[9px] text-sage-deep transition-colors hover:bg-sage-subtle"
-                        >
-                          #{item.tag}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </section>
-            )}
-
-            <div className="px-6 py-8 sm:px-10 sm:py-10">
-              <input
-                type="text"
-                value={title}
-                onChange={(event) => {
-                  setTitle(event.target.value);
-                  markDirty();
-                }}
-                placeholder="Untitled reflection..."
-                maxLength={120}
-                autoFocus={!isEditing}
-                className="w-full border-0 bg-transparent font-serif text-3xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/50 sm:text-4xl"
-              />
-
-              <div className="mt-4 h-px bg-hairline" />
+              <div className="group relative">
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(event) => {
+                    setTitle(event.target.value);
+                    markDirty();
+                  }}
+                  placeholder="Untitled reflection..."
+                  maxLength={120}
+                  autoFocus={!isEditing}
+                  className="w-full border-0 bg-transparent pb-3 font-serif text-3xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/40 sm:text-[2.6rem]"
+                />
+                <div className="h-0.5 w-full rounded-full bg-hairline transition-colors duration-300 group-focus-within:bg-sage/60" />
+              </div>
 
               <textarea
                 ref={textareaRef}
@@ -767,7 +829,7 @@ export default function EditorPage() {
                 }}
                 placeholder="Let the thought unfold, exactly as it came to you..."
                 spellCheck
-                className="mt-6 min-h-[360px] w-full resize-none overflow-hidden border-0 bg-transparent font-serif text-lg font-light leading-[1.9] text-charcoal outline-none placeholder:text-muted-gray/50"
+                className="ruled-paper mt-6 min-h-[468px] w-full resize-none overflow-hidden border-0 bg-transparent p-0 font-serif font-light text-charcoal caret-sage outline-none placeholder:text-muted-gray/50"
               />
             </div>
 
@@ -813,17 +875,23 @@ export default function EditorPage() {
           </motion.div>
 
           {!focusMode && (
-            <p className="mt-4 text-center text-[10px] text-muted-gray">
-              Press{" "}
-              <kbd className="rounded border border-hairline bg-paper px-1.5 py-0.5 font-sans text-[9px]">
-                Ctrl
-              </kbd>{" "}
-              +{" "}
-              <kbd className="rounded border border-hairline bg-paper px-1.5 py-0.5 font-sans text-[9px]">
-                S
-              </kbd>{" "}
-              to save.
-            </p>
+            <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-hairline bg-paper/70 px-5 py-3 text-[10px] text-muted-gray shadow-sm sm:flex-row sm:items-center sm:justify-between">
+              <span className="inline-flex items-center gap-2">
+                <Feather className="h-3.5 w-3.5 text-sage" />
+                {statusLabel}
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                Press
+                <kbd className="rounded border border-hairline bg-paper px-1.5 py-0.5 font-sans text-[9px]">
+                  Ctrl
+                </kbd>
+                +
+                <kbd className="rounded border border-hairline bg-paper px-1.5 py-0.5 font-sans text-[9px]">
+                  S
+                </kbd>
+                to save
+              </span>
+            </div>
           )}
         </main>
 

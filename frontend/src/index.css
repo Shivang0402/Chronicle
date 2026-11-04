@@ -140,6 +140,20 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  .ruled-paper {
+    font-size: 18px;
+    line-height: 36px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 35px,
+      #e8e6df 35px,
+      #e8e6df 36px
+    );
+    background-position: 0 -3px;
+    background-repeat: repeat-y;
+  }
 }
 
 @layer utilities {
