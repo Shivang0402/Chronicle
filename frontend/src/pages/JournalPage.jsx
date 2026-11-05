@@ -32,6 +32,7 @@ import {
   formatTime,
   readingTime,
 } from "../lib/journal";
+import { stripMarkdown } from "../lib/markdown";
 
 const PAGE_SIZE = 8;
 
@@ -113,7 +114,7 @@ function ArchiveEntryCard({ entry, view, onOpen }) {
               isList ? "line-clamp-2" : "line-clamp-3"
             }`}
           >
-            {entry.content}
+            {stripMarkdown(entry.content)}
           </p>
         </button>
 

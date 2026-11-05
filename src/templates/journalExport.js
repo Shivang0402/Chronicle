@@ -5,6 +5,150 @@ const escapeHtml = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
+const HORIZONTAL_RULE = /^\s*([-*_])(?:\s*\1){2,}\s*$/;
+const HEADING = /^(#{1,6})\s+(.*)$/;
+const BLOCKQUOTE = /^>\s?(.*)$/;
+const BULLET = /^\s*[-*+]\s+(.*)$/;
+const ORDERED = /^\s*\d+[.)]\s+(.*)$/;
+const INLINE_TOKEN =
+  /(\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|`[^`\n]+`)/g;
+
+const safeHref = (value) => {
+  const href = String(value || "").trim();
+
+  return /^(https?:|mailto:)/i.test(href) ? href : "";
+};
+
+const renderInline = (value) =>
+  String(value ?? "")
+    .split(INLINE_TOKEN)
+    .filter((part) => part !== "")
+    .map((part) => {
+      const link = part.match(/^\[([^\]\n]+)\]\(([^)\s]+)\)$/);
+
+      if (link) {
+        const href = safeHref(link[2]);
+
+        if (!href) return escapeHtml(link[1]);
+
+        return `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link[1])}</a>`;
+      }
+
+      if (/^\*\*[\s\S]+\*\*$/.test(part)) {
+        return `<strong>${escapeHtml(part.slice(2, -2))}</strong>`;
+      }
+
+      if (/^__[\s\S]+__$/.test(part)) {
+        return `<u>${escapeHtml(part.slice(2, -2))}</u>`;
+      }
+
+      if (/^\*[\s\S]+\*$/.test(part)) {
+        return `<em>${escapeHtml(part.slice(1, -1))}</em>`;
+      }
+
+      if (/^_[\s\S]+_$/.test(part)) {
+        return `<em>${escapeHtml(part.slice(1, -1))}</em>`;
+      }
+
+      if (/^~~[\s\S]+~~$/.test(part)) {
+        return `<del>${escapeHtml(part.slice(2, -2))}</del>`;
+      }
+
+      if (/^`[\s\S]+`$/.test(part)) {
+        return `<code>${escapeHtml(part.slice(1, -1))}</code>`;
+      }
+
+      return escapeHtml(part).replaceAll("\n", "<br>");
+    })
+    .join("");
+
+const renderMarkdown = (value) => {
+  const lines = String(value ?? "").replace(/\r\n/g, "\n").split("\n");
+  const blocks = [];
+  let index = 0;
+
+  while (index < lines.length) {
+    const line = lines[index];
+
+    if (!line.trim()) {
+      index += 1;
+      continue;
+    }
+
+    if (HORIZONTAL_RULE.test(line)) {
+      blocks.push("<hr>");
+      index += 1;
+      continue;
+    }
+
+    const heading = line.match(HEADING);
+
+    if (heading) {
+      const level = Math.min(heading[1].length + 2, 6);
+
+      blocks.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+      index += 1;
+      continue;
+    }
+
+    if (BLOCKQUOTE.test(line)) {
+      const quote = [];
+
+      while (index < lines.length && BLOCKQUOTE.test(lines[index])) {
+        quote.push(lines[index].match(BLOCKQUOTE)[1]);
+        index += 1;
+      }
+
+      blocks.push(
+        `<blockquote>${quote.map(renderInline).join("<br>")}</blockquote>`,
+      );
+      continue;
+    }
+
+    if (BULLET.test(line) || ORDERED.test(line)) {
+      const matcher = BULLET.test(line) ? BULLET : ORDERED;
+      const tag = matcher === BULLET ? "ul" : "ol";
+      const items = [];
+
+      while (index < lines.length && matcher.test(lines[index])) {
+        items.push(lines[index].match(matcher)[1]);
+        index += 1;
+      }
+
+      blocks.push(
+        `<${tag}>${items
+          .map((item) => `<li>${renderInline(item)}</li>`)
+          .join("")}</${tag}>`,
+      );
+      continue;
+    }
+
+    const paragraph = [];
+
+    while (index < lines.length) {
+      const candidate = lines[index];
+
+      if (!candidate.trim()) break;
+      if (
+        HORIZONTAL_RULE.test(candidate) ||
+        HEADING.test(candidate) ||
+        BLOCKQUOTE.test(candidate) ||
+        BULLET.test(candidate) ||
+        ORDERED.test(candidate)
+      ) {
+        break;
+      }
+
+      paragraph.push(candidate);
+      index += 1;
+    }
+
+    blocks.push(`<p>${paragraph.map(renderInline).join("<br>")}</p>`);
+  }
+
+  return blocks.join("\n");
+};
+
 const moodTone = (mood) => {
   const value = String(mood || "").toLowerCase();
   if (/peace|calm|content|grounded/.test(value)) return "sage";
@@ -44,7 +188,7 @@ const buildEntryHtml = (entry, index) => {
     </div>
     <h2 class="title">${escapeHtml(entry.title || "Untitled entry")}</h2>
     ${tags ? `<div class="tags">${tags}</div>` : ""}
-    <p class="content">${escapeHtml(entry.content)}</p>
+    <div class="content">${renderMarkdown(entry.content)}</div>
   </article>`;
 };
 
@@ -77,7 +221,23 @@ const journalStyles = `
   .title { margin: 0 0 2mm; color: var(--ink); font-size: 21pt; font-weight: 400; line-height: 1.28; break-after: avoid; }
   .tags { display: flex; flex-wrap: wrap; gap: 2mm; margin-bottom: 4mm; break-after: avoid; }
   .tag { color: var(--sage); background: #f1f3ee; border-radius: 2px; padding: 1mm 2mm; font: 7pt Arial, sans-serif; }
-  .content { margin: 0; color: #41433d; font-size: 11pt; line-height: 1.85; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .content { margin: 0; color: #41433d; font-size: 11pt; line-height: 1.85; overflow-wrap: anywhere; }
+  .content p { margin: 0 0 3mm; }
+  .content p:last-child { margin-bottom: 0; }
+  .content h2, .content h3, .content h4, .content h5, .content h6 { margin: 5mm 0 2mm; color: var(--ink); font-weight: 400; line-height: 1.3; break-after: avoid; }
+  .content h2 { font-size: 16pt; }
+  .content h3 { font-size: 14pt; }
+  .content h4 { font-size: 12.5pt; }
+  .content h5 { font-size: 11pt; font-style: italic; }
+  .content h6 { font: 600 8pt Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .content ul, .content ol { margin: 0 0 3mm; padding-left: 6mm; }
+  .content li { margin-bottom: 1mm; }
+  .content blockquote { margin: 4mm 0; border-left: 2px solid #a6b19f; padding: 1mm 0 1mm 4mm; color: var(--muted); font-style: italic; }
+  .content hr { margin: 5mm 0; border: 0; border-top: 1px solid var(--hairline); }
+  .content a { color: var(--sage); text-decoration: underline; text-decoration-color: rgba(80,97,75,.4); }
+  .content code { border-radius: 2px; background: #f1f3ee; padding: .5mm 1.5mm; font-family: "Courier New", monospace; font-size: .9em; }
+  .content strong { font-weight: 700; }
+  .content del { color: var(--muted); }
   .empty { margin-top: 12mm; border-left: 2px solid #a6b19f; padding: 4mm 5mm; color: var(--muted); background: #f6f7f3; font-style: italic; }
 `;
 

@@ -14,6 +14,7 @@ import {
   formatLongDate,
   readingTime,
 } from "../../lib/journal";
+import FormattedContent from "../ui/FormattedContent";
 
 export default function EntryReader({
   entry,
@@ -101,9 +102,10 @@ export default function EntryReader({
                 </div>
               )}
 
-              <div className="mt-7 whitespace-pre-wrap font-serif text-lg font-light leading-[1.85] text-charcoal">
-                {entry.content}
-              </div>
+              <FormattedContent
+                content={entry.content}
+                className="mt-7 font-serif text-lg font-light leading-[1.85] text-charcoal"
+              />
             </div>
 
             <div className="border-t border-hairline bg-warm-beige/30 px-6 py-4 sm:px-9">

@@ -1,3 +1,5 @@
+import { stripMarkdown } from "./markdown";
+
 export const dayKey = (value) => {
   const date = new Date(value);
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -30,7 +32,7 @@ export const formatMonth = (value) =>
   new Date(value).toLocaleDateString("en-US", { month: "short" });
 
 export const countWords = (content) => {
-  const text = String(content || "").trim();
+  const text = stripMarkdown(content);
   return text ? text.split(/\s+/).length : 0;
 };
 

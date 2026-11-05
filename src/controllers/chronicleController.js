@@ -5,8 +5,30 @@ const { renderJournalHtml } = require("../templates/journalExport");
 const MIN_CONTENT_LENGTH = 10;
 const MAX_CONTENT_LENGTH = 100000;
 
+const stripMarkdown = (content) =>
+  String(content || "")
+    .split("\n")
+    .map((line) =>
+      line
+        .replace(/^\s*([-*_])(?:\s*\1){2,}\s*$/, "")
+        .replace(/^\s*#{1,6}\s+/, "")
+        .replace(/^\s*>\s?/, "")
+        .replace(/^\s*[-*+]\s+/, "")
+        .replace(/^\s*\d+[.)]\s+/, ""),
+    )
+    .join(" ")
+    .replace(/\[([^\]]+)\]\([^)\s]+\)/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/~~([^~]+)~~/g, "$1")
+    .replace(/\*([^*\n]+)\*/g, "$1")
+    .replace(/_([^_\n]+)_/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+
 const countWords = (content) => {
-  const text = String(content || "").trim();
+  const text = stripMarkdown(content);
   return text ? text.split(/\s+/).length : 0;
 };
 

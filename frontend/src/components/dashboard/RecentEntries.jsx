@@ -5,6 +5,7 @@ import {
   formatEntryDate,
   readingTime,
 } from "../../lib/journal";
+import { stripMarkdown } from "../../lib/markdown";
 
 function EntryCard({ entry, onOpen }) {
   const words = countWords(entry.content);
@@ -31,7 +32,7 @@ function EntryCard({ entry, onOpen }) {
           {entry.title || "Untitled entry"}
         </h3>
         <p className="mt-2 line-clamp-3 text-[12px] font-light leading-relaxed text-charcoal-muted">
-          {entry.content}
+          {stripMarkdown(entry.content)}
         </p>
       </button>
 

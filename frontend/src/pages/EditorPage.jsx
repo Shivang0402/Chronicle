@@ -17,6 +17,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LeaveDraftDialog from "../components/dashboard/LeaveDraftDialog";
 import PageTransition from "../components/ui/PageTransition";
+import RichTextEditor from "../components/ui/RichTextEditor";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
@@ -78,7 +79,6 @@ export default function EditorPage() {
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [openedAt] = useState(() => new Date());
 
-  const textareaRef = useRef(null);
   const draftSnapshotRef = useRef(null);
   const dirtyRef = useRef(Boolean(initialDraft));
 
@@ -151,15 +151,6 @@ export default function EditorPage() {
       active = false;
     };
   }, [draftOwner, id, isEditing, token, loadKey]);
-
-  useEffect(() => {
-    const element = textareaRef.current;
-
-    if (!element) return;
-
-    element.style.height = "auto";
-    element.style.height = `${Math.max(element.scrollHeight, 468)}px`;
-  }, [content, focusMode, loading]);
 
   useEffect(() => {
     if (!dirty) return undefined;
@@ -820,16 +811,16 @@ export default function EditorPage() {
                 <div className="h-0.5 w-full rounded-full bg-hairline transition-colors duration-300 group-focus-within:bg-sage/60" />
               </div>
 
-              <textarea
-                ref={textareaRef}
+              <RichTextEditor
+                className="mt-6"
                 value={content}
-                onChange={(event) => {
-                  setContent(event.target.value);
+                onChange={(nextContent) => {
+                  setContent(nextContent);
                   markDirty();
                 }}
                 placeholder="Let the thought unfold, exactly as it came to you..."
                 spellCheck
-                className="ruled-paper mt-6 min-h-[468px] w-full resize-none overflow-hidden border-0 bg-transparent p-0 font-serif font-light text-charcoal caret-sage outline-none placeholder:text-muted-gray/50"
+                editorClassName="ruled-paper -mx-6 mt-4 min-h-[468px] w-[calc(100%_+_3rem)] px-6 font-serif font-light text-charcoal caret-sage sm:-mx-10 sm:w-[calc(100%_+_5rem)] sm:px-10"
               />
             </div>
 

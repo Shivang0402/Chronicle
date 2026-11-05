@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays, Hash, Loader2, PenLine, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import RichTextEditor from "../ui/RichTextEditor";
 import { chronicleApi } from "../../lib/api";
 import {
   clearDraft,
@@ -349,15 +350,15 @@ export default function EntryComposer({
               </div>
 
               <div className="mt-6 border-t border-hairline pt-6">
-                <textarea
+                <RichTextEditor
                   value={content}
-                  onChange={(event) => {
-                    setContent(event.target.value);
+                  onChange={(nextContent) => {
+                    setContent(nextContent);
                     markDirty();
                   }}
                   placeholder="Let the thought unfold, exactly as it came to you..."
                   autoFocus
-                  className="min-h-[210px] w-full resize-none border-0 bg-transparent font-serif text-lg font-light leading-[1.8] text-charcoal outline-none placeholder:text-muted-gray/60"
+                  editorClassName="min-h-[210px] font-serif text-lg font-light leading-[1.8] text-charcoal"
                 />
               </div>
 

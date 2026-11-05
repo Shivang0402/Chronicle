@@ -158,6 +158,95 @@
     background-position: 0 -3px;
     background-repeat: repeat-y;
   }
+
+  .rich-editor {
+    overflow-wrap: anywhere;
+  }
+
+  .rich-editor[data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: rgba(102, 104, 95, 0.5);
+    pointer-events: none;
+  }
+
+  .rich-editor p,
+  .rich-editor div {
+    margin: 0;
+  }
+
+  .rich-editor h2 {
+    margin: 0.45em 0 0.1em;
+    font-size: 1.6em;
+    font-weight: 400;
+    line-height: 1.35;
+  }
+
+  .rich-editor h3 {
+    margin: 0.4em 0 0.1em;
+    font-size: 1.35em;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .rich-editor h4,
+  .rich-editor h5,
+  .rich-editor h6 {
+    margin: 0.35em 0 0.1em;
+    font-size: 1.15em;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .rich-editor ul,
+  .rich-editor ol {
+    margin: 0;
+    padding-left: 1.5em;
+  }
+
+  .rich-editor ul {
+    list-style: disc;
+  }
+
+  .rich-editor ol {
+    list-style: decimal;
+  }
+
+  .rich-editor li {
+    margin: 0;
+  }
+
+  .rich-editor blockquote {
+    margin: 0.3em 0;
+    padding-left: 1em;
+    border-left: 2px solid rgba(80, 97, 75, 0.4);
+    color: #66685f;
+    font-style: italic;
+  }
+
+  .rich-editor a {
+    color: #50614b;
+    text-decoration: underline;
+    text-decoration-color: rgba(80, 97, 75, 0.5);
+    text-underline-offset: 2px;
+  }
+
+  .rich-editor code {
+    border-radius: 3px;
+    background: #f1f3ee;
+    padding: 0.1em 0.3em;
+    font-family: "Courier New", monospace;
+    font-size: 0.88em;
+  }
+
+  .rich-editor strong {
+    font-weight: 600;
+  }
+
+  .rich-editor hr {
+    margin: 0.6em 0;
+    border: 0;
+    border-top: 1px solid #e5e3dc;
+  }
 }
 
 @layer utilities {

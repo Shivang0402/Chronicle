@@ -27,6 +27,7 @@ import {
   formatEntryDate,
   formatTime,
 } from "../lib/journal";
+import { stripMarkdown } from "../lib/markdown";
 
 function DraftCard({ draft, onResume, onDiscard }) {
   const words = countWords(draft.content);
@@ -56,7 +57,8 @@ function DraftCard({ draft, onResume, onDiscard }) {
       </div>
 
       <p className="mt-3 line-clamp-4 text-[12px] font-light leading-relaxed text-charcoal-muted">
-        {draft.content || "No words yet — open this draft to begin."}
+        {stripMarkdown(draft.content) ||
+          "No words yet — open this draft to begin."}
       </p>
 
       {draft.tags.length > 0 && (
