@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarDays, Check, ChevronLeft, ChevronRight, Download, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Download, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { chronicleApi } from "../../lib/api";
 import { formatEntryDate } from "../../lib/journal";
+import FilterDatePicker from "../ui/FilterDatePicker";
 
 const scopes = [
   { id: "all", label: "Entire journal", description: "Every entry in your archive" },
@@ -243,20 +244,29 @@ export default function ExportDialog({
 
             {scope === "range" && (
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label className="text-xs font-medium text-charcoal">
-                  From
-                  <span className="relative mt-2 block">
-                    <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sage" />
-                    <input type="date" value={from} max={to || undefined} onChange={(event) => setFrom(event.target.value)} className="field-input pl-10" />
-                  </span>
-                </label>
-                <label className="text-xs font-medium text-charcoal">
-                  To
-                  <span className="relative mt-2 block">
-                    <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sage" />
-                    <input type="date" value={to} min={from || undefined} onChange={(event) => setTo(event.target.value)} className="field-input pl-10" />
-                  </span>
-                </label>
+                <div className="text-xs font-medium text-charcoal">
+                  <span className="mb-2 block">From</span>
+                  <FilterDatePicker
+                    value={from}
+                    onChange={setFrom}
+                    label="From date"
+                    placeholder="Select date"
+                    max={to || undefined}
+                    variant="field"
+                  />
+                </div>
+                <div className="text-xs font-medium text-charcoal">
+                  <span className="mb-2 block">To</span>
+                  <FilterDatePicker
+                    value={to}
+                    onChange={setTo}
+                    label="To date"
+                    placeholder="Select date"
+                    min={from || undefined}
+                    variant="field"
+                    align="right"
+                  />
+                </div>
               </div>
             )}
 
