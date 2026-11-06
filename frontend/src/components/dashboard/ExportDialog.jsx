@@ -216,7 +216,7 @@ export default function ExportDialog({
                       setLoadError("");
                       setLoadingEntries(item.id === "selected");
                     }}
-                    className="mt-1 accent-[#50614B]"
+                    className="mt-1 accent-sage-deep"
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-medium text-charcoal">{item.label}</span>
@@ -276,7 +276,7 @@ export default function ExportDialog({
                   ) : (
                     entries.map((entry) => (
                       <label key={entry._id} className="flex cursor-pointer items-start gap-3 border-b border-hairline/70 px-3.5 py-3 last:border-0 hover:bg-warm-beige/40">
-                        <input type="checkbox" checked={selectedIds.includes(entry._id)} onChange={() => toggleEntry(entry._id)} className="mt-1 accent-[#50614B]" />
+                        <input type="checkbox" checked={selectedIds.includes(entry._id)} onChange={() => toggleEntry(entry._id)} className="mt-1 accent-sage-deep" />
                         <span className="min-w-0">
                           <span className="block truncate text-sm text-charcoal">{entry.title || "Untitled entry"}</span>
                           <span className="mt-0.5 block text-[10px] text-muted-gray">{formatEntryDate(entry.date)}</span>

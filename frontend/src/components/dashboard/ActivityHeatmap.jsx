@@ -6,7 +6,7 @@ const intensityClasses = [
   "bg-sage-light",
   "bg-sage/40",
   "bg-sage/70",
-  "bg-sage",
+  "bg-sage-deep",
 ];
 
 const buildWeeks = (activity = [], weekCount = 12, startDate = null) => {

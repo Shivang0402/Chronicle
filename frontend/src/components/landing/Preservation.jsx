@@ -53,7 +53,7 @@ export default function Preservation() {
                   {formats.map(({ label, description, icon: Icon }, index) => (
                     <RevealItem key={label} y={8}>
                       <div className="grid grid-cols-[2rem_1fr_auto] items-center gap-3 border-b border-hairline/80 py-4 last:border-0 sm:grid-cols-[2.5rem_1fr_auto]">
-                        <span className="font-serif text-xs italic text-sage">0{index + 1}</span>
+                        <span className="font-serif text-xs italic text-sage-deep">0{index + 1}</span>
                         <span className="flex items-center gap-3 font-serif text-lg text-charcoal sm:text-xl">
                           <Icon className="h-4 w-4 text-sage" />
                           {label}

@@ -5,6 +5,34 @@
 @layer base {
   :root {
     color-scheme: light;
+
+    /* Core palette: single source of truth for Tailwind and raw CSS. */
+    --color-ivory: 248 247 243;
+    --color-paper: 252 251 249;
+    --color-warm-beige: 240 238 231;
+    --color-charcoal: 37 38 34;
+    /* Secondary tones are slightly deeper than the reference swatches
+       (#777970 / #85857D) so small text clears 4.5:1 on ivory and beige. */
+    --color-charcoal-muted: 102 104 95;
+    --color-muted-gray: 107 109 100;
+    --color-sage: 130 148 124;
+    --color-sage-dark: 108 126 102;
+    --color-sage-deep: 82 102 79;
+    --color-sage-darker: 67 84 63;
+    --color-sage-light: 220 227 213;
+    --color-sage-subtle: 232 239 230;
+    --color-hairline: 232 230 223;
+    --color-danger: 168 67 58;
+
+    /* Supporting tones for texture, scrollbars and data visualisation. */
+    --color-scrollbar: 201 199 191;
+    --color-scrollbar-hover: 183 180 170;
+    --color-chart-sage: 125 145 119;
+    --color-chart-sage-soft: 169 191 161;
+    --color-chart-sage-pale: 201 214 194;
+    --color-chart-stone: 102 104 95;
+    --color-chart-stone-light: 168 168 160;
+    --color-chart-sand: 216 201 181;
   }
 
   html {
@@ -20,13 +48,13 @@
   }
 
   ::selection {
-    background-color: #dce3d5;
-    color: #252622;
+    background-color: rgb(var(--color-sage-light));
+    color: rgb(var(--color-charcoal));
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: #c9c7bf transparent;
+    scrollbar-color: rgb(var(--color-scrollbar)) transparent;
   }
 
   *::-webkit-scrollbar {
@@ -35,8 +63,12 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background: #d7d4ca;
+    background: rgb(var(--color-scrollbar));
     border-radius: 9999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--color-scrollbar-hover));
   }
 
   *::-webkit-scrollbar-track {
@@ -44,7 +76,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid rgba(130, 148, 124, 0.65);
+    outline: 2px solid rgb(var(--color-sage) / 0.7);
     outline-offset: 3px;
   }
 }
@@ -52,7 +84,7 @@
 @layer components {
   .paper-texture {
     background-image: radial-gradient(
-      rgba(80, 97, 75, 0.055) 1px,
+      rgb(var(--color-sage-deep) / 0.055) 1px,
       transparent 1px
     );
     background-size: 24px 24px;
@@ -73,7 +105,7 @@
   }
 
   .eyebrow {
-    @apply text-[11px] font-medium uppercase tracking-mega text-sage;
+    @apply text-[11px] font-medium uppercase tracking-mega text-sage-deep;
   }
 
   .hairline {
@@ -85,7 +117,7 @@
   }
 
   .btn-sage {
-    @apply inline-flex items-center justify-center gap-2.5 rounded-full bg-sage px-7 py-3.5 text-[11px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-all duration-300 hover:bg-sage-deep hover:shadow-paper disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2.5 rounded-full bg-sage-deep px-7 py-3.5 text-[11px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-all duration-300 hover:bg-sage-darker hover:shadow-paper disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .btn-ghost {
@@ -97,7 +129,7 @@
   }
 
   .field-input {
-    @apply w-full rounded-xl border border-hairline bg-warm-beige/60 px-4 py-3 text-[15px] text-charcoal outline-none transition-all duration-300 placeholder:text-muted-gray/70 hover:border-sage/30 focus:border-sage/60 focus:bg-white focus:ring-4 focus:ring-sage/10;
+    @apply w-full rounded-xl border border-hairline bg-warm-beige/60 px-4 py-3 text-[15px] text-charcoal outline-none transition-all duration-300 placeholder:text-muted-gray hover:border-sage/40 focus:border-sage/70 focus:bg-paper focus:ring-4 focus:ring-sage/15;
   }
 
   .field-input-error {
@@ -109,7 +141,7 @@
   }
 
   .link-underline {
-    @apply relative inline-flex items-center gap-1 text-sage transition-colors hover:text-sage-deep;
+    @apply relative inline-flex items-center gap-1 text-sage-deep transition-colors hover:text-charcoal;
   }
 
   .link-underline::after {
@@ -152,8 +184,8 @@
       to bottom,
       transparent 0,
       transparent 35px,
-      #e8e6df 35px,
-      #e8e6df 36px
+      rgb(var(--color-hairline)) 35px,
+      rgb(var(--color-hairline)) 36px
     );
     background-position: 0 -3px;
     background-repeat: repeat-y;
@@ -165,7 +197,7 @@
 
   .rich-editor[data-placeholder]:empty::before {
     content: attr(data-placeholder);
-    color: rgba(102, 104, 95, 0.5);
+    color: rgb(var(--color-charcoal-muted) / 0.6);
     pointer-events: none;
   }
 
@@ -218,21 +250,21 @@
   .rich-editor blockquote {
     margin: 0.3em 0;
     padding-left: 1em;
-    border-left: 2px solid rgba(80, 97, 75, 0.4);
-    color: #66685f;
+    border-left: 2px solid rgb(var(--color-sage-deep) / 0.4);
+    color: rgb(var(--color-charcoal-muted));
     font-style: italic;
   }
 
   .rich-editor a {
-    color: #50614b;
+    color: rgb(var(--color-sage-deep));
     text-decoration: underline;
-    text-decoration-color: rgba(80, 97, 75, 0.5);
+    text-decoration-color: rgb(var(--color-sage-deep) / 0.5);
     text-underline-offset: 2px;
   }
 
   .rich-editor code {
     border-radius: 3px;
-    background: #f1f3ee;
+    background: rgb(var(--color-sage-subtle));
     padding: 0.1em 0.3em;
     font-family: "Courier New", monospace;
     font-size: 0.88em;
@@ -246,7 +278,7 @@
   .rich-editor hr {
     margin: 0.6em 0;
     border: 0;
-    border-top: 1px solid #e5e3dc;
+    border-top: 1px solid rgb(var(--color-hairline));
   }
 }
 

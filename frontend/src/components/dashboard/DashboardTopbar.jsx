@@ -35,7 +35,7 @@ export default function DashboardTopbar({
           <button
             type="button"
             onClick={onNewEntry}
-            className="hidden items-center gap-1.5 rounded-full bg-sage px-4 py-2 text-[10px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-colors hover:bg-sage-deep sm:inline-flex"
+            className="hidden items-center gap-1.5 rounded-full bg-sage-deep px-4 py-2 text-[10px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-colors hover:bg-sage-darker sm:inline-flex"
           >
             <PenLine className="h-3.5 w-3.5" />
             Write

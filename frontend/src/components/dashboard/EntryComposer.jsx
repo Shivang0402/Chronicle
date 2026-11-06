@@ -326,7 +326,7 @@ export default function EntryComposer({
                 }}
                 placeholder="Give this page a title (optional)"
                 maxLength={120}
-                className="w-full border-0 bg-transparent font-serif text-2xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/60"
+                className="w-full border-0 bg-transparent font-serif text-2xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/80"
               />
 
               <div className="mt-5 flex flex-wrap gap-2">
@@ -340,7 +340,7 @@ export default function EntryComposer({
                     }}
                     className={`rounded-full px-3 py-1.5 text-[10px] font-medium transition-colors ${
                       mood === item
-                        ? "bg-sage text-white shadow-sm"
+                        ? "bg-sage-deep text-white shadow-sm"
                         : "bg-warm-beige/80 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
                     }`}
                   >

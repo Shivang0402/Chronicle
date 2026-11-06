@@ -54,7 +54,7 @@ function EntryCard({ entry, onOpen }) {
           type="button"
           onClick={() => onOpen(entry)}
           aria-label={`Read ${entry.title || "entry"}`}
-          className="flex cursor-pointer items-center gap-1 text-sage transition-colors hover:text-sage-deep"
+          className="flex cursor-pointer items-center gap-1 text-sage-deep transition-colors hover:text-charcoal"
         >
           Read
           <ArrowUpRight className="h-3 w-3" />
@@ -105,7 +105,7 @@ export default function RecentEntries({
           <button
             type="button"
             onClick={() => setShowAll((value) => !value)}
-            className="text-[11px] font-medium text-sage transition-colors hover:text-sage-deep"
+            className="text-[11px] font-medium text-sage-deep transition-colors hover:text-charcoal"
           >
             {showAll ? "Show fewer" : "View all entries →"}
           </button>

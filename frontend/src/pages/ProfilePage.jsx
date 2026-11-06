@@ -378,7 +378,7 @@ export default function ProfilePage() {
                     }}
                     className="overflow-hidden rounded-3xl border border-hairline bg-paper shadow-paper"
                   >
-                    <div className="relative overflow-hidden bg-gradient-to-br from-sage-deep via-[#5f7059] to-sage p-6 sm:p-8">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-sage-darker via-sage-deep to-sage-deep p-6 sm:p-8">
                       <div className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full border border-white/15" />
                       <div className="pointer-events-none absolute -bottom-20 right-16 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
 
@@ -388,13 +388,13 @@ export default function ProfilePage() {
                             {initial}
                           </span>
                           <div className="min-w-0">
-                            <span className="text-[9px] uppercase tracking-mega text-white/60">
+                            <span className="text-[9px] uppercase tracking-mega text-white/80">
                               Your private folio
                             </span>
                             <h2 className="mt-1 truncate font-serif text-2xl text-white sm:text-3xl">
                               {displayName}
                             </h2>
-                            <p className="mt-1 flex items-center gap-2 text-[12px] text-white/75">
+                            <p className="mt-1 flex items-center gap-2 text-[12px] text-white/85">
                               <Mail className="h-3.5 w-3.5 shrink-0" />
                               <span className="truncate">
                                 {user?.email || "Not available"}

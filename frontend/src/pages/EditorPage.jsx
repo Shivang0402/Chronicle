@@ -460,7 +460,7 @@ export default function EditorPage() {
             <button
               type="button"
               onClick={() => navigate("/journal")}
-              className="mt-4 text-[11px] text-sage underline decoration-sage/40 underline-offset-4 transition-colors hover:text-sage-deep"
+              className="mt-4 text-[11px] text-sage-deep underline decoration-sage-deep/40 underline-offset-4 transition-colors hover:text-charcoal"
             >
               Back to Journal
             </button>
@@ -664,7 +664,7 @@ export default function EditorPage() {
                         aria-pressed={active}
                         className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-medium transition-all ${
                           active
-                            ? "bg-sage text-white shadow-sm"
+                            ? "bg-sage-deep text-white shadow-sm"
                             : "bg-warm-beige/80 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
                         }`}
                       >
@@ -686,7 +686,7 @@ export default function EditorPage() {
                       onKeyDown={handleCustomMoodKeyDown}
                       placeholder="Add your own mood"
                       maxLength={40}
-                      className="w-28 border-0 bg-transparent text-[10px] text-charcoal outline-none placeholder:text-muted-gray/60"
+                      className="w-28 border-0 bg-transparent text-[10px] text-charcoal outline-none placeholder:text-muted-gray/80"
                     />
                     <button
                       type="button"
@@ -731,7 +731,7 @@ export default function EditorPage() {
                       onKeyDown={handleTagKeyDown}
                       onBlur={() => addTag(tagInput)}
                       placeholder="Add tag"
-                      className="w-20 border-0 bg-transparent text-[10px] text-charcoal outline-none placeholder:text-muted-gray/60"
+                      className="w-20 border-0 bg-transparent text-[10px] text-charcoal outline-none placeholder:text-muted-gray/80"
                     />
                     <button
                       type="button"
@@ -805,7 +805,7 @@ export default function EditorPage() {
                   placeholder="Untitled reflection..."
                   maxLength={120}
                   autoFocus={!isEditing}
-                  className="w-full border-0 bg-transparent pb-3 font-serif text-3xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/40 sm:text-[2.6rem]"
+                  className="w-full border-0 bg-transparent pb-3 font-serif text-3xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/60 sm:text-[2.6rem]"
                 />
                 <div className="h-0.5 w-full rounded-full bg-hairline transition-colors duration-300 group-focus-within:bg-sage/60" />
               </div>

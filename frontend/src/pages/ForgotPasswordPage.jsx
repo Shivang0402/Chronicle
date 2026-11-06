@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="mb-7 grid h-14 w-14 place-items-center rounded-2xl bg-sage-subtle text-sage">
+            <div className="mb-7 grid h-14 w-14 place-items-center rounded-2xl bg-sage-subtle text-sage-deep">
               <MailCheck className="h-6 w-6" />
             </div>
             <span className="eyebrow mb-3 block">Recovery dispatched</span>

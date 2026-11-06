@@ -58,7 +58,7 @@ export default function VerifyEmailPage() {
       >
         {status === "verifying" && (
           <>
-            <div className="mb-7 grid h-14 w-14 place-items-center rounded-2xl bg-sage-subtle text-sage">
+            <div className="mb-7 grid h-14 w-14 place-items-center rounded-2xl bg-sage-subtle text-sage-deep">
               <Loader2 className="h-6 w-6 animate-spin" />
             </div>
             <span className="eyebrow mb-3 block">Verifying your folio</span>
@@ -74,7 +74,7 @@ export default function VerifyEmailPage() {
 
         {status === "success" && (
           <>
-            <div className="mb-7 grid h-14 w-14 place-items-center rounded-2xl bg-sage-subtle text-sage">
+            <div className="mb-7 grid h-14 w-14 place-items-center rounded-2xl bg-sage-subtle text-sage-deep">
               <MailCheck className="h-6 w-6" />
             </div>
             <span className="eyebrow mb-3 block">Verified</span>

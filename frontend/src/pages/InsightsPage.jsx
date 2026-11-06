@@ -51,14 +51,28 @@ const RANGE_OPTIONS = [
 
 const CURRENT_YEAR = new Date().getFullYear();
 
+const CHART_COLORS = {
+  deep: "rgb(var(--color-sage-deep))",
+  sage: "rgb(var(--color-chart-sage))",
+  soft: "rgb(var(--color-chart-sage-soft))",
+  pale: "rgb(var(--color-chart-sage-pale))",
+  stone: "rgb(var(--color-chart-stone))",
+  stoneLight: "rgb(var(--color-chart-stone-light))",
+  sand: "rgb(var(--color-chart-sand))",
+  track: "rgb(var(--color-warm-beige))",
+  grid: "rgb(var(--color-hairline))",
+  label: "rgb(var(--color-charcoal-muted))",
+  surface: "rgb(var(--color-paper))",
+};
+
 const MOOD_COLORS = [
-  "#50614B",
-  "#7D9177",
-  "#A9BFA1",
-  "#C9D6C2",
-  "#5C5C57",
-  "#A8A8A0",
-  "#D8C9B5",
+  CHART_COLORS.deep,
+  CHART_COLORS.sage,
+  CHART_COLORS.soft,
+  CHART_COLORS.pale,
+  CHART_COLORS.stone,
+  CHART_COLORS.stoneLight,
+  CHART_COLORS.sand,
 ];
 
 const formatNumber = (value) => Number(value || 0).toLocaleString("en-US");
@@ -268,7 +282,7 @@ function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
                 cy="70"
                 r={radius}
                 fill="none"
-                stroke="#EDE9DF"
+                stroke={CHART_COLORS.track}
                 strokeWidth="18"
               />
               {segments.map((segment) => (
@@ -464,8 +478,16 @@ function TrendChart({
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor="#7D9177" stopOpacity="0.3" />
-                    <stop offset="100%" stopColor="#7D9177" stopOpacity="0.02" />
+                    <stop
+                      offset="0%"
+                      stopColor={CHART_COLORS.sage}
+                      stopOpacity="0.3"
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={CHART_COLORS.sage}
+                      stopOpacity="0.02"
+                    />
                   </linearGradient>
                 </defs>
 
@@ -479,7 +501,7 @@ function TrendChart({
                       x2={padding.left + innerWidth}
                       y1={y}
                       y2={y}
-                      stroke="#E8E6DF"
+                      stroke={CHART_COLORS.grid}
                       strokeWidth="1"
                       strokeDasharray={ratio === 1 ? "0" : "3 5"}
                     />
@@ -489,7 +511,7 @@ function TrendChart({
                 <text
                   x={padding.left}
                   y={padding.top - 7}
-                  fill="#85857d"
+                  fill={CHART_COLORS.label}
                   fontSize="9"
                 >
                   {formatNumber(maxValue)}
@@ -499,7 +521,7 @@ function TrendChart({
                 <polyline
                   points={linePoints}
                   fill="none"
-                  stroke="#50614B"
+                  stroke={CHART_COLORS.deep}
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -523,8 +545,8 @@ function TrendChart({
                         cx={point.x}
                         cy={point.y}
                         r={series.length > 30 ? 2.5 : 3.5}
-                        fill="#FBF9F4"
-                        stroke="#50614B"
+                        fill={CHART_COLORS.surface}
+                        stroke={CHART_COLORS.deep}
                         strokeWidth="2"
                       >
                         <title>
@@ -539,7 +561,7 @@ function TrendChart({
                           x={point.x}
                           y={height - 5}
                           textAnchor={anchor}
-                          fill="#85857d"
+                          fill={CHART_COLORS.label}
                           fontSize="8"
                           letterSpacing="0.5"
                         >
@@ -727,7 +749,7 @@ function ReflectionCard({ stats, range, loading }) {
               <p className="mt-2 max-w-2xl text-[12px] leading-relaxed text-charcoal-muted sm:text-[13px]">
                 {body}
               </p>
-              <p className="mt-4 border-t border-sage/15 pt-3 text-[10px] uppercase tracking-wider text-muted-gray">
+              <p className="mt-4 border-t border-sage/15 pt-3 text-[10px] uppercase tracking-wider text-charcoal-muted">
                 All analytics are computed directly from your saved
                 reflections.
               </p>

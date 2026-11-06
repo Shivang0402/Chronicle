@@ -45,7 +45,7 @@ const dotColors = [
   "bg-sage-deep",
   "bg-sage/60",
   "bg-charcoal-muted",
-  "bg-warm-beige",
+  "bg-muted-gray",
 ];
 
 function SidebarContent({
@@ -76,7 +76,7 @@ function SidebarContent({
         <button
           type="button"
           onClick={onNewEntry}
-          className="mb-8 flex w-full items-center justify-center gap-2 rounded-xl bg-sage px-4 py-3 text-[11px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-colors hover:bg-sage-deep"
+          className="mb-8 flex w-full items-center justify-center gap-2 rounded-xl bg-sage-deep px-4 py-3 text-[11px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-colors hover:bg-sage-darker"
         >
           <PenLine className="h-4 w-4" />
           New Entry
@@ -125,7 +125,7 @@ function SidebarContent({
             <button
               type="button"
               onClick={onClearTag}
-              className="text-[10px] text-sage transition-colors hover:text-sage-deep"
+              className="text-[10px] text-sage-deep transition-colors hover:text-charcoal"
             >
               Clear
             </button>
@@ -192,7 +192,7 @@ export default function DashboardSidebar(props) {
 
   return (
     <>
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-hairline bg-warm-beige/60 backdrop-blur-xl lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-hairline bg-warm-beige lg:block">
         <SidebarContent {...props} />
       </aside>
 
@@ -214,7 +214,7 @@ export default function DashboardSidebar(props) {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] border-r border-hairline bg-ivory shadow-paper-lg lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] border-r border-hairline bg-warm-beige shadow-paper-lg lg:hidden"
             >
               <button
                 type="button"

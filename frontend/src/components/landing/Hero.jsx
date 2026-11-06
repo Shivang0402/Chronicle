@@ -50,7 +50,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.15 }}
-              className="mb-6 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-mega text-sage"
+              className="mb-6 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-mega text-sage-deep"
             >
               <span className="h-px w-8 origin-left animate-draw-line bg-sage" />
               A journal for the life you’re living
@@ -150,7 +150,7 @@ export default function Hero() {
             className="relative z-10 flex items-center lg:col-span-5"
           >
             <div className="relative w-full p-7 sm:p-9 lg:p-10">
-              <div className="mb-7 flex items-center gap-2 text-[10px] uppercase tracking-wider text-sage">
+              <div className="mb-7 flex items-center gap-2 text-[10px] uppercase tracking-wider text-sage-deep">
                 <span className="h-1.5 w-1.5 animate-soft-pulse rounded-full bg-sage" />
                 A page from the journal
               </div>
@@ -159,7 +159,7 @@ export default function Hero() {
                 <span className="uppercase tracking-widest text-muted-gray">
                   October 14 • 8:15 PM
                 </span>
-                <span className="font-medium tracking-wide text-sage">
+                <span className="font-medium tracking-wide text-sage-deep">
                   #Peaceful
                 </span>
               </div>
@@ -179,7 +179,7 @@ export default function Hero() {
                   <span className="h-0.5 w-0.5 rounded-full bg-muted-gray" />
                   <span>3 min read</span>
                 </div>
-                <span className="flex items-center gap-1.5 text-sage">
+                <span className="flex items-center gap-1.5 text-sage-deep">
                   <BookOpen className="h-3 w-3" />
                   Entry
                 </span>

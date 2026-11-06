@@ -195,7 +195,7 @@ export default function FilterDatePicker({ value, onChange, label = "Date" }) {
                       onClick={() => chooseDate(date)}
                       className={`grid h-8 place-items-center rounded-full text-[11px] transition-colors ${
                         isSelected
-                          ? "bg-sage font-medium text-white shadow-sm"
+                          ? "bg-sage-deep font-medium text-white shadow-sm"
                           : inMonth
                             ? "text-charcoal hover:bg-warm-beige"
                             : "text-muted-gray/45 hover:bg-warm-beige/60"

@@ -146,7 +146,7 @@ function ArchiveEntryCard({ entry, view, onOpen }) {
           type="button"
           onClick={() => onOpen(entry)}
           aria-label={`Read ${entry.title || "entry"}`}
-          className="flex cursor-pointer items-center gap-1 text-sage transition-colors hover:text-sage-deep"
+          className="flex cursor-pointer items-center gap-1 text-sage-deep transition-colors hover:text-charcoal"
         >
           Read
           <ArrowUpRight className="h-3 w-3" />
@@ -538,7 +538,7 @@ export default function JournalPage() {
                       <button
                         type="button"
                         onClick={clearFilters}
-                        className="inline-flex items-center gap-1 rounded-full px-2.5 py-2 text-[10px] text-sage transition-colors hover:text-sage-deep"
+                        className="inline-flex items-center gap-1 rounded-full px-2.5 py-2 text-[10px] text-sage-deep transition-colors hover:text-charcoal"
                       >
                         <X className="h-3 w-3" />
                         Clear filters
@@ -726,7 +726,7 @@ export default function JournalPage() {
                           }}
                           className={`grid h-8 min-w-8 place-items-center rounded-full px-2 text-[11px] transition-colors ${
                             number === page
-                              ? "bg-sage text-white shadow-sm"
+                              ? "bg-sage-deep text-white shadow-sm"
                               : "border border-hairline bg-paper text-charcoal-muted hover:text-charcoal"
                           }`}
                           aria-label={`Page ${number}`}

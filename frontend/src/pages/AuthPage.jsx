@@ -162,7 +162,7 @@ export default function AuthPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="mb-7 grid h-14 w-14 place-items-center rounded-2xl bg-sage-subtle text-sage">
+          <div className="mb-7 grid h-14 w-14 place-items-center rounded-2xl bg-sage-subtle text-sage-deep">
             <MailCheck className="h-6 w-6" />
           </div>
           <span className="eyebrow mb-3 block">One small step</span>
@@ -340,7 +340,7 @@ export default function AuthPage() {
                   <Link
                     to="/forgot-password"
                     state={{ email: loginForm.email }}
-                    className="text-[11px] font-normal text-sage transition-colors hover:text-sage-deep"
+                    className="text-[11px] font-normal text-sage-deep transition-colors hover:text-charcoal"
                   >
                     Forgot password?
                   </Link>
@@ -574,7 +574,7 @@ export default function AuthPage() {
           <button
             type="button"
             onClick={() => switchMode(mode === "signin" ? "register" : "signin")}
-            className="font-medium text-sage transition-colors hover:text-sage-deep"
+            className="font-medium text-sage-deep transition-colors hover:text-charcoal"
           >
             {mode === "signin" ? "Create an account" : "Sign in"}
           </button>
@@ -655,9 +655,9 @@ function PasswordStrength({ password }) {
   const colors = [
     "bg-hairline",
     "bg-danger/60",
-    "bg-[#C9A86A]",
+    "bg-sage/40",
     "bg-sage/70",
-    "bg-sage",
+    "bg-sage-deep",
   ];
 
   return (

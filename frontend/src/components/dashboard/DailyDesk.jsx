@@ -190,7 +190,7 @@ export default function DailyDesk({
                 <span
                   className={`stat-number grid h-7 w-7 place-items-center rounded-full text-[10px] font-medium ${
                     day.entries
-                      ? "bg-sage text-white"
+                      ? "bg-sage-deep text-white"
                       : day.future
                         ? "bg-paper/40 text-muted-gray/40"
                         : "border border-hairline bg-paper/70 text-charcoal-muted"

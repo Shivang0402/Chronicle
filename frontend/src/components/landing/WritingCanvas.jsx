@@ -65,7 +65,7 @@ export default function WritingCanvas() {
                   whileTap={{ scale: 0.96 }}
                   className={`rounded-full px-3.5 py-1.5 text-[11px] transition-all duration-300 ${
                     mood === item
-                      ? "bg-sage text-white shadow-sm"
+                      ? "bg-sage-deep text-white shadow-sm"
                       : "bg-warm-beige/70 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
                   }`}
                 >
