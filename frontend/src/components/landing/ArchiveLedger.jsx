@@ -1,5 +1,4 @@
 import { ArrowUpRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
 import Reveal, { RevealGroup, RevealItem } from "../ui/Reveal";
 
@@ -43,6 +42,11 @@ const entries = [
 ];
 
 export default function ArchiveLedger() {
+  const totalWords = entries.reduce(
+    (sum, entry) => sum + Number(entry.meta.split(" ")[0]),
+    0,
+  );
+
   return (
     <section id="features" className="scroll-mt-24 bg-warm-beige/40 py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
@@ -96,11 +100,20 @@ export default function ArchiveLedger() {
           ))}
         </RevealGroup>
 
-        <Reveal delay={0.2} y={10} blur={false} className="pt-6 text-right">
-          <Link to="/auth" className="group inline-flex items-center gap-2 text-xs font-medium text-charcoal transition-colors hover:text-sage-deep">
-            Begin your own archive
-            <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
+        <Reveal
+          delay={0.2}
+          y={10}
+          blur={false}
+          className="mt-6 flex flex-col gap-3 border-t border-charcoal/10 pt-5 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p className="max-w-md text-xs font-light leading-relaxed text-charcoal-muted">
+            Every entry keeps its date, mood, and tags, so a day can be found
+            by how it felt.
+          </p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-gray">
+            Sample ledger · {entries.length} entries ·{" "}
+            {totalWords.toLocaleString("en-US")} words
+          </p>
         </Reveal>
       </div>
     </section>

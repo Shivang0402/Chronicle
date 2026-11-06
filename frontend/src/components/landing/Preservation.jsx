@@ -1,5 +1,4 @@
-import { FileJson, FileText } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Download, FileJson, FileText, Lock } from "lucide-react";
 import AnimatedText from "../ui/AnimatedText";
 import Reveal, { RevealGroup, RevealImage, RevealItem } from "../ui/Reveal";
 
@@ -34,9 +33,20 @@ export default function Preservation() {
             </p>
           </Reveal>
           <Reveal delay={0.32} y={10} blur={false}>
-            <Link to="/auth?mode=register" className="link-underline mt-6 text-sm font-medium">
-              Start writing
-            </Link>
+            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-charcoal/15 pt-5 text-[10px] uppercase tracking-wider text-muted-gray">
+              <span className="flex items-center gap-1.5">
+                <Lock className="h-3 w-3 text-sage" />
+                Private by design
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Download className="h-3 w-3 text-sage" />
+                No lock-in
+              </span>
+              <span className="flex items-center gap-1.5">
+                <FileText className="h-3 w-3 text-sage" />
+                Portable formats
+              </span>
+            </div>
           </Reveal>
         </div>
 

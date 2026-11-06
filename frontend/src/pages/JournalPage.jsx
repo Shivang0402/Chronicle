@@ -450,7 +450,6 @@ export default function JournalPage() {
           user={user}
           title="My Journal"
           onOpenMenu={() => setMobileNavOpen(true)}
-          onNewEntry={openEditor}
           onLogout={handleLogout}
         />
 

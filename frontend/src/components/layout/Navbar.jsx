@@ -92,7 +92,7 @@ export default function Navbar() {
                 Sign In
               </Link>
               <Link to="/auth?mode=register" className="btn-primary !px-5 !py-2.5">
-                Get Started
+                Get started
               </Link>
             </>
           )}
@@ -157,7 +157,7 @@ export default function Navbar() {
                     onClick={closeMenu}
                     className="btn-primary w-full"
                   >
-                    Begin your journal
+                    Get started
                   </Link>
                   <Link
                     to="/auth"

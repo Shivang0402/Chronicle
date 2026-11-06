@@ -1,4 +1,4 @@
-import { ArrowUpRight, Feather, PenLine, X } from "lucide-react";
+import { ArrowUpRight, Feather, X } from "lucide-react";
 import { useState } from "react";
 import {
   countWords,
@@ -71,7 +71,6 @@ export default function RecentEntries({
   activeTag = "",
   onClearTag,
   onOpenEntry,
-  onNewEntry,
 }) {
   const [showAll, setShowAll] = useState(false);
   const visibleEntries = showAll ? entries : entries.slice(0, 3);
@@ -143,14 +142,9 @@ export default function RecentEntries({
               Clear filter
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={onNewEntry}
-              className="btn-sage mt-5 !px-5 !py-2.5 text-[10px]"
-            >
-              <PenLine className="h-3.5 w-3.5" />
-              Write your first entry
-            </button>
+            <p className="mt-5 text-[10px] uppercase tracking-wider text-muted-gray">
+              Begin from today&rsquo;s page above
+            </p>
           )}
         </div>
       ) : (

@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { PenLine } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DailyDesk from "../components/dashboard/DailyDesk";
@@ -187,7 +186,6 @@ export default function VaultPage() {
         <DashboardTopbar
           user={user}
           onOpenMenu={() => setMobileNavOpen(true)}
-          onNewEntry={openComposer}
           onLogout={handleLogout}
         />
 
@@ -198,39 +196,22 @@ export default function VaultPage() {
 
             <div className="relative mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
               <section id="dashboard-top" className="scroll-mt-24">
-                <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <span className="eyebrow mb-3 block">Your private desk</span>
-                    <h1 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl">
-                      {greeting},{" "}
-                      <span className="italic text-sage">{firstName}</span>.
-                    </h1>
-                    <p className="mt-3 max-w-xl text-[13px] leading-relaxed text-charcoal-muted sm:text-[15px]">
-                      Welcome to your private journal. Every page here belongs
-                      only to you — take a breath and begin wherever you are.
-                    </p>
-                  </motion.div>
-
-                  <motion.button
-                    type="button"
-                    onClick={openComposer}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.12,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    className="btn-sage self-start !px-5 !py-3 sm:self-auto"
-                  >
-                    <PenLine className="h-4 w-4" />
-                    Write Entry
-                  </motion.button>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="max-w-2xl"
+                >
+                  <span className="eyebrow mb-3 block">Your private desk</span>
+                  <h1 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl">
+                    {greeting},{" "}
+                    <span className="italic text-sage">{firstName}</span>.
+                  </h1>
+                  <p className="mt-3 max-w-xl text-[13px] leading-relaxed text-charcoal-muted sm:text-[15px]">
+                    Welcome to your private journal. Every page here belongs
+                    only to you — take a breath and begin wherever you are.
+                  </p>
+                </motion.div>
               </section>
 
               {error && (
@@ -265,7 +246,6 @@ export default function VaultPage() {
                   activeTag={activeTag}
                   onClearTag={() => handleSelectTag("")}
                   onOpenEntry={setReaderEntry}
-                  onNewEntry={openComposer}
                 />
 
                 <DailyPrompt

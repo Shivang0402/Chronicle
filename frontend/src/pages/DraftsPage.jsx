@@ -252,7 +252,6 @@ export default function DraftsPage() {
           user={user}
           title="Drafts"
           onOpenMenu={() => setMobileNavOpen(true)}
-          onNewEntry={openEditor}
           onLogout={handleLogout}
         />
 
@@ -289,7 +288,7 @@ export default function DraftsPage() {
                   className="btn-sage self-start !px-5 !py-3 sm:self-auto"
                 >
                   <PenLine className="h-4 w-4" />
-                  Continue writing
+                  New draft
                 </button>
               </motion.div>
 

@@ -1,11 +1,10 @@
-import { CalendarDays, Menu, PenLine } from "lucide-react";
+import { CalendarDays, Menu } from "lucide-react";
 import { todayLabel } from "../../lib/journal";
 import AccountMenu from "./AccountMenu";
 
 export default function DashboardTopbar({
   user,
   onOpenMenu,
-  onNewEntry,
   onLogout,
   title = "Dashboard",
 }) {
@@ -32,15 +31,6 @@ export default function DashboardTopbar({
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onNewEntry}
-            className="hidden items-center gap-1.5 rounded-full bg-sage-deep px-4 py-2 text-[10px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-colors hover:bg-sage-darker sm:inline-flex"
-          >
-            <PenLine className="h-3.5 w-3.5" />
-            Write
-          </button>
-          <span className="h-4 w-px bg-hairline" />
           <AccountMenu user={user} onLogout={onLogout} variant="topbar" />
         </div>
       </div>

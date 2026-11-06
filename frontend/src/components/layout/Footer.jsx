@@ -45,7 +45,7 @@ export default function Footer() {
 
           <div className="md:col-span-4">
             <p className="mb-5 text-[11px] uppercase tracking-wide2 text-muted-gray">
-              Begin
+              Account
             </p>
             <ul className="space-y-3">
               <li>
@@ -58,14 +58,6 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/auth?mode=register"
-                  className="text-sm text-charcoal-muted transition-colors hover:text-charcoal"
-                >
-                  Create an account
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/forgot-password"
                   className="text-sm text-charcoal-muted transition-colors hover:text-charcoal"
                 >
@@ -74,7 +66,8 @@ export default function Footer() {
               </li>
             </ul>
             <p className="mt-6 max-w-xs text-xs font-light leading-relaxed text-muted-gray">
-              Take your writing with you as a PDF, Markdown file, or JSON archive.
+              Private by design. Take your writing with you as a PDF, Markdown
+              file, or JSON archive.
             </p>
           </div>
         </div>

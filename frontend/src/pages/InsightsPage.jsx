@@ -996,7 +996,6 @@ export default function InsightsPage() {
           user={user}
           title="Insights"
           onOpenMenu={() => setMobileNavOpen(true)}
-          onNewEntry={handleNewEntry}
           onLogout={handleLogout}
         />
 

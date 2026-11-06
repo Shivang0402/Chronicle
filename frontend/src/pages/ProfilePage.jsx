@@ -334,7 +334,6 @@ export default function ProfilePage() {
           user={user}
           title="Profile"
           onOpenMenu={() => setMobileNavOpen(true)}
-          onNewEntry={handleNewEntry}
           onLogout={handleLogout}
         />
 

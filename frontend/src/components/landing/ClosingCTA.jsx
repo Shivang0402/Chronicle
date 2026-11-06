@@ -28,13 +28,22 @@ export default function ClosingCTA() {
           </p>
         </Reveal>
         <Reveal delay={0.36} y={12} blur={false}>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to="/auth?mode=register" className="btn-primary w-full sm:w-auto">
+          <div className="mt-8 flex flex-col items-center">
+            <Link
+              to="/auth?mode=register"
+              className="btn-primary w-full sm:w-auto"
+            >
               Begin your journal
             </Link>
-            <a href="#experience" className="btn-ghost w-full justify-center sm:w-auto">
-              Return to the beginning
-            </a>
+            <p className="mt-5 text-xs text-muted-gray">
+              Already keeping a journal?{" "}
+              <Link
+                to="/auth"
+                className="font-medium text-charcoal underline decoration-hairline underline-offset-4 transition-colors hover:text-sage-deep"
+              >
+                Sign in
+              </Link>
+            </p>
           </div>
         </Reveal>
       </div>
