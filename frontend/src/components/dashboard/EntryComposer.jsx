@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays, Hash, Loader2, PenLine, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import ConfirmDialog from "../ui/ConfirmDialog";
 import RichTextEditor from "../ui/RichTextEditor";
 import { chronicleApi } from "../../lib/api";
 import {
@@ -75,6 +76,7 @@ export default function EntryComposer({
   const [draftSavedAt, setDraftSavedAt] = useState(() =>
     initialDraft ? new Date(initialDraft.updatedAt) : null,
   );
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
 
   const draftSnapshotRef = useRef(null);
   const dirtyRef = useRef(Boolean(initialDraft));
@@ -172,14 +174,10 @@ export default function EntryComposer({
   };
 
   const handleDiscardDraft = () => {
-    if (
-      !window.confirm(
-        "Discard this draft? Your unsaved changes cannot be recovered.",
-      )
-    ) {
-      return;
-    }
+    setDiscardDialogOpen(true);
+  };
 
+  const confirmDiscardDraft = () => {
     clearDraft(draftOwner, draftEntryId);
     dirtyRef.current = false;
     setDirty(false);
@@ -190,6 +188,7 @@ export default function EntryComposer({
     setContent(baselineContent);
     setMood(baselineMood);
     setTagsInput(baselineTagsInput);
+    setDiscardDialogOpen(false);
   };
 
   const handleSubmit = async (event) => {
@@ -252,8 +251,9 @@ export default function EntryComposer({
   };
 
   return (
-    <AnimatePresence>
-      {open && (
+    <>
+      <AnimatePresence>
+        {open && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -447,6 +447,18 @@ export default function EntryComposer({
           </motion.form>
         </motion.div>
       )}
-    </AnimatePresence>
+      </AnimatePresence>
+
+      <ConfirmDialog
+        open={discardDialogOpen}
+        eyebrow="Discard draft"
+        title="Discard this draft?"
+        description="Your unsaved changes cannot be recovered."
+        confirmLabel="Discard draft"
+        cancelLabel="Keep writing"
+        onConfirm={confirmDiscardDraft}
+        onClose={() => setDiscardDialogOpen(false)}
+      />
+    </>
   );
 }

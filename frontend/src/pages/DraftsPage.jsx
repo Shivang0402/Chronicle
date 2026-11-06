@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
 import ExportDialog from "../components/dashboard/ExportDialog";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 import PageTransition from "../components/ui/PageTransition";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
@@ -118,6 +119,7 @@ export default function DraftsPage() {
   const [exporting, setExporting] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [exportError, setExportError] = useState("");
+  const [pendingDiscard, setPendingDiscard] = useState(null);
 
   useDocumentTitle("Drafts");
 
@@ -166,15 +168,18 @@ export default function DraftsPage() {
   };
 
   const handleDiscard = (draft) => {
-    const label = draft.title?.trim() || "this draft";
+    setPendingDiscard(draft);
+  };
 
-    if (!window.confirm(`Discard ${label}? This cannot be undone.`)) {
-      return;
-    }
+  const confirmDiscard = () => {
+    if (!pendingDiscard) return;
 
-    clearDraft(draftOwner, draft.entryId);
-    setDrafts((current) => current.filter((item) => item.key !== draft.key));
+    clearDraft(draftOwner, pendingDiscard.entryId);
+    setDrafts((current) =>
+      current.filter((item) => item.key !== pendingDiscard.key),
+    );
     setNotice("Draft discarded.");
+    setPendingDiscard(null);
   };
 
   const handleSelectTag = (nextTag) => {
@@ -374,6 +379,21 @@ export default function DraftsPage() {
           exportError={exportError}
           onClose={() => setExportDialogOpen(false)}
           onExport={handleExportDownload}
+        />
+
+        <ConfirmDialog
+          open={Boolean(pendingDiscard)}
+          eyebrow="Discard draft"
+          title={
+            pendingDiscard
+              ? `Discard ${pendingDiscard.title?.trim() || "this draft"}?`
+              : "Discard this draft?"
+          }
+          description="This cannot be undone."
+          confirmLabel="Discard draft"
+          cancelLabel="Keep draft"
+          onConfirm={confirmDiscard}
+          onClose={() => setPendingDiscard(null)}
         />
 
         {notice && (

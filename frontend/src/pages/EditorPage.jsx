@@ -16,6 +16,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LeaveDraftDialog from "../components/dashboard/LeaveDraftDialog";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 import PageTransition from "../components/ui/PageTransition";
 import RichTextEditor from "../components/ui/RichTextEditor";
 import { useAuth } from "../hooks/useAuth";
@@ -77,6 +78,7 @@ export default function EditorPage() {
   );
   const [focusMode, setFocusMode] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const [openedAt] = useState(() => new Date());
 
   const draftSnapshotRef = useRef(null);
@@ -222,14 +224,10 @@ export default function EditorPage() {
   };
 
   const handleDiscardDraft = () => {
-    if (
-      !window.confirm(
-        "Discard this draft? Your unsaved changes cannot be recovered.",
-      )
-    ) {
-      return;
-    }
+    setDiscardDialogOpen(true);
+  };
 
+  const confirmDiscardDraft = () => {
     clearDraft(draftOwner, id || null);
     dirtyRef.current = false;
     setDirty(false);
@@ -239,6 +237,7 @@ export default function EditorPage() {
     setError("");
     setTagInput("");
     setCustomMoodInput("");
+    setDiscardDialogOpen(false);
 
     if (isEditing && entry) {
       setTitle(entry.title || "");
@@ -892,6 +891,17 @@ export default function EditorPage() {
           onClose={closeLeaveDialog}
           onSaveDraft={handleSaveDraftAndLeave}
           onAbandon={handleAbandonWriting}
+        />
+
+        <ConfirmDialog
+          open={discardDialogOpen}
+          eyebrow="Discard draft"
+          title="Discard this draft?"
+          description="Your unsaved changes cannot be recovered."
+          confirmLabel="Discard draft"
+          cancelLabel="Keep writing"
+          onConfirm={confirmDiscardDraft}
+          onClose={() => setDiscardDialogOpen(false)}
         />
       </div>
     </PageTransition>

@@ -9,13 +9,13 @@ import {
   Underline,
   Undo2,
 } from "lucide-react";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   escapeHtml,
   htmlToMarkdown,
   markdownToHtml,
-  safeHref,
 } from "../../lib/markdownHtml";
+import LinkDialog from "./LinkDialog";
 
 const TOOLBAR_GROUPS = [
   [
@@ -63,7 +63,7 @@ const TOOLBAR_GROUPS = [
     {
       label: "Insert link",
       icon: Link2,
-      command: (editor) => insertLink(editor),
+      action: "link",
     },
   ],
 ];
@@ -86,34 +86,6 @@ const getActiveBlock = (editor) => {
   }
 
   return null;
-};
-
-const insertLink = (editor) => {
-  const raw = window.prompt("Link URL", "https://");
-
-  if (!raw) return;
-
-  const trimmed = raw.trim();
-  const href = safeHref(trimmed)
-    ? trimmed
-    : safeHref(`https://${trimmed}`);
-
-  if (!href) return;
-
-  const selection = window.getSelection();
-
-  editor.focus();
-
-  if (selection && !selection.isCollapsed) {
-    document.execCommand("createLink", false, href);
-    return;
-  }
-
-  document.execCommand(
-    "insertHTML",
-    false,
-    `<a href="${escapeHtml(href)}">${escapeHtml(href)}</a>`,
-  );
 };
 
 const placeCaretAtEnd = (element) => {
@@ -140,6 +112,9 @@ export default function RichTextEditor({
   const initializedRef = useRef(false);
   const lastEmittedRef = useRef(value || "");
   const latestRef = useRef({ value, onChange });
+  const savedRangeRef = useRef(null);
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [linkHasSelection, setLinkHasSelection] = useState(false);
 
   useEffect(() => {
     latestRef.current = { value, onChange };
@@ -200,9 +175,69 @@ export default function RichTextEditor({
     if (!editor) return;
 
     editor.focus();
-    command(editor);
+
+    const shouldEmit = command(editor);
+
+    if (shouldEmit === false) return;
+
     window.requestAnimationFrame(emitChange);
   };
+
+  const openLinkDialog = () => {
+    const editor = editorRef.current;
+
+    if (!editor) return;
+
+    editor.focus();
+
+    const selection = window.getSelection();
+
+    if (selection && selection.rangeCount) {
+      savedRangeRef.current = selection.getRangeAt(0).cloneRange();
+      setLinkHasSelection(!selection.isCollapsed);
+    } else {
+      savedRangeRef.current = null;
+      setLinkHasSelection(false);
+    }
+
+    setLinkDialogOpen(true);
+  };
+
+  const closeLinkDialog = () => {
+    setLinkDialogOpen(false);
+    savedRangeRef.current = null;
+  };
+
+  const applyLink = ({ href, text }) => {
+    const editor = editorRef.current;
+
+    if (!editor || !href) return;
+
+    editor.focus();
+
+    const selection = window.getSelection();
+
+    if (selection && savedRangeRef.current) {
+      selection.removeAllRanges();
+      selection.addRange(savedRangeRef.current);
+    }
+
+    if (linkHasSelection) {
+      document.execCommand("createLink", false, href);
+    } else {
+      document.execCommand(
+        "insertHTML",
+        false,
+        `<a href="${escapeHtml(href)}">${escapeHtml(text || href)}</a>`,
+      );
+    }
+
+    setLinkDialogOpen(false);
+    savedRangeRef.current = null;
+    window.requestAnimationFrame(emitChange);
+  };
+
+  const toolbarGroups = TOOLBAR_GROUPS;
 
   const handlePaste = (event) => {
     event.preventDefault();
@@ -223,17 +258,27 @@ export default function RichTextEditor({
   return (
     <div className={className}>
       <div className="flex flex-wrap items-center gap-1 rounded-xl border border-hairline bg-paper/80 p-1 shadow-sm">
-        {TOOLBAR_GROUPS.map((group, groupIndex) => (
+        {toolbarGroups.map((group, groupIndex) => (
           <div key={groupIndex} className="flex items-center gap-0.5">
             {groupIndex > 0 && (
               <span className="mx-1 h-4 w-px bg-hairline" aria-hidden="true" />
             )}
-            {group.map(({ label, icon: Icon, command }) => (
+            {group.map(({ label, icon: Icon, command, action }) => (
               <button
                 key={label}
                 type="button"
                 onMouseDown={(event) => event.preventDefault()}
-                onClick={() => runCommand(command)}
+                onClick={() => {
+                  if (action === "link") {
+                    runCommand(() => {
+                      openLinkDialog();
+                      return false;
+                    });
+                    return;
+                  }
+
+                  runCommand(command);
+                }}
                 title={label}
                 aria-label={label}
                 className="grid h-8 w-8 place-items-center rounded-lg text-charcoal-muted transition-colors hover:bg-warm-beige hover:text-charcoal focus-visible:ring-2 focus-visible:ring-sage/40"
@@ -281,6 +326,14 @@ export default function RichTextEditor({
         onInput={emitChange}
         onPaste={handlePaste}
         className={`rich-editor w-full border-0 bg-transparent outline-none ${editorClassName}`}
+      />
+
+      <LinkDialog
+        key={linkDialogOpen ? "link-open" : "link-closed"}
+        open={linkDialogOpen}
+        hasSelection={linkHasSelection}
+        onClose={closeLinkDialog}
+        onSubmit={applyLink}
       />
     </div>
   );
