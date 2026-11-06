@@ -35,7 +35,11 @@ const renderInline = (text, keyPrefix) =>
       }
 
       if (/^\*\*[\s\S]+\*\*$/.test(part)) {
-        return <strong key={key}>{part.slice(2, -2)}</strong>;
+        return (
+          <strong key={key} className="font-semibold">
+            {part.slice(2, -2)}
+          </strong>
+        );
       }
 
       if (/^__[\s\S]+__$/.test(part)) {

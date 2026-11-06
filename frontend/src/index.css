@@ -238,6 +238,7 @@
     font-size: 0.88em;
   }
 
+  .rich-editor b,
   .rich-editor strong {
     font-weight: 600;
   }
