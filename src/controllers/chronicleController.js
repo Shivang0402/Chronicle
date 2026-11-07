@@ -73,17 +73,26 @@ const buildPdf = async (entries, exportedOn) => {
   try {
     const page = await browser.newPage();
 
-    await page.setContent(html, { waitUntil: "load" });
-    await page.evaluate(() => document.fonts.ready.then(() => true));
+    await page.setContent(html, {
+      waitUntil: "domcontentloaded",
+      timeout: 15000,
+    });
+    await page.evaluate(() =>
+      Promise.race([
+        document.fonts.ready.then(() => true),
+        new Promise((resolve) => setTimeout(resolve, 2500)),
+      ]),
+    );
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
       displayHeaderFooter: true,
-      headerTemplate:
-        '<div style="width:100%;margin:0 18mm;color:#82947c;font:8px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;">Chronicle <span style="float:right;color:#85857d;letter-spacing:1px;">Personal journal</span></div>',
+      headerTemplate: "<span></span>",
       footerTemplate:
-        '<div style="width:100%;margin:0 18mm;color:#85857d;font:8px Arial,sans-serif;border-top:1px solid #e8e6df;padding-top:5px;">A personal record <span style="float:right;">Page <span class="pageNumber"></span> / <span class="totalPages"></span></span></div>',
-      margin: { top: "24mm", right: "18mm", bottom: "22mm", left: "18mm" },
+        '<div style="width:100%;margin:0 14mm;color:#8a8b81;font:8px Arial,sans-serif;letter-spacing:1.6px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;"><span>Chronicle</span><span>Page <span class="pageNumber"></span> / <span class="totalPages"></span></span></div>',
+      margin: { top: "14mm", right: "14mm", bottom: "16mm", left: "14mm" },
+      outline: true,
+      tagged: true,
     });
 
     return Buffer.from(pdf);
