@@ -7,8 +7,7 @@ const entries = [
     date: "Oct 22, 2025",
     mood: "Peaceful",
     title: "The cadence of autumn winds",
-    excerpt:
-      "Walked down by the river canal right as dusk began falling. The maple leaves are turning that deep burnt ochre. A sudden sense of peace accompanied the evening chill.",
+    excerpt: "A riverside walk at dusk, and the calm that came with the evening chill.",
     meta: "540 words · 3 min",
     tags: ["Walks", "Reflections"],
   },
@@ -16,8 +15,7 @@ const entries = [
     date: "Oct 18, 2025",
     mood: "Inspired",
     title: "Pages from the second notebook",
-    excerpt:
-      "Finished reading Calvino’s Invisible Cities again. Made extensive notes on how memory shapes the physical contours of spaces we inhabit and return to.",
+    excerpt: "A return to Invisible Cities, and notes on the places memory builds.",
     meta: "820 words · 5 min",
     tags: ["Books", "Architecture"],
   },
@@ -25,19 +23,9 @@ const entries = [
     date: "Oct 14, 2025",
     mood: "Grateful",
     title: "Quiet cup of morning tea",
-    excerpt:
-      "Morning light filters past the curtains. Steaming mug, zero notifications for an hour. Relearning how pleasant it is to just hear the kettle whistle on the stove.",
+    excerpt: "Morning light, a warm cup, and one unhurried hour to myself.",
     meta: "412 words · 2 min",
     tags: ["Morning", "Stillness"],
-  },
-  {
-    date: "Oct 08, 2025",
-    mood: "Contemplative",
-    title: "Letters unposted, thoughts preserved",
-    excerpt:
-      "Sorting old correspondence in the cedar chest. There is something profoundly tactile in dated handwriting that modern communication will never quite replicate.",
-    meta: "615 words · 4 min",
-    tags: ["Memory", "Letters"],
   },
 ];
 
@@ -48,9 +36,9 @@ export default function ArchiveLedger() {
   );
 
   return (
-    <section id="features" className="scroll-mt-24 bg-warm-beige/40 py-20 md:py-28">
+    <section id="features" className="scroll-mt-24 bg-warm-beige/40 py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
-        <div className="mb-10 grid gap-5 md:mb-12 md:grid-cols-12 md:items-end">
+        <div className="mb-8 grid gap-5 md:mb-9 md:grid-cols-12 md:items-end">
           <div className="md:col-span-8">
             <Reveal variant="fade" y={12} blur={false}>
               <span className="eyebrow mb-3 block">A sample archive</span>
@@ -64,15 +52,9 @@ export default function ArchiveLedger() {
               parts={[{ text: "The days you wrote down, gathered in one place." }]}
             />
           </div>
-          <Reveal
-            variant="right"
-            className="md:col-span-4 md:justify-self-end"
-            delay={0.2}
-            y={20}
-            blur={false}
-          >
+          <Reveal variant="right" className="md:col-span-4 md:justify-self-end" delay={0.2} y={20} blur={false}>
             <p className="max-w-xs text-sm leading-relaxed text-charcoal-muted md:text-right">
-              Browse by date, revisit a feeling, and follow a thought back to where it began.
+              Revisit a feeling or follow a thought back to where it began.
             </p>
           </Reveal>
         </div>
@@ -80,7 +62,7 @@ export default function ArchiveLedger() {
         <RevealGroup className="border-t border-charcoal/15" stagger={0.1} delay={0.2} amount={0.1}>
           {entries.map((entry) => (
             <RevealItem key={entry.title} variant="right" x={26} y={12}>
-              <article className="group grid gap-3 border-b border-charcoal/10 py-6 sm:py-7 md:grid-cols-12 md:gap-8">
+              <article key={entry.title} className="group grid gap-3 border-b border-charcoal/10 py-4 sm:py-5 md:grid-cols-12 md:gap-8">
                 <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-gray md:col-span-3 md:block">
                   <time>{entry.date}</time>
                   <span className="h-1 w-1 rounded-full bg-sage md:my-3 md:block" />
@@ -93,7 +75,7 @@ export default function ArchiveLedger() {
                     </h3>
                     <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-sage opacity-0 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
                   </div>
-                  <p className="mt-2 max-w-2xl text-sm font-light leading-relaxed text-charcoal-muted">
+                  <p className="mt-1.5 max-w-2xl text-sm font-light leading-relaxed text-charcoal-muted">
                     {entry.excerpt}
                   </p>
                 </div>
@@ -107,20 +89,12 @@ export default function ArchiveLedger() {
           ))}
         </RevealGroup>
 
-        <Reveal
-          variant="fade"
-          delay={0.2}
-          y={10}
-          blur={false}
-          className="mt-6 flex flex-col gap-3 border-t border-charcoal/10 pt-5 sm:flex-row sm:items-center sm:justify-between"
-        >
+        <Reveal variant="fade" delay={0.2} y={10} blur={false} className="mt-4 flex flex-col gap-3 border-t border-charcoal/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-md text-xs font-light leading-relaxed text-charcoal-muted">
-            Every entry keeps its date, mood, and tags, so a day can be found
-            by how it felt.
+            Each entry keeps its date, mood, and tags for easy browsing.
           </p>
           <p className="text-[10px] uppercase tracking-wider text-muted-gray">
-            Sample ledger · {entries.length} entries ·{" "}
-            {totalWords.toLocaleString("en-US")} words
+            Sample ledger · {entries.length} entries · {totalWords.toLocaleString("en-US")} words
           </p>
         </Reveal>
       </div>

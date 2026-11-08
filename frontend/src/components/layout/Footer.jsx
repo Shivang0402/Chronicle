@@ -26,13 +26,7 @@ export default function Footer() {
             </p>
           </Reveal>
 
-          <Reveal
-            variant="down"
-            y={18}
-            delay={0.06}
-            amount={0.1}
-            className="md:col-span-3"
-          >
+          <Reveal variant="down" y={18} delay={0.06} amount={0.1} className="md:col-span-3">
             <p className="mb-5 text-[11px] uppercase tracking-wide2 text-muted-gray">
               Explore
             </p>
@@ -50,13 +44,7 @@ export default function Footer() {
             </ul>
           </Reveal>
 
-          <Reveal
-            variant="right"
-            y={20}
-            delay={0.12}
-            amount={0.1}
-            className="md:col-span-4"
-          >
+          <Reveal variant="right" y={20} delay={0.12} amount={0.1} className="md:col-span-4">
             <p className="mb-5 text-[11px] uppercase tracking-wide2 text-muted-gray">
               Account
             </p>
@@ -79,18 +67,12 @@ export default function Footer() {
               </li>
             </ul>
             <p className="mt-6 max-w-xs text-xs font-light leading-relaxed text-muted-gray">
-              Private by design. Take your writing with you as a PDF, Markdown
-              file, or JSON archive.
+              Private by design. Keep a print-ready PDF copy of your journal.
             </p>
           </Reveal>
         </div>
 
-        <Reveal
-          variant="fade"
-          y={10}
-          amount={0.1}
-          className="flex flex-col items-center justify-between gap-3 border-t border-hairline pt-8 text-[11px] text-muted-gray sm:flex-row"
-        >
+        <Reveal variant="fade" y={10} amount={0.1} className="flex flex-col items-center justify-between gap-3 border-t border-hairline pt-8 text-[11px] text-muted-gray sm:flex-row">
           <p>© {currentYear} Chronicle Journaling Co.</p>
           <p className="uppercase tracking-wide2">
              Make space for your story

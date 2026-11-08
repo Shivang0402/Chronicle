@@ -10,13 +10,7 @@ export default function Philosophy() {
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-9 px-6 sm:px-10 md:grid-cols-2 md:gap-12 lg:gap-20 lg:px-16">
         <div className="relative mb-8 pr-7 pb-7 sm:pr-12 md:mb-0">
-          <RevealImage
-            variant="clip-left"
-            amount={0.12}
-            delay={0.05}
-            duration={1}
-            onMount
-          >
+          <RevealImage variant="clip-left" amount={0.12} delay={0.05} duration={1} onMount>
             <div className="relative overflow-hidden border border-white/70 bg-warm-beige shadow-paper-lg">
               <img
                 src="/images/philosophy-journal.jpg"
@@ -52,7 +46,7 @@ export default function Philosophy() {
 
         <div className="max-w-xl md:justify-self-start md:pl-5 lg:pl-8">
           <Reveal variant="right" y={22} blur={false}>
-            <span className="eyebrow mb-8 block">The experience</span>
+            <span className="eyebrow mb-5 block">The experience</span>
           </Reveal>
           <AnimatedText
             as="blockquote"
@@ -60,7 +54,7 @@ export default function Philosophy() {
             once={false}
             delay={0.12}
             lineStagger={0.16}
-            className="mb-9 font-serif text-3xl leading-[1.28] tracking-tight text-charcoal sm:text-4xl lg:text-[46px]"
+            className="mb-7 font-serif text-3xl leading-[1.28] tracking-tight text-charcoal sm:text-4xl lg:text-[46px]"
             lines={[
               [{ text: "Not everything needs to be shared." }],
               [

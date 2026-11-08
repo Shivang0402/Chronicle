@@ -1,19 +1,12 @@
-import { motion } from "framer-motion";
 import { CalendarDays, Feather } from "lucide-react";
-import { useState } from "react";
 import AnimatedText from "../ui/AnimatedText";
-import Reveal, { RevealGroup, RevealItem } from "../ui/Reveal";
-
-const moods = ["Peaceful", "Grateful", "Inspired", "Contemplative"];
-const tags = ["#Reflections", "#MorningThoughts", "#TeaRitual"];
+import Reveal from "../ui/Reveal";
 
 export default function WritingCanvas() {
-  const [mood, setMood] = useState("Peaceful");
-
   return (
-    <section id="editor" className="scroll-mt-24 bg-ivory py-24 md:py-36">
+    <section id="editor" className="scroll-mt-24 bg-ivory py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
-        <div className="mb-14 max-w-3xl md:mb-16">
+        <div className="mb-10 max-w-3xl md:mb-12">
           <Reveal variant="down" y={12} blur={false}>
             <span className="eyebrow mb-3 block">The Writing Canvas</span>
           </Reveal>
@@ -27,119 +20,53 @@ export default function WritingCanvas() {
           />
           <Reveal variant="down" delay={0.24} y={14} blur={false}>
             <p className="mt-4 max-w-2xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-              A distraction-free folio that honors the intimacy of pen and
-              paper, quietly elevated for the modern thinker.
+              A small glimpse of a page, kept just for you.
             </p>
           </Reveal>
         </div>
 
-        <Reveal variant="scale" y={28} amount={0.12} delay={0.32} duration={0.9}>
-          <div className="mx-auto max-w-4xl border border-hairline bg-paper p-6 shadow-paper sm:p-10 lg:p-16">
-            <div className="flex flex-wrap items-center justify-between gap-5 border-b border-hairline pb-7 text-[11px]">
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="uppercase tracking-wider text-muted-gray">
-                  Friday, October 24
-                </span>
-                <span className="hidden h-3 w-px bg-hairline sm:block" />
-                <span className="font-light text-charcoal-muted">
-                  Late Afternoon
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <span className="uppercase tracking-widest text-[10px] text-muted-gray">
-                  Mood
-                </span>
-                <div className="flex items-center gap-1.5 rounded-full bg-sage-subtle px-3 py-1.5 text-[11px] font-medium text-charcoal">
-                  <span className="h-1.5 w-1.5 animate-soft-pulse rounded-full bg-sage" />
-                  {mood}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 border-b border-hairline py-5">
-              {moods.map((item) => (
-                <motion.button
-                  key={item}
-                  type="button"
-                  onClick={() => setMood(item)}
-                  whileTap={{ scale: 0.96 }}
-                  className={`rounded-full px-3.5 py-1.5 text-[11px] transition-all duration-300 ${
-                    mood === item
-                      ? "bg-sage-deep text-white shadow-sm"
-                      : "bg-warm-beige/70 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
-                  }`}
-                >
-                  {item}
-                </motion.button>
-              ))}
-              <span className="ml-auto flex items-center gap-1.5 text-[11px] text-muted-gray">
-                <CalendarDays className="h-3.5 w-3.5" />
-                Oct 24, 2025
+        <Reveal variant="up" y={16} amount={0.12} delay={0.28} duration={0.8}>
+          <article className="relative mx-auto max-w-3xl border border-hairline bg-paper px-7 py-8 shadow-paper sm:px-12 sm:py-11 lg:px-16">
+            <div aria-hidden="true" className="absolute bottom-0 left-0 top-0 w-1 bg-sage/50" />
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline pb-4 text-[10px] uppercase tracking-wider text-muted-gray">
+              <span className="inline-flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5 text-sage" />
+                October 24, 2025
+              </span>
+              <span className="rounded-full bg-sage-subtle px-3 py-1 font-medium normal-case tracking-normal text-sage-deep">
+                Peaceful
               </span>
             </div>
 
-            <RevealGroup
-              className="px-1 pb-10 pt-10 sm:px-4 lg:px-10"
-              delay={0.3}
-              stagger={0.12}
-            >
-              <RevealItem variant="left" x={22}>
-                <h3 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-4xl">
-                  The quiet architecture of morning
-                </h3>
-              </RevealItem>
-
-              <RevealItem variant="fade">
-                <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-gray">
-                  {tags.map((tag, index) => (
-                    <span key={tag} className="flex items-center gap-2">
-                      {index > 0 && (
-                        <span className="h-0.5 w-0.5 rounded-full bg-muted-gray/60" />
-                      )}
-                      <span className="transition-colors hover:text-charcoal">
-                        {tag}
-                      </span>
-                    </span>
-                  ))}
-                </div>
-              </RevealItem>
-
-              <RevealItem>
-                <div className="mt-8 space-y-6 text-base font-light leading-[1.85] text-charcoal sm:text-lg">
-                  <p>
-                    There is an unmistakable fragrance that autumn brings when
-                    the rain finally ceases. The windowpane is still dotted with
-                    dew, catching the faint amber glow of the morning sun.
-                  </p>
-                  <p>
-                    I used to mistake stillness for inactivity. Now I recognize
-                    it as the fertile ground where thoughts take root. Writing
-                    today feels less like recording facts and more like tuning an
-                    instrument
-                    <span className="ml-0.5 inline-block h-[1.05em] w-px translate-y-[0.18em] animate-caret bg-sage" />
-                  </p>
-                </div>
-              </RevealItem>
-            </RevealGroup>
-
-            <div className="flex flex-col items-start justify-between gap-4 border-t border-hairline pt-7 sm:flex-row sm:items-center">
-              <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-gray">
-                <span className="font-medium text-charcoal">670 words</span>
-                <span className="h-0.5 w-0.5 rounded-full bg-muted-gray" />
-                <span>4 min read</span>
-                <span className="h-0.5 w-0.5 rounded-full bg-muted-gray" />
-                <span className="flex items-center gap-1.5 italic">
-                  <Feather className="h-3 w-3 text-sage" />
-                  Sample entry
-                </span>
+            <div className="pb-2 pt-7 sm:pt-9">
+              <h3 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-4xl">
+                The quiet architecture of morning
+              </h3>
+              <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-gray">
+                <span>#Morning</span>
+                <span aria-hidden="true" className="h-1 w-1 rounded-full bg-sage/60" />
+                <span>#Reflection</span>
               </div>
 
-              <span className="text-[10px] uppercase tracking-widest text-muted-gray">
-                Preview only
-              </span>
+              <div className="mt-7 space-y-4 font-serif text-base font-light leading-[1.85] text-charcoal sm:text-lg">
+                <p>
+                  Morning light moved slowly across the desk. I made tea and
+                  listened to the rain ease against the window. The house felt
+                  still, and my thoughts began to settle.
+                </p>
+                <p>
+                  Nothing remarkable happened. Maybe that is what I want to
+                  remember: a quiet start, a familiar cup, and a few minutes
+                  that belonged only to me.
+                </p>
+              </div>
+
+              <div className="mt-7 flex items-center gap-2 border-t border-hairline pt-4 text-[10px] uppercase tracking-wider text-muted-gray">
+                <Feather className="h-3 w-3 text-sage" />
+                A journal entry
+              </div>
             </div>
-          </div>
+          </article>
         </Reveal>
       </div>
     </section>

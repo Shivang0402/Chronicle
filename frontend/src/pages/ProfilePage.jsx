@@ -41,18 +41,6 @@ const EXPORT_FORMATS = [
     dialogLabel: "PDF",
     dialogHint: "A typeset keepsake ready to print",
   },
-  {
-    id: "markdown",
-    label: "Markdown",
-    dialogLabel: "Markdown",
-    dialogHint: "Plain text for any writing app",
-  },
-  {
-    id: "json",
-    label: "JSON archive",
-    dialogLabel: "JSON",
-    dialogHint: "Structured data for backup",
-  },
 ];
 
 const EXPORT_DIALOG_FORMATS = EXPORT_FORMATS.map((item) => ({
@@ -218,7 +206,7 @@ export default function ProfilePage() {
         format,
       });
       const date = todayStamp();
-      const extension = format === "markdown" ? "md" : format;
+      const extension = format;
       const label =
         EXPORT_FORMATS.find((item) => item.id === format)?.label || format;
 
@@ -474,8 +462,8 @@ export default function ProfilePage() {
 
                     <p className="mt-5 flex items-start gap-2 border-t border-hairline/70 pt-4 text-[10px] leading-relaxed text-muted-gray">
                       <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sage" />
-                      Choose PDF, Markdown, or JSON in the export dialog, then
-                      pick the part of your journal to include.
+                      Create a print-ready PDF, then choose which part of your
+                      journal to include.
                     </p>
 
                     {exportError && (

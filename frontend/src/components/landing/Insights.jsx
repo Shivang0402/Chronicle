@@ -28,13 +28,7 @@ export default function Insights() {
               parts={[{ text: "Notice what returns." }]}
             />
           </div>
-          <Reveal
-            variant="left"
-            className="md:col-span-4 md:justify-self-end"
-            delay={0.18}
-            y={20}
-            blur={false}
-          >
+          <Reveal variant="left" className="md:col-span-4 md:justify-self-end" delay={0.18} y={20} blur={false}>
             <p className="max-w-sm text-sm leading-relaxed text-charcoal-muted md:text-right">
               A little distance can reveal the shape of your writing: its pace, its moods, and the themes you return to.
             </p>
@@ -69,3 +63,4 @@ export default function Insights() {
     </section>
   );
 }
+
