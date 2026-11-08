@@ -66,9 +66,9 @@ function SidebarContent({
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-6">
-        <div className="mb-9 flex flex-col gap-1">
-          <Wordmark to="/dashboard" mark size="sm" />
-          <span className="pl-[46px] text-[9px] uppercase tracking-wide2 text-muted-gray">
+        <div className="mb-9 flex flex-col items-center gap-1 text-center">
+          <Wordmark to="/dashboard" size="sm" />
+          <span className="text-[9px] uppercase tracking-wide2 text-muted-gray">
             Personal journal
           </span>
         </div>
