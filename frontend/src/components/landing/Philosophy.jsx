@@ -1,5 +1,6 @@
+import { ShieldCheck } from "lucide-react";
 import AnimatedText from "../ui/AnimatedText";
-import Reveal, { RevealGroup, RevealImage, RevealItem } from "../ui/Reveal";
+import Reveal, { RevealImage } from "../ui/Reveal";
 
 export default function Philosophy() {
   return (
@@ -8,28 +9,45 @@ export default function Philosophy() {
       className="relative -mt-8 scroll-mt-24 bg-ivory pb-16 pt-12 md:-mt-12 md:pb-20 md:pt-16"
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-9 px-6 sm:px-10 md:grid-cols-2 md:gap-12 lg:gap-20 lg:px-16">
-        <div className="relative">
+        <div className="relative mb-8 pr-7 pb-7 sm:pr-12 md:mb-0">
           <RevealImage
             variant="clip-left"
             amount={0.12}
             delay={0.05}
             duration={1}
+            onMount
           >
-            <div className="relative overflow-hidden bg-warm-beige">
+            <div className="relative overflow-hidden border border-white/70 bg-warm-beige shadow-paper-lg">
               <img
                 src="/images/philosophy-journal.jpg"
                 alt="An open journal and pen on a wooden desk in warm window light"
                 className="aspect-[4/3] w-full object-cover"
                 loading="eager"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/55 via-transparent to-transparent" />
+              <p className="absolute bottom-5 left-5 font-serif text-lg italic text-ivory sm:bottom-7 sm:left-7 sm:text-xl">
+                A quieter place to return to.
+              </p>
             </div>
           </RevealImage>
-          <Reveal variant="fade" delay={0.2} y={8} blur={false}>
-            <p className="mt-4 flex max-w-md items-start gap-3 text-sm leading-relaxed text-charcoal-muted">
-              <span aria-hidden="true" className="mt-2 h-px w-8 shrink-0 bg-sage/60" />
-              A page begins with whatever is on your mind.
+          <RevealImage
+            variant="clip-right"
+            delay={0.22}
+            y={12}
+            amount={0.12}
+            onMount
+            className="absolute -bottom-7 right-0 z-10 w-[38%] border-[5px] border-paper bg-paper p-1 shadow-paper-lg sm:-bottom-8 sm:w-[34%]"
+          >
+            <img
+              src="/images/auth-journal.jpg"
+              alt="A leather-bound journal resting on linen beside a window"
+              className="aspect-[4/3] w-full object-cover"
+              loading="lazy"
+            />
+            <p className="px-1 pb-1 pt-2 text-center text-[9px] uppercase tracking-wider text-muted-gray sm:text-[10px]">
+              Your words, your own
             </p>
-          </Reveal>
+          </RevealImage>
         </div>
 
         <div className="max-w-xl md:justify-self-start md:pl-5 lg:pl-8">
@@ -53,31 +71,17 @@ export default function Philosophy() {
           />
           <Reveal variant="right" delay={0.26} y={18} blur={false}>
             <p className="max-w-lg text-base font-light leading-[1.95] text-charcoal-muted sm:text-lg">
-              The day moves quickly. Writing gives you a moment to notice what
-              stayed with you, and a place to leave it for tomorrow.
+              The day moves quickly. A few lines can help you notice what
+              mattered, make sense of it, and leave it somewhere safe for
+              tomorrow.
             </p>
           </Reveal>
-          <RevealGroup
-            className="mt-8 border-t border-hairline/80 pt-5"
-            delay={0.34}
-            stagger={0.1}
-          >
-            <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-muted-gray">
-              If you need a place to begin
-            </p>
-            <div className="grid gap-3">
-              <RevealItem variant="fade" y={8}>
-                <p className="font-serif text-base leading-snug text-charcoal sm:text-lg">
-                  What stayed with you today?
-                </p>
-              </RevealItem>
-              <RevealItem variant="fade" y={8}>
-                <p className="font-serif text-base leading-snug text-charcoal sm:text-lg">
-                  What do you want to remember?
-                </p>
-              </RevealItem>
+          <Reveal variant="fade" delay={0.34} y={8} blur={false}>
+            <div className="mt-7 flex items-start gap-3 border-t border-hairline/80 pt-5 text-sm text-charcoal-muted">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-sage-deep" />
+              <p>Private by design. Write at your own pace, and return whenever you like.</p>
             </div>
-          </RevealGroup>
+          </Reveal>
         </div>
       </div>
     </section>
