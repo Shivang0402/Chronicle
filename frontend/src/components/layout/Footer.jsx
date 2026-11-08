@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Reveal from "../ui/Reveal";
 import Wordmark from "../ui/Wordmark";
 
 const currentYear = new Date().getFullYear();
@@ -15,7 +16,7 @@ export default function Footer() {
     <footer className="border-t border-hairline bg-ivory">
       <div className="mx-auto max-w-7xl px-6 py-10 sm:px-10 md:py-12 lg:px-16">
         <div className="grid grid-cols-1 gap-8 pb-8 md:grid-cols-12 md:gap-10">
-          <div className="md:col-span-5">
+          <Reveal variant="left" y={20} amount={0.1} className="md:col-span-5">
             <Wordmark />
             <p className="mt-4 max-w-sm text-sm font-light leading-relaxed text-charcoal-muted">
               A journal for the moments, thoughts, and small details worth keeping.
@@ -23,9 +24,15 @@ export default function Footer() {
             <p className="mt-6 text-[11px] uppercase tracking-wide2 text-muted-gray">
               A quiet space · Calming by design
             </p>
-          </div>
+          </Reveal>
 
-          <div className="md:col-span-3">
+          <Reveal
+            variant="down"
+            y={18}
+            delay={0.06}
+            amount={0.1}
+            className="md:col-span-3"
+          >
             <p className="mb-5 text-[11px] uppercase tracking-wide2 text-muted-gray">
               Explore
             </p>
@@ -41,9 +48,15 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
 
-          <div className="md:col-span-4">
+          <Reveal
+            variant="right"
+            y={20}
+            delay={0.12}
+            amount={0.1}
+            className="md:col-span-4"
+          >
             <p className="mb-5 text-[11px] uppercase tracking-wide2 text-muted-gray">
               Account
             </p>
@@ -69,15 +82,20 @@ export default function Footer() {
               Private by design. Take your writing with you as a PDF, Markdown
               file, or JSON archive.
             </p>
-          </div>
+          </Reveal>
         </div>
 
-        <div className="flex flex-col items-center justify-between gap-3 border-t border-hairline pt-8 text-[11px] text-muted-gray sm:flex-row">
+        <Reveal
+          variant="fade"
+          y={10}
+          amount={0.1}
+          className="flex flex-col items-center justify-between gap-3 border-t border-hairline pt-8 text-[11px] text-muted-gray sm:flex-row"
+        >
           <p>© {currentYear} Chronicle Journaling Co.</p>
           <p className="uppercase tracking-wide2">
-            A journal for everyday life
+             A journal for everyday life
           </p>
-        </div>
+        </Reveal>
       </div>
     </footer>
   );

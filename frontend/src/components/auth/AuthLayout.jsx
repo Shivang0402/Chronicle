@@ -5,7 +5,7 @@ import Wordmark from "../ui/Wordmark";
 
 export default function AuthLayout({ children }) {
   return (
-    <PageTransition>
+    <PageTransition variant="fade">
       <div className="relative min-h-screen overflow-hidden bg-ivory">
         <div className="pointer-events-none absolute inset-0 paper-texture opacity-60" />
         <div className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-sage-light/20 blur-3xl" />

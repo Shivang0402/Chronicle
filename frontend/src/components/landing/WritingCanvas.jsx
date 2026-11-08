@@ -14,17 +14,18 @@ export default function WritingCanvas() {
     <section id="editor" className="scroll-mt-24 bg-ivory py-24 md:py-36">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="mb-14 max-w-3xl md:mb-16">
-          <Reveal y={14} blur={false}>
+          <Reveal variant="down" y={12} blur={false}>
             <span className="eyebrow mb-3 block">The Writing Canvas</span>
           </Reveal>
           <AnimatedText
             as="h2"
+            mode="slide"
             once={false}
             delay={0.1}
             className="font-serif text-3xl tracking-tight text-charcoal sm:text-5xl"
             parts={[{ text: "Give your thoughts room to unfold." }]}
           />
-          <Reveal delay={0.24} y={16} blur={false}>
+          <Reveal variant="down" delay={0.24} y={14} blur={false}>
             <p className="mt-4 max-w-2xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
               A distraction-free folio that honors the intimacy of pen and
               paper, quietly elevated for the modern thinker.
@@ -32,7 +33,7 @@ export default function WritingCanvas() {
           </Reveal>
         </div>
 
-        <Reveal y={28} amount={0.12} delay={0.32}>
+        <Reveal variant="scale" y={28} amount={0.12} delay={0.32} duration={0.9}>
           <div className="mx-auto max-w-4xl border border-hairline bg-paper p-6 shadow-paper sm:p-10 lg:p-16">
             <div className="flex flex-wrap items-center justify-between gap-5 border-b border-hairline pb-7 text-[11px]">
               <div className="flex flex-wrap items-center gap-4">
@@ -83,13 +84,13 @@ export default function WritingCanvas() {
               delay={0.3}
               stagger={0.12}
             >
-              <RevealItem>
+              <RevealItem variant="left" x={22}>
                 <h3 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-4xl">
                   The quiet architecture of morning
                 </h3>
               </RevealItem>
 
-              <RevealItem>
+              <RevealItem variant="fade">
                 <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-gray">
                   {tags.map((tag, index) => (
                     <span key={tag} className="flex items-center gap-2">

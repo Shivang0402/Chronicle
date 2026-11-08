@@ -16,18 +16,25 @@ export default function Insights() {
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="grid gap-8 md:grid-cols-12 md:items-end">
           <div className="md:col-span-8">
-            <Reveal y={12} blur={false}>
+            <Reveal variant="left" y={20} blur={false}>
               <span className="eyebrow mb-3 block">Looking back</span>
             </Reveal>
             <AnimatedText
               as="h2"
+              mode="drop"
               once={false}
               delay={0.1}
               className="font-serif text-3xl tracking-tight text-charcoal sm:text-5xl"
               parts={[{ text: "Notice what returns." }]}
             />
           </div>
-          <Reveal className="md:col-span-4 md:justify-self-end" delay={0.18} y={10} blur={false}>
+          <Reveal
+            variant="left"
+            className="md:col-span-4 md:justify-self-end"
+            delay={0.18}
+            y={20}
+            blur={false}
+          >
             <p className="max-w-sm text-sm leading-relaxed text-charcoal-muted md:text-right">
               A little distance can reveal the shape of your writing: its pace, its moods, and the themes you return to.
             </p>
@@ -45,7 +52,7 @@ export default function Insights() {
           />
           <RevealGroup className="grid gap-8 md:grid-cols-3 md:gap-10" delay={0.16} stagger={0.12}>
             {reflections.map(([title, body], index) => (
-              <RevealItem key={title} y={14}>
+              <RevealItem key={title} variant="scale" y={14}>
                 <div className="relative flex items-center gap-3 md:mb-6 md:block">
                   <span className="relative z-10 grid h-8 w-8 place-items-center rounded-full border border-sage/30 bg-ivory font-serif text-xs italic text-sage-deep">
                     0{index + 1}

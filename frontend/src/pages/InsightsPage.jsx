@@ -21,6 +21,7 @@ import DashboardTopbar from "../components/dashboard/DashboardTopbar";
 import ExportDialog from "../components/dashboard/ExportDialog";
 import StatCard from "../components/dashboard/StatCard";
 import PageTransition from "../components/ui/PageTransition";
+import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
@@ -976,7 +977,7 @@ export default function InsightsPage() {
   const scopeLabel = getScopeLabel(range, displayRangeStart);
 
   return (
-    <PageTransition>
+    <PageTransition variant="zoom">
       <div className="min-h-screen bg-ivory">
         <DashboardSidebar
           user={user}
@@ -1006,10 +1007,10 @@ export default function InsightsPage() {
             <div className="pointer-events-none absolute left-1/4 top-1/3 h-[28rem] w-[28rem] rounded-full bg-sage-light/10 blur-3xl" />
 
             <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              <Reveal
+                variant="left"
+                y={18}
+                blur={false}
                 className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"
               >
                 <div className="max-w-2xl">
@@ -1059,9 +1060,14 @@ export default function InsightsPage() {
                     {exporting ? "Preparing..." : "Export archive"}
                   </button>
                 </div>
-              </motion.div>
+              </Reveal>
 
-              <div className="mt-7 flex flex-col gap-2 rounded-xl border border-hairline bg-paper px-4 py-3 text-[11px] text-muted-gray shadow-paper sm:flex-row sm:items-center sm:justify-between">
+              <Reveal
+                variant="fade"
+                y={12}
+                blur={false}
+                className="mt-7 flex flex-col gap-2 rounded-xl border border-hairline bg-paper px-4 py-3 text-[11px] text-muted-gray shadow-paper sm:flex-row sm:items-center sm:justify-between"
+              >
                 <div className="flex flex-wrap items-center gap-2">
                   <CalendarDays className="h-4 w-4 text-sage" />
                   <span className="font-medium uppercase tracking-wide2 text-charcoal">
@@ -1079,7 +1085,7 @@ export default function InsightsPage() {
                   </span>{" "}
                   {rangeEntries === 1 ? "entry" : "entries"}
                 </span>
-              </div>
+              </Reveal>
 
               {error && (
                 <div className="mt-6 flex flex-col gap-3 rounded-xl border border-danger/20 bg-danger/5 px-4 py-3 text-[12px] text-danger sm:flex-row sm:items-center sm:justify-between">
@@ -1094,7 +1100,13 @@ export default function InsightsPage() {
                 </div>
               )}
 
-              <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              <Reveal
+                variant="scale"
+                y={20}
+                amount={0.05}
+                blur={false}
+                className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+              >
                 {statCards.map((card, index) => (
                   <StatCard
                     key={card.label}
@@ -1103,9 +1115,15 @@ export default function InsightsPage() {
                     delay={0.1 + index * 0.05}
                   />
                 ))}
-              </div>
+              </Reveal>
 
-              <div className="mt-8 space-y-6">
+              <Reveal
+                variant="up"
+                y={22}
+                amount={0.03}
+                blur={false}
+                className="mt-8 space-y-6"
+              >
                 <ActivityHeatmap
                   activity={stats.activity}
                   loading={loading}
@@ -1143,9 +1161,15 @@ export default function InsightsPage() {
                   range={range}
                   loading={loading}
                 />
-              </div>
+              </Reveal>
 
-              <footer className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between">
+              <Reveal
+                as="footer"
+                variant="fade"
+                y={10}
+                blur={false}
+                className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between"
+              >
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-sage" />
                   A private record, kept only for you
@@ -1172,7 +1196,7 @@ export default function InsightsPage() {
                     Insights
                   </Link>
                 </div>
-              </footer>
+              </Reveal>
             </div>
           </main>
         </div>

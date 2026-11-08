@@ -119,7 +119,14 @@ export default function Hero() {
             className="group relative lg:col-span-7"
             ref={imageRef}
           >
-            <RevealImage onMount delay={0.75} y={0} duration={1} className="h-full">
+            <RevealImage
+              variant="fade"
+              onMount
+              delay={0.75}
+              y={0}
+              duration={1}
+              className="h-full"
+            >
               <div className="aspect-[16/10] overflow-hidden bg-hairline">
                 <motion.img
                   src="/images/hero-journal.jpg"

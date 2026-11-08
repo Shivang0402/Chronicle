@@ -8,11 +8,12 @@ export default function ClosingCTA() {
       <div className="pointer-events-none absolute inset-0 paper-texture opacity-60" />
       <div className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-sage-light/25 blur-3xl" />
       <div className="relative mx-auto max-w-4xl px-6 text-center sm:px-10">
-        <Reveal y={10} blur={false}>
+        <Reveal variant="down" y={10} blur={false}>
           <span className="eyebrow mb-5 block">A page of your own</span>
         </Reveal>
         <AnimatedText
           as="h2"
+          mode="tilt"
           once={false}
           delay={0.1}
           lineStagger={0.16}
@@ -22,12 +23,12 @@ export default function ClosingCTA() {
             [{ text: "Keep what matters.", italic: true, className: "text-sage" }],
           ]}
         />
-        <Reveal delay={0.24} y={14} blur={false}>
+        <Reveal variant="scale" delay={0.24} y={14} blur={false}>
           <p className="mx-auto mt-6 max-w-xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
             A few honest lines are enough to begin.
           </p>
         </Reveal>
-        <Reveal delay={0.36} y={12} blur={false}>
+        <Reveal variant="scale" delay={0.36} y={12} blur={false}>
           <div className="mt-8 flex flex-col items-center">
             <Link
               to="/auth?mode=register"

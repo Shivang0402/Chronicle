@@ -9,6 +9,7 @@ import ExportDialog from "../components/dashboard/ExportDialog";
 import EntryReader from "../components/dashboard/EntryReader";
 import RecentEntries from "../components/dashboard/RecentEntries";
 import PageTransition from "../components/ui/PageTransition";
+import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
@@ -158,7 +159,7 @@ export default function VaultPage() {
   };
 
   return (
-    <PageTransition>
+    <PageTransition variant="rise">
       <div className="min-h-screen bg-ivory">
         <DashboardSidebar
           user={user}
@@ -187,10 +188,10 @@ export default function VaultPage() {
 
             <div className="relative mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
               <section id="dashboard-top" className="scroll-mt-24">
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                <Reveal
+                  variant="down"
+                  y={18}
+                  blur={false}
                   className="max-w-2xl"
                 >
                   <span className="eyebrow mb-3 block">Your private desk</span>
@@ -202,7 +203,7 @@ export default function VaultPage() {
                     Welcome to your private journal. Every page here belongs
                     only to you — take a breath and begin wherever you are.
                   </p>
-                </motion.div>
+                </Reveal>
               </section>
 
               {error && (
@@ -218,7 +219,13 @@ export default function VaultPage() {
                 </div>
               )}
 
-              <div className="mt-8">
+              <Reveal
+                variant="scale"
+                y={22}
+                delay={0.08}
+                amount={0.08}
+                className="mt-8"
+              >
                 <DailyDesk
                   stats={stats}
                   entries={entries}
@@ -227,22 +234,32 @@ export default function VaultPage() {
                   onReadEntry={setReaderEntry}
                   onOpenJournal={() => navigate("/journal")}
                 />
-              </div>
+              </Reveal>
 
               <div className="mt-8 space-y-8">
-                <RecentEntries
-                  entries={entries}
-                  totalChronicles={entriesTotal}
-                  loading={entriesLoading}
-                  activeTag={activeTag}
-                  onClearTag={() => handleSelectTag("")}
-                  onOpenEntry={setReaderEntry}
-                />
+                <Reveal variant="left" y={24} amount={0.08}>
+                  <RecentEntries
+                    entries={entries}
+                    totalChronicles={entriesTotal}
+                    loading={entriesLoading}
+                    activeTag={activeTag}
+                    onClearTag={() => handleSelectTag("")}
+                    onOpenEntry={setReaderEntry}
+                  />
+                </Reveal>
 
-                <DailyPrompt onReflect={(prompt) => openEditor(prompt)} />
+                <Reveal variant="right" y={24} amount={0.08}>
+                  <DailyPrompt onReflect={(prompt) => openEditor(prompt)} />
+                </Reveal>
               </div>
 
-              <footer className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between">
+              <Reveal
+                as="footer"
+                variant="fade"
+                y={10}
+                blur={false}
+                className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between"
+              >
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-sage" />
                   All entries encrypted in transit via JWT/HTTPS
@@ -269,7 +286,7 @@ export default function VaultPage() {
                     Insights
                   </Link>
                 </div>
-              </footer>
+              </Reveal>
             </div>
           </main>
         </div>

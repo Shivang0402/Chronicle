@@ -7,6 +7,10 @@ const chronicleRoutes = require("./routes/chronicleRoutes");
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
 app.use(express.json());
 
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/chronicle", chronicleRoutes);
 

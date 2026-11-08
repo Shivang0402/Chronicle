@@ -23,6 +23,7 @@ import EntryReader from "../components/dashboard/EntryReader";
 import FilterDatePicker from "../components/ui/FilterDatePicker";
 import FilterSelect from "../components/ui/FilterSelect";
 import PageTransition from "../components/ui/PageTransition";
+import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
@@ -422,7 +423,7 @@ export default function JournalPage() {
   };
 
   return (
-    <PageTransition>
+    <PageTransition variant="slide-left">
       <div className="min-h-screen bg-ivory">
         <DashboardSidebar
           user={user}
@@ -459,10 +460,10 @@ export default function JournalPage() {
             <div className="pointer-events-none absolute -right-24 top-24 h-80 w-80 rounded-full bg-sage-light/20 blur-3xl" />
 
             <div className="relative mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              <Reveal
+                variant="right"
+                y={18}
+                blur={false}
                 className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
               >
                 <div>
@@ -486,9 +487,15 @@ export default function JournalPage() {
                   <PenLine className="h-4 w-4" />
                   New Entry
                 </button>
-              </motion.div>
+              </Reveal>
 
-              <div className="mt-7 rounded-2xl border border-hairline bg-paper p-4 shadow-paper sm:p-5">
+              <Reveal
+                variant="down"
+                y={16}
+                delay={0.06}
+                blur={false}
+                className="mt-7 rounded-2xl border border-hairline bg-paper p-4 shadow-paper sm:p-5"
+              >
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-gray" />
                   <input
@@ -583,7 +590,7 @@ export default function JournalPage() {
                     />
                   </div>
                 </div>
-              </div>
+              </Reveal>
 
               {error && (
                 <div className="mt-6 flex flex-col gap-3 rounded-xl border border-danger/20 bg-danger/5 px-4 py-3 text-[12px] text-danger sm:flex-row sm:items-center sm:justify-between">
@@ -655,7 +662,14 @@ export default function JournalPage() {
                 ) : (
                   <div className="space-y-8">
                     {groups.map((group) => (
-                      <section key={group.key}>
+                      <Reveal
+                        as="section"
+                        key={group.key}
+                        variant="up"
+                        y={18}
+                        amount={0.05}
+                        blur={false}
+                      >
                         <div className="mb-4 flex items-center gap-3">
                           <h2 className="font-serif text-xl tracking-tight text-charcoal">
                             {group.month}
@@ -685,14 +699,19 @@ export default function JournalPage() {
                             />
                           ))}
                         </div>
-                      </section>
+                      </Reveal>
                     ))}
                   </div>
                 )}
               </div>
 
               {!loading && totalPages > 1 && (
-                <div className="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
+                <Reveal
+                  variant="fade"
+                  y={10}
+                  blur={false}
+                  className="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row"
+                >
                   <span className="text-[10px] text-muted-gray">
                     Page {page} of {totalPages} ·{" "}
                     {total.toLocaleString("en-US")} entries
@@ -748,7 +767,7 @@ export default function JournalPage() {
                       <ChevronRight className="h-4 w-4" />
                     </button>
                   </div>
-                </div>
+                </Reveal>
               )}
 
             </div>

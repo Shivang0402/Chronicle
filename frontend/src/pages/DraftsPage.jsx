@@ -15,6 +15,7 @@ import DashboardTopbar from "../components/dashboard/DashboardTopbar";
 import ExportDialog from "../components/dashboard/ExportDialog";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import PageTransition from "../components/ui/PageTransition";
+import Reveal, { RevealGroup, RevealItem } from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
@@ -232,7 +233,7 @@ export default function DraftsPage() {
   };
 
   return (
-    <PageTransition>
+    <PageTransition variant="slide-right">
       <div className="min-h-screen bg-ivory">
         <DashboardSidebar
           user={user}
@@ -261,10 +262,10 @@ export default function DraftsPage() {
             <div className="pointer-events-none absolute -right-24 top-24 h-80 w-80 rounded-full bg-sage-light/20 blur-3xl" />
 
             <div className="relative mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              <Reveal
+                variant="scale"
+                y={20}
+                blur={false}
                 className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
               >
                 <div>
@@ -290,9 +291,15 @@ export default function DraftsPage() {
                   <PenLine className="h-4 w-4" />
                   New draft
                 </button>
-              </motion.div>
+              </Reveal>
 
-              <div className="mt-7 flex items-start gap-3 rounded-2xl border border-hairline bg-warm-beige/50 p-4 text-[11px] leading-relaxed text-charcoal-muted sm:items-center sm:p-5">
+              <Reveal
+                variant="down"
+                y={14}
+                delay={0.05}
+                blur={false}
+                className="mt-7 flex items-start gap-3 rounded-2xl border border-hairline bg-warm-beige/50 p-4 text-[11px] leading-relaxed text-charcoal-muted sm:items-center sm:p-5"
+              >
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-paper text-sage-deep shadow-sm">
                   <FileText className="h-4 w-4" />
                 </span>
@@ -301,11 +308,16 @@ export default function DraftsPage() {
                   your journal or discard them. They are not included in your
                   archive yet.
                 </p>
-              </div>
+              </Reveal>
 
               <div className="mt-7">
                 {drafts.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-hairline bg-paper/60 px-6 py-16 text-center">
+                  <Reveal
+                    variant="scale"
+                    y={18}
+                    blur={false}
+                    className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-hairline bg-paper/60 px-6 py-16 text-center"
+                  >
                     <span className="grid h-12 w-12 place-items-center rounded-full bg-sage-subtle text-sage-deep">
                       <FileText className="h-5 w-5" />
                     </span>
@@ -324,22 +336,31 @@ export default function DraftsPage() {
                       <PenLine className="h-3.5 w-3.5" />
                       Start a new entry
                     </button>
-                  </div>
+                  </Reveal>
                 ) : (
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <RevealGroup
+                    className="grid grid-cols-1 gap-4 md:grid-cols-2"
+                    stagger={0.08}
+                  >
                     {drafts.map((draft) => (
-                      <DraftCard
-                        key={draft.key}
-                        draft={draft}
-                        onResume={handleResume}
-                        onDiscard={handleDiscard}
-                      />
+                      <RevealItem key={draft.key} variant="fade" y={14}>
+                        <DraftCard
+                          draft={draft}
+                          onResume={handleResume}
+                          onDiscard={handleDiscard}
+                        />
+                      </RevealItem>
                     ))}
-                  </div>
+                  </RevealGroup>
                 )}
               </div>
 
-              <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-hairline bg-warm-beige/50 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <Reveal
+                variant="left"
+                y={20}
+                blur={false}
+                className="mt-8 flex flex-col gap-4 rounded-2xl border border-hairline bg-warm-beige/50 p-5 sm:flex-row sm:items-center sm:justify-between"
+              >
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-paper text-sage-deep shadow-sm">
                     <Download className="h-4 w-4" />
@@ -366,7 +387,7 @@ export default function DraftsPage() {
                   )}
                   {exporting ? "Preparing..." : "Export Journal"}
                 </button>
-              </div>
+              </Reveal>
             </div>
           </main>
         </div>

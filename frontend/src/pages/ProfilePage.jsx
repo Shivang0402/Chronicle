@@ -22,6 +22,7 @@ import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
 import ExportDialog from "../components/dashboard/ExportDialog";
 import PageTransition from "../components/ui/PageTransition";
+import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { authApi, chronicleApi } from "../lib/api";
@@ -314,7 +315,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <PageTransition>
+    <PageTransition variant="fade">
       <div className="min-h-screen bg-ivory">
         <DashboardSidebar
           user={user}
@@ -343,10 +344,11 @@ export default function ProfilePage() {
             <div className="pointer-events-none absolute -right-24 top-24 h-80 w-80 rounded-full bg-sage-light/20 blur-3xl" />
 
             <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-              <motion.header
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              <Reveal
+                as="header"
+                variant="right"
+                y={18}
+                blur={false}
                 className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
               >
                 <div>
@@ -363,18 +365,16 @@ export default function ProfilePage() {
                   <span className="h-1.5 w-1.5 rounded-full bg-sage" />
                   Private journal
                 </span>
-              </motion.header>
+              </Reveal>
 
               <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
                 <div className="flex flex-col gap-6 lg:col-span-8">
-                  <motion.section
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.06,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
+                  <Reveal
+                    as="section"
+                    variant="scale"
+                    y={20}
+                    delay={0.06}
+                    blur={false}
                     className="overflow-hidden rounded-3xl border border-hairline bg-paper shadow-paper"
                   >
                     <div className="relative overflow-hidden bg-gradient-to-br from-sage-darker via-sage-deep to-sage-deep p-6 sm:p-8">
@@ -441,16 +441,14 @@ export default function ProfilePage() {
                         Member since {memberSince}
                       </span>
                     </div>
-                  </motion.section>
+                  </Reveal>
 
-                  <motion.section
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.12,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
+                  <Reveal
+                    as="section"
+                    variant="left"
+                    y={20}
+                    delay={0.12}
+                    blur={false}
                     className="rounded-3xl border border-hairline bg-paper p-6 shadow-paper sm:p-7"
                   >
                     <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -489,17 +487,15 @@ export default function ProfilePage() {
                         {exportError}
                       </p>
                     )}
-                  </motion.section>
+                  </Reveal>
 
-                  <motion.section
-                    ref={securityRef}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.18,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
+                  <Reveal
+                    as="section"
+                    nodeRef={securityRef}
+                    variant="down"
+                    y={18}
+                    delay={0.18}
+                    blur={false}
                     className="scroll-mt-24 rounded-3xl border border-hairline bg-paper p-6 shadow-paper sm:p-7"
                   >
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -670,18 +666,16 @@ export default function ProfilePage() {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </motion.section>
+                  </Reveal>
                 </div>
 
                 <aside className="flex flex-col gap-6 lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
-                  <motion.section
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.1,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
+                  <Reveal
+                    as="section"
+                    variant="right"
+                    y={20}
+                    delay={0.1}
+                    blur={false}
                     className="rounded-3xl border border-hairline bg-paper p-6 shadow-paper"
                   >
                     <SectionHeading
@@ -727,16 +721,14 @@ export default function ProfilePage() {
                       Browse all entries
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
-                  </motion.section>
+                  </Reveal>
 
-                  <motion.section
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.16,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
+                  <Reveal
+                    as="section"
+                    variant="scale"
+                    y={20}
+                    delay={0.16}
+                    blur={false}
                     className="relative overflow-hidden rounded-3xl border border-sage/20 bg-gradient-to-br from-sage-subtle via-paper to-warm-beige p-6 shadow-paper"
                   >
                     <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-sage/10 blur-2xl" />
@@ -757,16 +749,14 @@ export default function ProfilePage() {
                       See your insights
                       <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
-                  </motion.section>
+                  </Reveal>
 
-                  <motion.section
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.22,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
+                  <Reveal
+                    as="section"
+                    variant="fade"
+                    y={14}
+                    delay={0.22}
+                    blur={false}
                     className="rounded-3xl border border-hairline bg-paper p-6 shadow-paper"
                   >
                     <SectionHeading
@@ -782,11 +772,17 @@ export default function ProfilePage() {
                       <LogOut className="h-3.5 w-3.5" />
                       Sign out
                     </button>
-                  </motion.section>
+                  </Reveal>
                 </aside>
               </div>
 
-              <footer className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between">
+              <Reveal
+                as="footer"
+                variant="fade"
+                y={10}
+                blur={false}
+                className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between"
+              >
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-sage" />
                   Account details and journal data stay private to you
@@ -813,7 +809,7 @@ export default function ProfilePage() {
                     Insights
                   </Link>
                 </div>
-              </footer>
+              </Reveal>
             </div>
           </main>
         </div>

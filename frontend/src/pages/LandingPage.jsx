@@ -14,7 +14,7 @@ export default function LandingPage() {
   useDocumentTitle("A Quiet Sanctuary for Your Thoughts");
 
   return (
-    <PageTransition>
+    <PageTransition variant="soft">
       <div className="min-h-screen bg-ivory">
         <Navbar />
         <main>

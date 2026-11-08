@@ -9,7 +9,12 @@ export default function Philosophy() {
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-9 px-6 sm:px-10 md:grid-cols-2 md:gap-12 lg:gap-20 lg:px-16">
         <div className="relative">
-          <RevealImage onMount y={14} amount={0.12} delay={0.05} duration={1}>
+          <RevealImage
+            variant="clip-left"
+            amount={0.12}
+            delay={0.05}
+            duration={1}
+          >
             <div className="relative overflow-hidden bg-warm-beige">
               <img
                 src="/images/philosophy-journal.jpg"
@@ -19,7 +24,7 @@ export default function Philosophy() {
               />
             </div>
           </RevealImage>
-          <Reveal delay={0.2} y={8} blur={false}>
+          <Reveal variant="fade" delay={0.2} y={8} blur={false}>
             <p className="mt-4 flex max-w-md items-start gap-3 text-sm leading-relaxed text-charcoal-muted">
               <span aria-hidden="true" className="mt-2 h-px w-8 shrink-0 bg-sage/60" />
               A page begins with whatever is on your mind.
@@ -28,11 +33,12 @@ export default function Philosophy() {
         </div>
 
         <div className="max-w-xl md:justify-self-start md:pl-5 lg:pl-8">
-          <Reveal y={10} blur={false}>
+          <Reveal variant="right" y={22} blur={false}>
             <span className="eyebrow mb-8 block">The experience</span>
           </Reveal>
           <AnimatedText
             as="blockquote"
+            mode="fade"
             once={false}
             delay={0.12}
             lineStagger={0.16}
@@ -45,7 +51,7 @@ export default function Philosophy() {
               ],
             ]}
           />
-          <Reveal delay={0.26} y={12} blur={false}>
+          <Reveal variant="right" delay={0.26} y={18} blur={false}>
             <p className="max-w-lg text-base font-light leading-[1.95] text-charcoal-muted sm:text-lg">
               The day moves quickly. Writing gives you a moment to notice what
               stayed with you, and a place to leave it for tomorrow.
@@ -60,12 +66,12 @@ export default function Philosophy() {
               If you need a place to begin
             </p>
             <div className="grid gap-3">
-              <RevealItem y={8}>
+              <RevealItem variant="fade" y={8}>
                 <p className="font-serif text-base leading-snug text-charcoal sm:text-lg">
                   What stayed with you today?
                 </p>
               </RevealItem>
-              <RevealItem y={8}>
+              <RevealItem variant="fade" y={8}>
                 <p className="font-serif text-base leading-snug text-charcoal sm:text-lg">
                   What do you want to remember?
                 </p>

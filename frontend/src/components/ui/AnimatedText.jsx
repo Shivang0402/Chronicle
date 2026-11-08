@@ -3,6 +3,43 @@ import useInViewOnce from "../../hooks/useInViewOnce";
 
 const easing = [0.16, 1, 0.3, 1];
 
+const wordHidden = (mode, reduce) => {
+  if (reduce) return { opacity: 0 };
+
+  switch (mode) {
+    case "fade":
+      return { opacity: 0, filter: "blur(8px)" };
+    case "scale":
+      return { opacity: 0, scale: 0.82 };
+    case "slide":
+      return { opacity: 0, x: -18 };
+    case "blur":
+      return { opacity: 0, filter: "blur(12px)" };
+    case "tilt":
+      return { opacity: 0, y: "70%", rotate: 3 };
+    case "drop":
+      return { opacity: 0, y: "-90%", rotate: -1.5 };
+    default:
+      return { y: "112%", opacity: 0, rotate: 1.5 };
+  }
+};
+
+const wordVisible = (mode, reduce) => {
+  if (reduce) {
+    return { opacity: 1, transition: { duration: 0.01, ease: "easeOut" } };
+  }
+
+  return {
+    y: ["rise", "drop", "tilt"].includes(mode) ? "0%" : 0,
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    rotate: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.9, ease: easing },
+  };
+};
+
 const toParts = (value) => (Array.isArray(value) ? value : [{ text: value }]);
 
 const buildWords = (parts) => {
@@ -33,6 +70,7 @@ export default function AnimatedText({
   delay = 0,
   stagger = 0.04,
   lineStagger = 0.14,
+  mode = "rise",
   once = true,
   onMount = false,
   amount = 0.15,
@@ -87,20 +125,8 @@ export default function AnimatedText({
               >
                 <motion.span
                   variants={{
-                    hidden: reduce
-                      ? { opacity: 0 }
-                      : { y: "112%", opacity: 0, rotate: 1.5 },
-                    visible: reduce
-                      ? {
-                          opacity: 1,
-                          transition: { duration: 0.01, ease: "easeOut" },
-                        }
-                      : {
-                          y: "0%",
-                          opacity: 1,
-                          rotate: 0,
-                          transition: { duration: 0.9, ease: easing },
-                        },
+                    hidden: wordHidden(mode, reduce),
+                    visible: wordVisible(mode, reduce),
                   }}
                   className={[
                     "inline-block",

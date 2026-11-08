@@ -8,7 +8,7 @@ export default function NotFoundPage() {
   useDocumentTitle("Page not found");
 
   return (
-    <PageTransition>
+    <PageTransition variant="scale">
       <div className="relative grid min-h-screen place-items-center overflow-hidden bg-ivory px-6">
         <div className="pointer-events-none absolute inset-0 paper-texture opacity-60" />
         <div className="relative text-center">

@@ -1,0 +1,12 @@
+node_modules
+frontend
+tests
+postman
+.postman
+.git
+.gitignore
+.env
+.env.*
+npm-debug.log*
+Dockerfile
+docker-compose.yml

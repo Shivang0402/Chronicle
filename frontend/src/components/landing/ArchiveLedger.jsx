@@ -52,18 +52,25 @@ export default function ArchiveLedger() {
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="mb-10 grid gap-5 md:mb-12 md:grid-cols-12 md:items-end">
           <div className="md:col-span-8">
-            <Reveal y={12} blur={false}>
+            <Reveal variant="fade" y={12} blur={false}>
               <span className="eyebrow mb-3 block">A sample archive</span>
             </Reveal>
             <AnimatedText
               as="h2"
+              mode="scale"
               once={false}
               delay={0.1}
               className="font-serif text-3xl tracking-tight text-charcoal sm:text-5xl"
               parts={[{ text: "The days you wrote down, gathered in one place." }]}
             />
           </div>
-          <Reveal className="md:col-span-4 md:justify-self-end" delay={0.2} y={10} blur={false}>
+          <Reveal
+            variant="right"
+            className="md:col-span-4 md:justify-self-end"
+            delay={0.2}
+            y={20}
+            blur={false}
+          >
             <p className="max-w-xs text-sm leading-relaxed text-charcoal-muted md:text-right">
               Browse by date, revisit a feeling, and follow a thought back to where it began.
             </p>
@@ -72,7 +79,7 @@ export default function ArchiveLedger() {
 
         <RevealGroup className="border-t border-charcoal/15" stagger={0.1} delay={0.2} amount={0.1}>
           {entries.map((entry) => (
-            <RevealItem key={entry.title} y={12}>
+            <RevealItem key={entry.title} variant="right" x={26} y={12}>
               <article className="group grid gap-3 border-b border-charcoal/10 py-6 sm:py-7 md:grid-cols-12 md:gap-8">
                 <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-gray md:col-span-3 md:block">
                   <time>{entry.date}</time>
@@ -101,6 +108,7 @@ export default function ArchiveLedger() {
         </RevealGroup>
 
         <Reveal
+          variant="fade"
           delay={0.2}
           y={10}
           blur={false}

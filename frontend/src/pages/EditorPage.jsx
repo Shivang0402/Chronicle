@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -18,6 +17,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import LeaveDraftDialog from "../components/dashboard/LeaveDraftDialog";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import PageTransition from "../components/ui/PageTransition";
+import Reveal from "../components/ui/Reveal";
 import RichTextEditor from "../components/ui/RichTextEditor";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
@@ -454,7 +454,7 @@ export default function EditorPage() {
 
   if (loading) {
     return (
-      <PageTransition>
+      <PageTransition variant="fade">
         <div className="grid min-h-screen place-items-center bg-ivory px-6">
           <div className="text-center">
             <Loader2 className="mx-auto h-6 w-6 animate-spin text-sage" />
@@ -476,7 +476,7 @@ export default function EditorPage() {
 
   if (loadError) {
     return (
-      <PageTransition>
+      <PageTransition variant="fade">
         <div className="grid min-h-screen place-items-center bg-ivory px-6">
           <div className="max-w-md text-center">
             <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger/10 text-danger">
@@ -515,7 +515,7 @@ export default function EditorPage() {
   }
 
   return (
-    <PageTransition>
+    <PageTransition variant="fade">
       <div className="min-h-screen bg-ivory">
         <div className="pointer-events-none fixed inset-0 paper-texture opacity-40" />
         <div className="pointer-events-none fixed -right-24 top-24 h-80 w-80 rounded-full bg-sage-light/20 blur-3xl" />
@@ -586,10 +586,11 @@ export default function EditorPage() {
           }`}
         >
           {!focusMode && (
-            <motion.section
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            <Reveal
+              as="section"
+              variant="scale"
+              y={18}
+              blur={false}
               className="relative mb-5 overflow-hidden rounded-3xl border border-hairline bg-paper shadow-paper"
             >
               <div
@@ -628,18 +629,16 @@ export default function EditorPage() {
                   </p>
                 </div>
               </div>
-            </motion.section>
+            </Reveal>
           )}
 
           {!focusMode && (
-            <motion.section
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.6,
-                delay: 0.05,
-                ease: [0.16, 1, 0.3, 1],
-              }}
+            <Reveal
+              as="section"
+              variant="left"
+              y={16}
+              delay={0.05}
+              blur={false}
               className="mb-4 rounded-2xl border border-hairline bg-paper/90 px-4 py-3 shadow-paper sm:px-5"
             >
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
@@ -752,17 +751,14 @@ export default function EditorPage() {
                   </div>
                 </div>
               </div>
-            </motion.section>
+            </Reveal>
           )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.7,
-              delay: 0.08,
-              ease: [0.16, 1, 0.3, 1],
-            }}
+          <Reveal
+            variant="up"
+            y={20}
+            delay={0.08}
+            blur={false}
             className={`overflow-hidden rounded-2xl border bg-paper ${
               focusMode
                 ? "border-transparent shadow-none"
@@ -870,7 +866,7 @@ export default function EditorPage() {
                 </button>
               </div>
             </footer>
-          </motion.div>
+          </Reveal>
 
           {!focusMode && (
             <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-hairline bg-paper/70 px-5 py-3 text-[10px] text-muted-gray shadow-sm sm:flex-row sm:items-center sm:justify-between">

@@ -1,0 +1,51 @@
+name: chronicle
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 4444
+      MONGO_URI: mongodb://mongo:27017/chronicle
+      CLIENT_URL: ${PUBLIC_CLIENT_URL:-http://localhost:8080}
+      APP_URL: ${PUBLIC_CLIENT_URL:-http://localhost:8080}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    expose:
+      - "4444"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-}
+    restart: unless-stopped
+    environment:
+      BACKEND_URL: http://backend:4444
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
