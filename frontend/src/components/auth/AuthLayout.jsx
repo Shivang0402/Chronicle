@@ -34,7 +34,7 @@ export default function AuthLayout({ children }) {
                 </span>
                 <div>
                   <span className="block font-serif text-xl leading-tight tracking-tight text-charcoal">
-                    Chronicle
+                    Chronicle<span className="text-sage">.</span>
                   </span>
                   <span className="block text-[9px] uppercase tracking-wide2 text-muted-gray">
                     Est. Archival MMXXIX

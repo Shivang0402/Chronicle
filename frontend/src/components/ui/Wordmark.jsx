@@ -24,8 +24,7 @@ export default function Wordmark({
         </span>
       )}
       <span className={`font-serif tracking-tight ${sizes[size]}`}>
-        Chronicle
-        <span className="ml-0.5 inline-block h-1 w-1 rounded-full bg-sage align-middle" />
+        Chronicle<span className="text-sage">.</span>
       </span>
     </Link>
   );

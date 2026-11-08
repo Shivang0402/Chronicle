@@ -19,7 +19,7 @@ export default function Footer() {
           <Reveal variant="left" y={20} amount={0.1} className="md:col-span-5">
             <Wordmark />
             <p className="mt-4 max-w-sm text-sm font-light leading-relaxed text-charcoal-muted">
-              A journal for the moments, thoughts, and small details worth keeping.
+              A thoughtful home for the moments, ideas, and little details you want to remember.
             </p>
             <p className="mt-6 text-[11px] uppercase tracking-wide2 text-muted-gray">
               A quiet space · Calming by design
@@ -93,7 +93,7 @@ export default function Footer() {
         >
           <p>© {currentYear} Chronicle Journaling Co.</p>
           <p className="uppercase tracking-wide2">
-             A journal for everyday life
+             Make space for your story
           </p>
         </Reveal>
       </div>

@@ -80,8 +80,8 @@ export default function Hero() {
               className="mt-8 max-w-2xl"
             >
               <p className="text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-                Put the day into your own words. Chronicle gives your thoughts
-                room to settle, and your memories a place to return to.
+                Give the day a place in your story. Find room to reflect, notice
+                what matters, and return to the moments you want to keep.
               </p>
             </Reveal>
 
