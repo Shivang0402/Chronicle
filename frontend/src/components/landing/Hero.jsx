@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
 import Reveal, { RevealImage } from "../ui/Reveal";
 
+const WORDMARK = "Chronicle";
+
 export default function Hero() {
   const imageRef = useRef(null);
   const reduce = useReducedMotion();
@@ -35,14 +37,26 @@ export default function Hero() {
       <div className="pointer-events-none absolute -right-32 top-0 h-80 w-80 rounded-full bg-warm-beige/70 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="pointer-events-none mb-6 select-none text-center font-serif text-[13vw] font-medium uppercase leading-none tracking-[0.12em] text-charcoal/[0.11] md:mb-0 md:text-left lg:text-[150px]"
+        <div
+          aria-hidden="true"
+          className="pointer-events-none mb-6 select-none text-center font-serif text-[13vw] font-medium leading-none tracking-tight text-charcoal/[0.15] md:mb-0 md:text-left lg:text-[150px]"
         >
-          CHRONICLE
-        </motion.div>
+          {WORDMARK.split("").map((letter, index) => (
+            <span
+              key={`${letter}-${index}`}
+              className="hero-wordmark-letter"
+              style={{ animationDelay: `${0.12 + index * 0.07}s` }}
+            >
+              {letter}
+            </span>
+          ))}
+          <span
+            className="hero-wordmark-dot text-sage/65"
+            style={{ animationDelay: "1.24s" }}
+          >
+            .
+          </span>
+        </div>
 
         <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-8">
           <div className="flex flex-col justify-end lg:col-span-8">
