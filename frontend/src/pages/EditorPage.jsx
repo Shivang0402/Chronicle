@@ -590,29 +590,42 @@ export default function EditorPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative mb-5 overflow-hidden rounded-3xl border border-hairline shadow-paper"
+              className="relative mb-5 overflow-hidden rounded-3xl border border-hairline bg-paper shadow-paper"
             >
               <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-cover bg-center"
+                className="absolute inset-0 scale-105 bg-cover bg-center"
                 style={{ backgroundImage: "url('/images/hero-journal.jpg')" }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-ivory via-ivory/70 to-ivory/5" />
-              <div className="relative flex min-h-[168px] flex-col justify-end gap-2 p-6 sm:min-h-[196px] sm:p-8">
-                <span className="eyebrow">
-                  {isEditing ? "Returning to the page" : "A fresh page"}
-                </span>
-                <h1 className="max-w-lg font-serif text-2xl leading-tight tracking-tight text-charcoal sm:text-3xl">
-                  {isEditing ? "Edit your entry" : "Write what you notice"}
-                </h1>
-                <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wider text-muted-gray">
-                  <CalendarDays className="h-3 w-3 text-sage" />
-                  <span>{dateLabel}</span>
-                  <span className="h-1 w-1 rounded-full bg-muted-gray/40" />
-                  <span className="inline-flex items-center gap-1">
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-ivory via-ivory/50 to-transparent"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-r from-ivory/70 via-transparent to-transparent"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 paper-texture opacity-25 mix-blend-soft-light"
+              />
+              <div className="relative flex min-h-[190px] flex-col justify-between gap-6 p-6 sm:min-h-[220px] sm:p-8">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="eyebrow rounded-full bg-paper/70 px-2.5 py-1 backdrop-blur-sm">
+                    {isEditing ? "Returning to the page" : "A fresh page"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-hairline/70 bg-paper/80 px-2.5 py-1 text-[9px] uppercase tracking-wider text-charcoal-muted backdrop-blur-sm">
                     <Clock className="h-3 w-3 text-sage" />
                     {timeLabel}
                   </span>
+                </div>
+                <div>
+                  <h1 className="max-w-lg font-serif text-2xl leading-tight tracking-tight text-charcoal sm:text-[2rem]">
+                    {isEditing ? "Edit your entry" : "Write what you notice"}
+                  </h1>
+                  <p className="mt-1.5 max-w-md text-[11px] leading-relaxed text-charcoal-muted">
+                    A quiet place for what you noticed, felt, or want to remember.
+                  </p>
                 </div>
               </div>
             </motion.section>
