@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import LeaveDraftDialog from "../components/dashboard/LeaveDraftDialog";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import PageTransition from "../components/ui/PageTransition";
@@ -50,7 +50,9 @@ export default function EditorPage() {
   const isEditing = Boolean(id);
   const { token, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const draftOwner = getDraftOwner(user);
+  const prompt = isEditing ? "" : location.state?.prompt || "";
 
   const [initialDraft] = useState(() =>
     !isEditing && token ? readDraft(draftOwner, null) : null,
@@ -58,7 +60,9 @@ export default function EditorPage() {
 
   const [entry, setEntry] = useState(null);
   const [title, setTitle] = useState(initialDraft?.title || "");
-  const [content, setContent] = useState(initialDraft?.content || "");
+  const [content, setContent] = useState(
+    initialDraft?.content || (prompt ? `${prompt}\n\n` : ""),
+  );
   const [mood, setMood] = useState(initialDraft?.mood || "");
   const [tags, setTags] = useState(initialDraft?.tags || []);
   const [tagInput, setTagInput] = useState("");
@@ -623,33 +627,26 @@ export default function EditorPage() {
                 delay: 0.05,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="mb-5 rounded-2xl border border-hairline bg-paper/90 p-5 shadow-paper sm:p-6"
+              className="mb-4 rounded-2xl border border-hairline bg-paper/90 px-4 py-3 shadow-paper sm:px-5"
             >
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline pb-4">
-                <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-sage-subtle text-sage-deep">
-                    <CalendarDays className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <p className="font-serif text-base leading-snug text-charcoal sm:text-lg">
-                      {dateLabel}
-                    </p>
-                    <p className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-gray">
-                      <Clock className="h-3 w-3 text-sage" />
-                      {timeLabel}
-                    </p>
-                  </div>
-                </div>
-                <span className="rounded-full bg-warm-beige px-3 py-1 text-[9px] font-medium uppercase tracking-wider text-charcoal-muted">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
+                <span className="inline-flex items-center gap-1.5 text-[10px] text-charcoal-muted">
+                  <CalendarDays className="h-3 w-3 text-sage" />
+                  {dateLabel}
+                  <span className="text-muted-gray/50">·</span>
+                  <Clock className="h-3 w-3 text-sage" />
+                  {timeLabel}
+                </span>
+                <span className="rounded-full bg-warm-beige px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-charcoal-muted">
                   {isEditing ? "Editing archive" : "New reflection"}
                 </span>
               </div>
 
-              <div className="mt-4">
-                <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-muted-gray">
-                  Emotional resonance
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-hairline/60 pt-2">
+                <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-muted-gray">
+                  Mood
                 </span>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {moodOptions.map((item) => {
                     const active = mood === item;
 
@@ -662,21 +659,19 @@ export default function EditorPage() {
                           markDirty();
                         }}
                         aria-pressed={active}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-medium transition-all ${
+                        title={MOOD_EMOJI[item] || undefined}
+                        className={`rounded-full px-2.5 py-1 text-[9px] font-medium transition-all ${
                           active
                             ? "bg-sage-deep text-white shadow-sm"
                             : "bg-warm-beige/80 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
                         }`}
                       >
-                        <span aria-hidden="true">
-                          {MOOD_EMOJI[item] || "✦"}
-                        </span>
                         {item}
                       </button>
                     );
                   })}
 
-                  <div className="inline-flex items-center gap-1 rounded-full border border-dashed border-hairline bg-paper px-2.5 py-1">
+                  <div className="inline-flex items-center gap-1 rounded-full border border-dashed border-hairline bg-paper px-2 py-0.5">
                     <input
                       type="text"
                       value={customMoodInput}
@@ -684,32 +679,32 @@ export default function EditorPage() {
                         setCustomMoodInput(event.target.value)
                       }
                       onKeyDown={handleCustomMoodKeyDown}
-                      placeholder="Add your own mood"
+                      placeholder="Custom mood"
                       maxLength={40}
-                      className="w-28 border-0 bg-transparent text-[10px] text-charcoal outline-none placeholder:text-muted-gray/80"
+                      className="w-20 border-0 bg-transparent text-[9px] text-charcoal outline-none placeholder:text-muted-gray/80"
                     />
                     <button
                       type="button"
                       onClick={() => addCustomMood(customMoodInput)}
-                      className="grid h-4 w-4 place-items-center rounded-full text-muted-gray transition-colors hover:bg-warm-beige hover:text-charcoal"
+                      className="grid h-3.5 w-3.5 place-items-center rounded-full text-muted-gray transition-colors hover:bg-warm-beige hover:text-charcoal"
                       aria-label="Add custom mood"
                     >
-                      <Plus className="h-3 w-3" />
+                      <Plus className="h-2.5 w-2.5" />
                     </button>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4">
-                <span className="flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.18em] text-muted-gray">
-                  <Hash className="h-3 w-3 text-sage" />
-                  Tag taxonomy
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-hairline/60 pt-2">
+                <span className="inline-flex items-center gap-1 text-[9px] font-medium uppercase tracking-[0.15em] text-muted-gray">
+                  <Hash className="h-2.5 w-2.5 text-sage" />
+                  Tags
                 </span>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {tags.map((tag) => (
                     <span
                       key={tag}
-                      className="group inline-flex items-center gap-1 rounded-full bg-warm-beige px-2.5 py-1 text-[10px] text-charcoal-muted transition-colors hover:text-charcoal"
+                      className="group inline-flex items-center gap-1 rounded-full bg-warm-beige px-2 py-0.5 text-[9px] text-charcoal-muted transition-colors hover:text-charcoal"
                     >
                       #{tag}
                       <button
@@ -718,12 +713,12 @@ export default function EditorPage() {
                         className="text-muted-gray transition-colors group-hover:text-danger"
                         aria-label={`Remove ${tag}`}
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-2.5 w-2.5" />
                       </button>
                     </span>
                   ))}
 
-                  <div className="inline-flex items-center gap-1 rounded-full border border-dashed border-hairline bg-paper px-2.5 py-1">
+                  <div className="inline-flex items-center gap-1 rounded-full border border-dashed border-hairline bg-paper px-2 py-0.5">
                     <input
                       type="text"
                       value={tagInput}
@@ -731,15 +726,15 @@ export default function EditorPage() {
                       onKeyDown={handleTagKeyDown}
                       onBlur={() => addTag(tagInput)}
                       placeholder="Add tag"
-                      className="w-20 border-0 bg-transparent text-[10px] text-charcoal outline-none placeholder:text-muted-gray/80"
+                      className="w-16 border-0 bg-transparent text-[9px] text-charcoal outline-none placeholder:text-muted-gray/80"
                     />
                     <button
                       type="button"
                       onClick={() => addTag(tagInput)}
-                      className="grid h-4 w-4 place-items-center rounded-full text-muted-gray transition-colors hover:bg-warm-beige hover:text-charcoal"
+                      className="grid h-3.5 w-3.5 place-items-center rounded-full text-muted-gray transition-colors hover:bg-warm-beige hover:text-charcoal"
                       aria-label="Add tag"
                     >
-                      <Plus className="h-3 w-3" />
+                      <Plus className="h-2.5 w-2.5" />
                     </button>
                   </div>
                 </div>
@@ -805,7 +800,7 @@ export default function EditorPage() {
                   placeholder="Untitled reflection..."
                   maxLength={120}
                   autoFocus={!isEditing}
-                  className="w-full border-0 bg-transparent pb-3 font-serif text-3xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/60 sm:text-[2.6rem]"
+                  className="w-full border-0 bg-transparent pb-3 font-serif text-2xl leading-tight tracking-tight text-charcoal outline-none placeholder:text-muted-gray/60 sm:text-[2.1rem]"
                 />
                 <div className="h-0.5 w-full rounded-full bg-hairline transition-colors duration-300 group-focus-within:bg-sage/60" />
               </div>

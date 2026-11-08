@@ -358,7 +358,7 @@ export default function EntryComposer({
                   }}
                   placeholder="Let the thought unfold, exactly as it came to you..."
                   autoFocus
-                  editorClassName="min-h-[210px] font-serif text-lg font-light leading-[1.8] text-charcoal"
+                  editorClassName="ruled-paper -mx-6 mt-4 min-h-[240px] w-[calc(100%_+_3rem)] px-6 font-serif font-light text-charcoal caret-sage sm:-mx-8 sm:w-[calc(100%_+_4rem)] sm:px-8"
                 />
               </div>
 

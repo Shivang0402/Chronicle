@@ -6,7 +6,6 @@ import DailyPrompt from "../components/dashboard/DailyPrompt";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
 import ExportDialog from "../components/dashboard/ExportDialog";
-import EntryComposer from "../components/dashboard/EntryComposer";
 import EntryReader from "../components/dashboard/EntryReader";
 import RecentEntries from "../components/dashboard/RecentEntries";
 import PageTransition from "../components/ui/PageTransition";
@@ -56,8 +55,6 @@ export default function VaultPage() {
   const [notice, setNotice] = useState("");
   const [activeTag, setActiveTag] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [composerOpen, setComposerOpen] = useState(false);
-  const [composerPrompt, setComposerPrompt] = useState("");
   const [readerEntry, setReaderEntry] = useState(null);
   const [exporting, setExporting] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
@@ -109,9 +106,8 @@ export default function VaultPage() {
   const firstName = user?.name?.split(" ")[0] || "wanderer";
   const greeting = greetingForNow();
 
-  const openComposer = () => {
-    setComposerPrompt("");
-    setComposerOpen(true);
+  const openEditor = (prompt = "") => {
+    navigate("/journal/new", prompt ? { state: { prompt } } : undefined);
   };
 
   const handleSelectTag = (tag) => {
@@ -128,11 +124,6 @@ export default function VaultPage() {
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
-  };
-
-  const handleCreated = () => {
-    setNotice("Entry preserved in your archive.");
-    setReloadKey((value) => value + 1);
   };
 
   const handleExport = () => {
@@ -175,7 +166,7 @@ export default function VaultPage() {
           activeTag={activeTag}
           onSelectTag={handleSelectTag}
           onClearTag={() => handleSelectTag("")}
-          onNewEntry={openComposer}
+          onNewEntry={() => openEditor()}
           onExport={handleExport}
           onLogout={handleLogout}
           exporting={exporting}
@@ -232,7 +223,7 @@ export default function VaultPage() {
                   stats={stats}
                   entries={entries}
                   loading={statsLoading || entriesLoading}
-                  onWrite={openComposer}
+                  onWrite={() => openEditor()}
                   onReadEntry={setReaderEntry}
                   onOpenJournal={() => navigate("/journal")}
                 />
@@ -248,12 +239,7 @@ export default function VaultPage() {
                   onOpenEntry={setReaderEntry}
                 />
 
-                <DailyPrompt
-                  onReflect={(prompt) => {
-                    setComposerPrompt(prompt);
-                    setComposerOpen(true);
-                  }}
-                />
+                <DailyPrompt onReflect={(prompt) => openEditor(prompt)} />
               </div>
 
               <footer className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between">
@@ -287,16 +273,6 @@ export default function VaultPage() {
             </div>
           </main>
         </div>
-
-        <EntryComposer
-          key={composerOpen ? composerPrompt || "blank" : "closed"}
-          open={composerOpen}
-          onClose={() => setComposerOpen(false)}
-          token={token}
-          user={user}
-          onCreated={handleCreated}
-          initialPrompt={composerPrompt}
-        />
 
         <EntryReader
           key={readerEntry?._id || "closed"}
