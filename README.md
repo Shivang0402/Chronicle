@@ -94,7 +94,7 @@ Copy the example environment files and adjust values for your machine. Do not co
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `VITE_API_URL` | No locally; set in production | API origin, such as `https://chronicle-api.onrender.com`. Do not append `/api` or a trailing slash. Leave empty locally to use the Vite `/api` proxy. |
+| `VITE_API_URL` | No locally; set in production | API origin, such as `https://chroniclejournal.onrender.com`. Do not append `/api` or a trailing slash. Leave empty locally to use the Vite `/api` proxy. |
 | `VITE_API_PROXY` | No | Local API origin used by the Vite development proxy. Defaults to `http://localhost:4444`. |
 
 Vite embeds `VITE_*` values in the generated frontend at build time. After changing a Vercel environment variable, redeploy the frontend for the change to take effect.
@@ -210,7 +210,7 @@ Create a MongoDB database with a database user for the application. Configure th
    - `MONGO_URI`: the production MongoDB connection URI.
    - `CLIENT_URL`: the frontend's exact public origin, for example `https://chronicle.vercel.app`, with no trailing slash.
 4. Apply the Blueprint and wait for the service to build and become healthy. The Render health check uses `/api/health`.
-5. Copy the deployed service origin, for example `https://chronicle-api.onrender.com`.
+5. Copy the deployed service origin, for example `https://chroniclejournal.onrender.com`.
 
 The Blueprint generates a `JWT` secret and sets `NODE_ENV=production`. The Docker image includes Chromium and its runtime libraries for PDF generation. Add the `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM` environment variables in the Render service settings to enable email delivery. Without SMTP, verification and password-reset links are logged by the API, which is suitable only for development, not normal user-facing production email.
 
