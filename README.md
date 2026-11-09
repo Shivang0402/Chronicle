@@ -208,7 +208,7 @@ Create a MongoDB database with a database user for the application. Configure th
 2. In Render, create a **Blueprint** from the repository. Render reads `render.yaml` and creates the `chronicle-api` Docker web service.
 3. When prompted, provide:
    - `MONGO_URI`: the production MongoDB connection URI.
-   - `CLIENT_URL`: the frontend's exact public origin, for example `https://chronicle.vercel.app`, with no trailing slash.
+   - `CLIENT_URL`: the frontend's exact public origin, for example `https://chronicle-jet-ten.vercel.app`, with no trailing slash.
 4. Apply the Blueprint and wait for the service to build and become healthy. The Render health check uses `/api/health`.
 5. Copy the deployed service origin, for example `https://chroniclejournal.onrender.com`.
 
