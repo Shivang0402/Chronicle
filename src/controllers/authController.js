@@ -1,4 +1,5 @@
 const userModel = require("../models/userModel");
+const Chronicle = require("../models/chronicleModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
@@ -321,6 +322,23 @@ const getProfile = async (req, res) => {
   }
 };
 
+const deleteAccount = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await Chronicle.deleteMany({ user: user._id });
+    await userModel.deleteOne({ _id: user._id });
+
+    return res.status(200).json({ message: "Account deleted successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: "Could not delete account" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -330,4 +348,5 @@ module.exports = {
   resetPassword,
   changePassword,
   getProfile,
+  deleteAccount,
 };

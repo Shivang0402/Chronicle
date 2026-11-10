@@ -98,6 +98,9 @@ export const authApi = {
     }),
 
   getProfile: (token) => request("/auth/profile", { token }),
+
+  deleteAccount: (token) =>
+    request("/auth/account", { method: "DELETE", token }),
 };
 
 export const chronicleApi = {

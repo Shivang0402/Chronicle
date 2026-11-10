@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const request = require("supertest");
 const { setup, teardown, clear, captureLogs, findToken } = require("./helper");
 const app = require("../src/app");
+const Chronicle = require("../src/models/chronicleModel");
 const User = require("../src/models/userModel");
 
 const credentials = {
@@ -180,6 +181,44 @@ describe("auth", () => {
 
     const anonymous = await request(app).get("/api/auth/profile");
     assert.equal(anonymous.status, 401);
+  });
+
+  it("deletes the authenticated account and its journal entries", async () => {
+    await registerVerified();
+
+    const session = await login({
+      email: credentials.email,
+      password: credentials.password,
+    });
+    const token = session.body.token;
+    const user = await User.findOne({ email: credentials.email });
+
+    await request(app)
+      .post("/api/chronicle")
+      .set(auth(token))
+      .send({
+        title: "Temporary entry",
+        content: "This entry should be removed with the account.",
+      });
+
+    assert.equal(await Chronicle.countDocuments({ user: user._id }), 1);
+
+    const anonymous = await request(app).delete("/api/auth/account");
+    assert.equal(anonymous.status, 401);
+
+    const deleted = await request(app)
+      .delete("/api/auth/account")
+      .set(auth(token));
+    assert.equal(deleted.status, 200);
+
+    assert.equal(await User.findOne({ email: credentials.email }), null);
+    assert.equal(await Chronicle.countDocuments({ user: user._id }), 0);
+
+    const relogin = await login({
+      email: credentials.email,
+      password: credentials.password,
+    });
+    assert.equal(relogin.status, 401);
   });
 
   it("resets a password through an emailed single-use token", async () => {

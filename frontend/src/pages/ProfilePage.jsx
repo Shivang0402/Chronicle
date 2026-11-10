@@ -13,6 +13,7 @@ import {
   Mail,
   ShieldCheck,
   Sparkles,
+  Trash2,
   User,
   X,
 } from "lucide-react";
@@ -20,12 +21,14 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
+import DeleteAccountDialog from "../components/dashboard/DeleteAccountDialog";
 import ExportDialog from "../components/dashboard/ExportDialog";
 import PageTransition from "../components/ui/PageTransition";
 import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { authApi, chronicleApi } from "../lib/api";
+import { clearDrafts, getDraftOwner } from "../lib/drafts";
 import { formatEntryDate } from "../lib/journal";
 
 const EMPTY_PASSWORD_FORM = {
@@ -112,6 +115,9 @@ export default function ProfilePage() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordNotice, setPasswordNotice] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   useDocumentTitle("Profile");
 
@@ -186,6 +192,32 @@ export default function ProfilePage() {
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
+  };
+
+  const closeDeleteDialog = () => {
+    if (deletingAccount) return;
+    setDeleteDialogOpen(false);
+    setDeleteError("");
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!token || deletingAccount) return;
+
+    setDeletingAccount(true);
+    setDeleteError("");
+
+    try {
+      await authApi.deleteAccount(token);
+      clearDrafts(getDraftOwner(user));
+      logout();
+      navigate("/", { replace: true });
+    } catch (error) {
+      setDeleteError(
+        error?.message || "Could not delete your account. Please try again.",
+      );
+    } finally {
+      setDeletingAccount(false);
+    }
   };
 
   const handleOpenExport = (format = "pdf") => {
@@ -761,6 +793,36 @@ export default function ProfilePage() {
                       Sign out
                     </button>
                   </Reveal>
+
+                  <Reveal
+                    as="section"
+                    variant="fade"
+                    y={14}
+                    delay={0.26}
+                    blur={false}
+                    className="rounded-3xl border border-danger/20 bg-paper p-6 shadow-paper"
+                  >
+                    <SectionHeading
+                      icon={Trash2}
+                      title="Delete account"
+                      description="Permanently remove your account and journal."
+                    />
+                    <p className="mt-4 text-[11px] leading-relaxed text-muted-gray">
+                      This cannot be undone. Export any entries you want to keep
+                      before continuing.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeleteError("");
+                        setDeleteDialogOpen(true);
+                      }}
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-danger/20 bg-danger/[0.04] px-4 py-3 text-[11px] font-medium uppercase tracking-wide2 text-danger transition-colors hover:border-danger/40 hover:bg-danger/[0.08]"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Delete account
+                    </button>
+                  </Reveal>
                 </aside>
               </div>
 
@@ -812,6 +874,14 @@ export default function ProfilePage() {
           initialFormat={exportFormat}
           onClose={() => setExportDialogOpen(false)}
           onExport={handleDialogExport}
+        />
+
+        <DeleteAccountDialog
+          open={deleteDialogOpen}
+          onClose={closeDeleteDialog}
+          onConfirm={handleDeleteAccount}
+          deleting={deletingAccount}
+          error={deleteError}
         />
 
         {notice && (

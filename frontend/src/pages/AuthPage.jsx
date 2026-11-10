@@ -230,7 +230,7 @@ export default function AuthPage() {
       <div className="mb-7 flex flex-wrap items-center justify-between gap-3">
         <span className="inline-flex items-center gap-2 rounded-full border border-hairline bg-warm-beige/60 px-3 py-1.5 text-[9px] uppercase tracking-wide2 text-charcoal-muted">
           <span className="h-1.5 w-1.5 animate-soft-pulse rounded-full bg-sage" />
-          Vol. IV • {mode === "register" ? "Begin a new folio" : "Access your folios"}
+          {mode === "register" ? "Begin a new folio" : "Access your folios"}
         </span>
         <span className="flex items-center gap-1.5 text-[10px] text-muted-gray">
           <ShieldCheck className="h-3.5 w-3.5 text-sage" />

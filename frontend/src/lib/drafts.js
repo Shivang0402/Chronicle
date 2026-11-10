@@ -90,6 +90,28 @@ export function clearDraft(owner, entryId) {
   }
 }
 
+export function clearDrafts(owner) {
+  if (typeof window === "undefined") return;
+
+  const prefix = `${DRAFT_PREFIX}.${encodeURIComponent(owner)}.`;
+
+  try {
+    const keys = [];
+
+    for (let i = 0; i < window.localStorage.length; i += 1) {
+      const key = window.localStorage.key(i);
+
+      if (key && key.startsWith(prefix)) {
+        keys.push(key);
+      }
+    }
+
+    keys.forEach((key) => window.localStorage.removeItem(key));
+  } catch {
+    // Storage can be unavailable in private browsing modes.
+  }
+}
+
 const safeParse = (raw) => {
   try {
     return JSON.parse(raw);

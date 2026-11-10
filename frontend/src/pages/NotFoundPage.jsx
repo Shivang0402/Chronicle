@@ -12,7 +12,7 @@ export default function NotFoundPage() {
       <div className="relative grid min-h-screen place-items-center overflow-hidden bg-ivory px-6">
         <div className="pointer-events-none absolute inset-0 paper-texture opacity-60" />
         <div className="relative text-center">
-          <Wordmark className="mb-10 justify-center" mark />
+          <Wordmark className="mb-10 justify-center" />
           <span className="font-serif text-[110px] leading-none text-sage/25 sm:text-[160px]">
             404
           </span>

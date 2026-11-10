@@ -1,4 +1,4 @@
-import { ArrowLeft, Feather, Lock, Quote, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Lock, Quote, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageTransition from "../ui/PageTransition";
 import Wordmark from "../ui/Wordmark";
@@ -13,7 +13,7 @@ export default function AuthLayout({ children }) {
 
         <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
           <div className="mb-5 flex items-center justify-between">
-            <Wordmark mark />
+            <Wordmark />
             <Link
               to="/"
               className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-gray transition-colors hover:text-charcoal"
@@ -28,18 +28,13 @@ export default function AuthLayout({ children }) {
               <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-sage-light/50 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-sage/15 blur-3xl" />
 
-              <div className="relative z-10 flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-sage-deep text-ivory shadow-sm">
-                  <Feather className="h-4 w-4" />
+              <div className="relative z-10">
+                <span className="block font-serif text-xl leading-tight tracking-tight text-charcoal">
+                  Chronicle<span className="text-sage">.</span>
                 </span>
-                <div>
-                  <span className="block font-serif text-xl leading-tight tracking-tight text-charcoal">
-                    Chronicle<span className="text-sage">.</span>
-                  </span>
-                  <span className="block text-[9px] uppercase tracking-wide2 text-muted-gray">
-                    Est. Archival MMXXIX
-                  </span>
-                </div>
+                <span className="block text-[9px] uppercase tracking-wide2 text-muted-gray">
+                  Est. Archival MMXXIX
+                </span>
               </div>
 
               <div className="relative z-10 my-10">
@@ -67,9 +62,6 @@ export default function AuthLayout({ children }) {
                     “To keep a journal is to live twice — once in the rush of
                     the moment, and once in the stillness of reflection.”
                   </blockquote>
-                  <p className="mt-3 text-[9px] uppercase tracking-wide2 text-muted-gray">
-                    Archival Journaling Anthology, Vol. IV
-                  </p>
                 </div>
               </div>
 
