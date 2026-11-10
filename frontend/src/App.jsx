@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ScrollToTop from "./components/layout/ScrollToTop";
 import ScrollProgress from "./components/ui/ScrollProgress";
+import AboutPage from "./pages/AboutPage";
 import AuthPage from "./pages/AuthPage";
 import DraftsPage from "./pages/DraftsPage";
 import EditorPage from "./pages/EditorPage";
@@ -11,8 +12,10 @@ import InsightsPage from "./pages/InsightsPage";
 import JournalPage from "./pages/JournalPage";
 import LandingPage from "./pages/LandingPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ProfilePage from "./pages/ProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import TermsPage from "./pages/TermsPage";
 import VaultPage from "./pages/VaultPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 
@@ -26,6 +29,9 @@ export default function App() {
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />

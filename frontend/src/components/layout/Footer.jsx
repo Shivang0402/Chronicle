@@ -1,8 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Reveal from "../ui/Reveal";
 import Wordmark from "../ui/Wordmark";
-
-const currentYear = new Date().getFullYear();
 
 const exploreLinks = [
   { label: "The Experience", href: "#experience" },
@@ -11,7 +9,23 @@ const exploreLinks = [
   { label: "Preservation", href: "#export" },
 ];
 
+const resourceLinks = [
+  { label: "About Chronicle", to: "/about" },
+  { label: "Privacy Policy", to: "/privacy" },
+  { label: "Terms of Service", to: "/terms" },
+  {
+    label: "Contact & Feedback",
+    href: "mailto:support.chroniclejournal@gmail.com?subject=Chronicle%20feedback",
+  },
+];
+
+const linkClass =
+  "text-sm text-charcoal-muted transition-colors hover:text-charcoal";
+
 export default function Footer() {
+  const { pathname } = useLocation();
+  const isLanding = pathname === "/";
+
   return (
     <footer className="border-t border-hairline bg-ivory">
       <div className="mx-auto max-w-7xl px-6 py-10 sm:px-10 md:py-12 lg:px-16">
@@ -34,8 +48,8 @@ export default function Footer() {
               {exploreLinks.map((link) => (
                 <li key={link.href}>
                   <a
-                    href={link.href}
-                    className="text-sm text-charcoal-muted transition-colors hover:text-charcoal"
+                    href={isLanding ? link.href : `/${link.href}`}
+                    className={linkClass}
                   >
                     {link.label}
                   </a>
@@ -46,36 +60,30 @@ export default function Footer() {
 
           <Reveal variant="right" y={20} delay={0.12} amount={0.1} className="md:col-span-4">
             <p className="mb-5 text-[11px] uppercase tracking-wide2 text-muted-gray">
-              Account
+              Resources
             </p>
             <ul className="space-y-3">
-              <li>
-                <Link
-                  to="/auth"
-                  className="text-sm text-charcoal-muted transition-colors hover:text-charcoal"
-                >
-                  Sign in to your journal
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-charcoal-muted transition-colors hover:text-charcoal"
-                >
-                  Reset your password
-                </Link>
-              </li>
+              {resourceLinks.map((link) => (
+                <li key={link.label}>
+                  {link.to ? (
+                    <Link to={link.to} className={linkClass}>
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a href={link.href} className={linkClass}>
+                      {link.label}
+                    </a>
+                  )}
+                </li>
+              ))}
             </ul>
-            <p className="mt-6 max-w-xs text-xs font-light leading-relaxed text-muted-gray">
-              Private by design. Keep a print-ready PDF copy of your journal.
-            </p>
           </Reveal>
         </div>
 
         <Reveal variant="fade" y={10} amount={0.1} className="flex flex-col items-center justify-between gap-3 border-t border-hairline pt-8 text-[11px] text-muted-gray sm:flex-row">
-          <p>© {currentYear} Chronicle Journaling Co.</p>
+          <p>© 2026 Chronicle. All rights reserved.</p>
           <p className="uppercase tracking-wide2">
-             Make space for your story
+            MAKE SPACE FOR YOUR STORY
           </p>
         </Reveal>
       </div>
