@@ -1,272 +1,449 @@
-# Chronicle
+# Chronicle.
 
-Chronicle is a private journaling app for writing, organizing, and revisiting journal entries. It includes a React web client, a JSON API, account and email verification flows, journal search and insights, and print-ready PDF export.
+<p align="center">
+  <img
+    src="https://readme-typing-svg.demolab.com?font=Georgia&size=28&duration=3500&pause=1200&color=8B7E74&center=true&vCenter=true&width=750&height=50&lines=A+Quiet+Sanctuary+for+Your+Thoughts.;Your+thoughts.+Your+space.+Your+Chronicle.;Some+things+are+worth+writing+down."
+    alt="Chronicle - A Quiet Sanctuary for Your Thoughts."
+  />
+</p>
+<p align="center">
+  A personal journaling application built for writing, reflecting, and preserving the moments that matter.
+</p>
 
-## Contents
+<p align="center">
+  <a href="https://chronicle-jet-ten.vercel.app/">
+    <img src="https://img.shields.io/badge/LIVE%20APPLICATION-Visit%20Chronicle-8B7E74?style=for-the-badge&logo=vercel&logoColor=white" alt="Live application"/>
+  </a>
+  <a href="https://github.com/Shivang0402/Chronicle">
+    <img src="https://img.shields.io/badge/SOURCE%20CODE-GitHub-24292F?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repository"/>
+  </a>
+</p>
 
-- [Features](#features)
-- [Technology](#technology)
-- [Repository layout](#repository-layout)
-- [Requirements](#requirements)
-- [Configuration](#configuration)
-- [Run locally](#run-locally)
-- [Run with Docker Compose](#run-with-docker-compose)
-- [Build and check](#build-and-check)
-- [API overview](#api-overview)
-- [Deploy](#deploy)
-- [Troubleshooting](#troubleshooting)
+<p align="center">
+  <img src="https://img.shields.io/badge/React-Frontend-61DAFB?style=flat-square&logo=react&logoColor=black"/>
+  <img src="https://img.shields.io/badge/Node.js-Backend-339933?style=flat-square&logo=nodedotjs&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Express.js-API-000000?style=flat-square&logo=express&logoColor=white"/>
+  <img src="https://img.shields.io/badge/MongoDB-Database-47A248?style=flat-square&logo=mongodb&logoColor=white"/>
+  <img src="https://img.shields.io/badge/JavaScript-Language-F7DF1E?style=flat-square&logo=javascript&logoColor=black"/>
+</p>
+
+---
+
+## About Chronicle
+
+Chronicle is a personal digital journaling application designed to give your thoughts, experiences, and reflections a place of their own.
+
+Not everything needs to be shared. Not every thought needs an audience.
+
+In a digital world dominated by social feeds, notifications, and constant interaction, Chronicle takes a different approach. It provides a dedicated space where you can write freely, organize your experiences, revisit old memories, and understand your journaling habits.
+
+From a passing thought to a detailed account of an important day, Chronicle makes it easier to document the things that make up your story.
+
+**It isn't about creating more content. It's about preserving more meaning.**
+
+## Why Chronicle?
+
+Most digital platforms are designed around sharing and interaction. Traditional note-taking applications, on the other hand, often lack the personal experience and reflection that make journaling meaningful.
+
+Chronicle was built around a different philosophy:
+
+- **A personal space:** Your journal belongs to you, without the pressure of sharing.
+- **Freedom to write:** A dedicated environment for long-form writing and personal expression.
+- **Meaningful organization:** Keep your memories organized through dates, moods, and tags.
+- **Reflection through insights:** Understand your writing habits and explore patterns over time.
+- **Preserving memories:** Keep your journal accessible and exportable.
+
+The goal is to make journaling a natural part of everyday life, rather than another task to complete.
+
+---
 
 ## Features
 
-- Create an account, verify an email address, sign in, and manage the profile.
-- Create, read, update, delete, and search journal entries.
-- Organize entries using moods and tags; review journal statistics and insights.
-- Export journal entries as a formatted PDF.
-- Request verification and password-reset emails. SMTP is optional for local development.
-- Use a responsive web interface built with React.
+<table>
+  <tr>
+    <td width="50%">
+      <h3>Personal Journaling</h3>
+      Create, edit, and revisit journal entries with support for long-form writing.
+    </td>
+    <td width="50%">
+      <h3>Search and Organization</h3>
+      Find entries using search, filters, sorting, dates, moods, and tags.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>Journaling Insights</h3>
+      Explore monthly activity, mood distribution, and personal writing statistics.
+    </td>
+    <td width="50%">
+      <h3>PDF Export</h3>
+      Generate formatted PDF exports to preserve journal entries outside the application.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>Authentication</h3>
+      Account registration, email verification, secure password hashing, and protected API endpoints.
+    </td>
+    <td width="50%">
+      <h3>Responsive Interface</h3>
+      A React-based interface with thoughtful interactions and responsive layouts.
+    </td>
+  </tr>
+</table>
 
-## Technology
+---
 
-| Area | Technology |
-| --- | --- |
-| Frontend | React, React Router, Vite, Tailwind CSS, Framer Motion |
-| API | Node.js 22, Express 5 |
-| Database | MongoDB with Mongoose |
-| Authentication | bcrypt password hashing and signed JWTs |
-| PDF generation | Puppeteer and headless Chromium |
-| Deployment | Vercel frontend, Render Docker web service |
+## Technology Stack
 
-## Repository layout
+Chronicle is built using the MERN ecosystem, with additional tools for frontend development, authentication, document generation, testing, and deployment.
+
+### Frontend
+
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=react,vite,tailwind,js,html,css" alt="Frontend technology logos"/>
+</p>
+
+<p align="center">
+  React.js &nbsp; | &nbsp; React Router &nbsp; | &nbsp; Vite &nbsp; | &nbsp; Tailwind CSS &nbsp; | &nbsp; Framer Motion
+</p>
+
+### Backend and Database
+
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=nodejs,express,mongodb" alt="Backend and database technology logos"/>
+</p>
+
+<p align="center">
+  Node.js &nbsp; | &nbsp; Express.js &nbsp; | &nbsp; MongoDB &nbsp; | &nbsp; Mongoose
+</p>
+
+### Development and Infrastructure
+
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=docker,git,github,postman" alt="Development tool logos"/>
+</p>
+
+<p align="center">
+  Docker &nbsp; | &nbsp; Git &nbsp; | &nbsp; GitHub &nbsp; | &nbsp; Postman
+</p>
+
+### Technology Breakdown
+
+| Category | Technologies |
+|---|---|
+| Frontend | React.js, React Router, Vite |
+| Styling and Animation | Tailwind CSS, Framer Motion |
+| Backend | Node.js, Express.js |
+| Database | MongoDB, Mongoose |
+| Authentication | JSON Web Tokens, bcrypt |
+| Email Services | SMTP, Nodemailer |
+| PDF Generation | Puppeteer, Chromium |
+| API Testing | Postman |
+| Testing | Node.js test runner |
+| Containerization | Docker, Docker Compose |
+| Deployment | Vercel, Render, MongoDB Atlas |
+
+---
+
+## Application Architecture
+
+Chronicle follows a client-server architecture in which the frontend communicates with the backend through RESTful APIs.
+
+The backend handles authentication, request validation, application logic, and database operations.
+
+```mermaid
+flowchart TD
+    A["User"] --> B["React Frontend"]
+    B --> C["REST API - Express.js"]
+    C --> D["Authentication and Validation"]
+    D --> E["Controllers"]
+    E --> F["Mongoose Models"]
+    F --> G[("MongoDB Atlas")]
+    E --> H["Puppeteer PDF Generation"]
+    E --> I["Email Services"]
+    G --> F
+    F --> E
+    E --> C
+    C --> B
+```
+
+### How It Works
+
+**Authentication**
+
+- Users register using their account details.
+- Passwords are hashed using bcrypt.
+- Email verification is supported.
+- JWTs are issued after successful authentication.
+- Protected routes validate authentication before allowing access to user-specific resources.
+
+**Journal Management**
+
+- Users create and manage their journal entries.
+- Each entry is associated with its respective user.
+- Mongoose handles database interactions.
+- Search, filtering, sorting, and pagination help retrieve entries efficiently.
+
+**Insights and Analytics**
+
+- Journal data is processed through backend aggregation and query logic.
+- Monthly activity and mood statistics are generated.
+- The frontend presents the resulting insights.
+
+**PDF Generation**
+
+- Journal content is processed by the backend.
+- Puppeteer uses headless Chromium to generate formatted PDF documents.
+- Users can preserve their written entries outside the application.
+
+---
+
+## Project Structure
 
 ```text
-.
-├── frontend/                 React/Vite application and Vercel configuration
-│   ├── public/                Static assets
-│   ├── src/                   Pages, components, context, and API client
-│   ├── .env.example           Frontend environment variable template
-│   └── vercel.json            Client-side route rewrite
-├── src/                       Express API
-│   ├── config/                 Database connection
-│   ├── controllers/            Authentication and journal operations
-│   ├── middlewares/            Request authentication and validation
-│   ├── models/                 MongoDB models
-│   ├── routes/                 API route definitions
-│   ├── templates/              PDF and email templates
-│   └── utils/                  Shared server utilities
-├── tests/                      API tests
-├── postman/                    Postman collection and environment examples
-├── Dockerfile                  Production API image with Chromium dependencies
-├── docker-compose.yml          Local MongoDB, API, and web client stack
-├── render.yaml                 Render Blueprint for the API
-└── package.json                API scripts and dependencies
+Chronicle/
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── context/
+│   │   └── ...
+│   ├── .env.example
+│   ├── vercel.json
+│   └── package.json
+│
+├── src/
+│   ├── config/
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── models/
+│   ├── routes/
+│   ├── templates/
+│   └── utils/
+│
+├── tests/
+├── postman/
+├── .postman/
+│
+├── Dockerfile
+├── docker-compose.yml
+├── render.yaml
+├── package.json
+├── package-lock.json
+└── README.md
 ```
 
-The frontend is an independent npm project with its own `package.json` and lockfile. Install frontend and backend dependencies from their respective directories.
+---
 
-## Requirements
+## Getting Started
 
-- Node.js 22 or later and npm.
-- MongoDB running locally, a MongoDB Atlas database, or Docker Compose (see below).
-- For PDF generation outside Docker, a compatible Chromium installation and its system libraries. The provided production Docker image installs these dependencies.
+Want to explore the project locally? Follow these steps.
 
-## Configuration
+### Prerequisites
 
-Copy the example environment files and adjust values for your machine. Do not commit real secrets or production credentials.
+Make sure you have:
 
-### API environment (`.env` in the repository root)
+- Node.js 22+
+- npm
+- MongoDB Atlas account or a local MongoDB instance
+- Git
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `PORT` | No | API listen port. Defaults to `4444` in the supplied environment file; the server uses the platform-provided port when deployed. |
-| `MONGO_URI` | Yes | MongoDB connection string. The example points to a local `chronicle` database. |
-| `JWT` | Yes | Secret used to sign and verify login tokens. Use a long, random value outside local development. |
-| `CLIENT_URL` | Recommended | Exact browser app origin allowed by API CORS; also used to create verification and reset links. |
-| `APP_URL` | No | Legacy/fallback frontend URL setting. `CLIENT_URL` is used first for email links. |
-| `SMTP_HOST` | No | SMTP server hostname. If unset, the mailer logs email links to the API output for development. |
-| `SMTP_PORT` | No | SMTP port; defaults to `587`. |
-| `SMTP_USER` | No | SMTP username, when authentication is required. |
-| `SMTP_PASS` | No | SMTP password, when authentication is required. |
-| `SMTP_FROM` | No | Sender name and email address. |
+### 1. Clone the Repository
 
-`PUBLIC_CLIENT_URL`, `FRONTEND_PORT`, and `VITE_API_URL` in the root example are used by the Docker Compose setup. Frontend builds use the frontend project environment variable described next.
+```bash
+git clone https://github.com/Shivang0402/Chronicle.git
 
-### Frontend environment (`frontend/.env`)
+cd Chronicle
+```
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `VITE_API_URL` | No locally; set in production | API origin, such as `https://chroniclejournal.onrender.com`. Do not append `/api` or a trailing slash. Leave empty locally to use the Vite `/api` proxy. |
-| `VITE_API_PROXY` | No | Local API origin used by the Vite development proxy. Defaults to `http://localhost:4444`. |
+### 2. Configure the Backend
 
-Vite embeds `VITE_*` values in the generated frontend at build time. After changing a Vercel environment variable, redeploy the frontend for the change to take effect.
+Install backend dependencies:
 
-## Run locally
-
-### 1. Configure and start the API
-
-From the repository root:
-
-```sh
+```bash
 npm ci
+```
+
+Create your environment file:
+
+```bash
 cp .env.example .env
+```
+
+Configure the required environment variables:
+
+```env
+PORT=4444
+MONGO_URI=your_mongodb_connection_string
+JWT=your_jwt_secret
+CLIENT_URL=http://localhost:5173
+```
+
+Additional SMTP configuration can be added for email delivery.
+
+### 3. Start the Backend
+
+```bash
 npm run dev
 ```
 
-On Windows PowerShell, use `Copy-Item .env.example .env` in place of `cp`. Edit `.env` and set `MONGO_URI` and `JWT`. The API expects MongoDB to be available before it starts. By default, it listens on port `4444` and exposes its health check at `http://localhost:4444/api/health`.
+The API will be available at:
 
-For a production-mode process, use `npm start` instead of `npm run dev`.
+`http://localhost:4444`
 
-### 2. Configure and start the frontend
+### 4. Configure the Frontend
 
-In a second terminal:
+Open another terminal:
 
-```sh
+```bash
 cd frontend
+
 npm ci
+```
+
+Create the frontend environment file:
+
+```bash
 cp .env.example .env
+```
+
+Configure the API URL if required by your frontend configuration:
+
+```env
+VITE_API_URL=http://localhost:4444
+```
+
+### 5. Start the Frontend
+
+```bash
 npm run dev
 ```
 
-On Windows PowerShell, use `Copy-Item .env.example .env`. Open `http://localhost:5173`. Vite forwards requests under `/api` to `http://localhost:4444` by default. Set `VITE_API_PROXY` in `frontend/.env` if your API listens elsewhere.
+Open the application at:
 
-## Run with Docker Compose
+`http://localhost:5173`
 
-Docker Compose starts a MongoDB container, the API, and the frontend container. It is a convenient way to try the complete stack without installing MongoDB locally.
+### Running with Docker
 
-1. Copy `.env.example` to `.env` and set a local `JWT` value. The compose configuration supplies the API with the Mongo container address, so a local `MONGO_URI` value is not used by the backend container.
-2. Start the services from the repository root:
+Chronicle also includes Docker and Docker Compose configurations.
 
-   ```sh
-   docker compose up --build
-   ```
+To start the application stack:
 
-3. Open `http://localhost:8080`. The API health check is available at `http://localhost:4444/api/health` from the host only if you expose the port; by default, the API is internal to the Compose network and is reached through the frontend proxy.
-
-To stop the stack, press Ctrl+C and run `docker compose down`. The named `mongo-data` volume preserves the local database between runs. To remove that volume and its data, run `docker compose down --volumes`.
-
-## Build and check
-
-Build the frontend production assets:
-
-```sh
-cd frontend
-npm run build
+```bash
+docker compose up --build
 ```
 
-Preview the production build locally with `npm run preview` from `frontend/`.
+To stop the containers:
 
-Run the API test suite from the repository root:
-
-```sh
-npm test
+```bash
+docker compose down
 ```
 
-Run the frontend linter from `frontend/`:
+---
 
-```sh
-npm run lint
+## API Overview
+
+All API endpoints use the `/api` prefix.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Register a new user |
+| POST | `/api/auth/login` | Authenticate a user |
+| GET | `/api/auth/verify-email` | Verify email address |
+| POST | `/api/auth/forgot-password` | Request password reset |
+| POST | `/api/auth/reset-password` | Reset password |
+| PATCH | `/api/auth/change-password` | Change password |
+| GET | `/api/auth/profile` | Retrieve user profile |
+| GET | `/api/chronicle/getchronicles` | Retrieve journal entries |
+| POST | `/api/chronicle` | Create journal entry |
+| GET | `/api/chronicle/:id` | Retrieve an individual entry |
+| PATCH | `/api/chronicle/:id` | Update an entry |
+| DELETE | `/api/chronicle/:id` | Delete an entry |
+| GET | `/api/chronicle/search` | Search journal entries |
+| GET | `/api/chronicle/stats` | Retrieve journaling statistics |
+| GET | `/api/chronicle/moods` | Retrieve mood information |
+| GET | `/api/chronicle/tags` | Retrieve tags |
+| GET | `/api/chronicle/export` | Export journal entries |
+
+Protected endpoints require a valid JWT in the Authorization header:
+
+```http
+Authorization: Bearer <your_token>
 ```
 
-## API overview
+---
 
-All API routes are prefixed by `/api`. Protected routes require an `Authorization: Bearer <token>` header. The login token expires after seven days.
+## Deployment
 
-| Method | Path | Authentication | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/health` | No | Service health check. |
-| `POST` | `/api/auth/register` | No | Register an account and start email verification. |
-| `POST` | `/api/auth/login` | No | Sign in and receive a JWT. Email verification is required. |
-| `GET` | `/api/auth/verify-email?token=...` | No | Verify an email address. |
-| `POST` | `/api/auth/resend-verification` | No | Request another verification email. |
-| `POST` | `/api/auth/forgot-password` | No | Request a password reset link. |
-| `POST` | `/api/auth/reset-password` | No | Set a new password using a reset token. |
-| `PATCH` | `/api/auth/change-password` | Yes | Change the signed-in user's password. |
-| `GET` | `/api/auth/profile` | Yes | Read the signed-in user's profile. |
-| `GET` | `/api/chronicle/getchronicles` | Yes | List journal entries. |
-| `POST` | `/api/chronicle` | Yes | Create an entry. |
-| `GET` | `/api/chronicle/:id` | Yes | Read one entry. |
-| `PATCH` | `/api/chronicle/:id` | Yes | Update an entry. |
-| `DELETE` | `/api/chronicle/:id` | Yes | Delete an entry. |
-| `GET` | `/api/chronicle/search` | Yes | Search entries. |
-| `GET` | `/api/chronicle/stats` | Yes | Retrieve journal statistics. |
-| `GET` | `/api/chronicle/moods` | Yes | Retrieve available/used moods. |
-| `GET` | `/api/chronicle/tags` | Yes | Retrieve tags. |
-| `GET` | `/api/chronicle/export` | Yes | Export entries. The web app currently uses PDF export. |
+Chronicle uses separate hosting services for its frontend and backend.
 
-The Postman collection in `postman/` can be used to explore the API. Configure its environment with the local API URL and a token obtained from login where required.
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=vercel,docker,mongodb" alt="Deployment technology logos"/>
+</p>
 
-## Deploy
+| Component | Platform |
+|---|---|
+| Frontend | Vercel |
+| Backend | Render |
+| Database | MongoDB Atlas |
 
-The repository includes a Render Blueprint for the API and Vercel configuration for the frontend. Deploy the API first so its public origin can be configured in Vercel.
+The frontend communicates with the deployed API using the `VITE_API_URL` environment variable.
 
-### 1. Prepare a production MongoDB database
+Sensitive configuration, including database credentials, JWT secrets, and SMTP credentials, is maintained through environment variables rather than committed to source control.
 
-Create a MongoDB database with a database user for the application. Configure the database network access so the Render service can connect, and copy the connection URI. Use a strong, unique database password and keep the URI private.
+---
 
-### 2. Deploy the API to Render
+## Security and Privacy
 
-1. Push the repository to a Git provider supported by Render.
-2. In Render, create a **Blueprint** from the repository. Render reads `render.yaml` and creates the `chronicle-api` Docker web service.
-3. When prompted, provide:
-   - `MONGO_URI`: the production MongoDB connection URI.
-   - `CLIENT_URL`: the frontend's exact public origin, for example `https://chronicle-jet-ten.vercel.app`, with no trailing slash.
-4. Apply the Blueprint and wait for the service to build and become healthy. The Render health check uses `/api/health`.
-5. Copy the deployed service origin, for example `https://chroniclejournal.onrender.com`.
+Chronicle is designed as a personal journaling platform, so protecting user data is an important part of its architecture.
 
-The Blueprint generates a `JWT` secret and sets `NODE_ENV=production`. The Docker image includes Chromium and its runtime libraries for PDF generation. Add the `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM` environment variables in the Render service settings to enable email delivery. Without SMTP, verification and password-reset links are logged by the API, which is suitable only for development, not normal user-facing production email.
+The application incorporates:
 
-### 3. Deploy the frontend to Vercel
+- Password hashing using bcrypt.
+- JWT-based authentication.
+- Protected API routes.
+- User-specific journal data access.
+- Environment-based configuration.
+- Database access restrictions.
 
-1. Import the same repository as a Vercel project.
-2. Set **Root Directory** to `frontend` and enable the option to include files outside that directory if the Vercel interface offers it. No shared root files are needed to build the frontend.
-3. Use the Vite defaults, or set:
-   - Build command: `npm run build`
-   - Output directory: `dist`
-   - Install command: `npm install` (Vercel detects the lockfile and package manager)
-4. Add `VITE_API_URL` to the Vercel project environment variables. Set it to the Render service origin copied above, without `/api` or a trailing slash.
-5. Deploy the frontend and copy its production origin.
-6. Confirm Render's `CLIENT_URL` matches this origin exactly. If the Vercel domain changes or you add a custom domain, update `CLIENT_URL` in Render and redeploy/restart the API service.
+**Privacy is an important design goal, but the current application does not claim end-to-end encryption.** Stored journal content may be accessible to authorized backend and database operators.
 
-`frontend/vercel.json` rewrites client-side routes to `index.html`, so refreshing a nested app route loads the React application. Add `VITE_API_URL` to Preview deployments only if preview builds should connect to the same API. CORS currently accepts the single origin configured in `CLIENT_URL`, so alternate preview domains will not be allowed unless the server's CORS configuration is extended.
+---
 
-### Production environment checklist
+## Future Scope
 
-- `MONGO_URI` points to the production database and has not been committed.
-- `JWT` is a strong secret generated for the production service.
-- `CLIENT_URL` is the exact frontend origin, with HTTPS and no trailing slash.
-- Vercel `VITE_API_URL` is the Render origin only; the API client adds `/api` itself.
-- SMTP credentials are configured if users need verification and password-reset emails delivered.
-- Frontend has been redeployed after any `VITE_API_URL` change.
+Chronicle is an evolving project. Some areas that could be explored further include:
 
-## Troubleshooting
+- End-to-end encryption for journal entries.
+- Advanced writing and formatting capabilities.
+- Image attachments within entries.
+- More detailed writing analytics.
+- Complete diary backup and export.
+- Additional personalization and customization.
 
-### The frontend says it cannot reach the server
+---
 
-Check the Render service is healthy and that `VITE_API_URL` contains its public origin, without `/api` and without a trailing slash. Since Vite variables are included at build time, redeploy Vercel after changing the variable.
+## Author
 
-### The API reports a database connection error
+**Shivang Pandey**
 
-Check `MONGO_URI`, the database username/password, and the database network access rules. Ensure the database is running before starting the API locally.
+<p align="center">
+  <a href="https://github.com/Shivang0402">
+    <img src="https://img.shields.io/badge/GitHub-Shivang0402-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub profile"/>
+  </a>
+</p>
 
-### Browser requests fail with a CORS error
+---
 
-Set Render's `CLIENT_URL` to the exact website origin, including `https://` and any custom domain, but excluding a trailing slash. The API currently allows one configured origin.
-
-### Verification or password reset emails are not arriving
-
-Without SMTP configuration, the API logs the generated email link instead of sending an email. In production, configure valid SMTP settings and check the provider's sender/domain requirements and service logs.
-
-### PDF export fails in a local environment
-
-PDF export requires Chromium. Use the supplied Docker image/Compose setup, or install the operating system libraries Puppeteer requires for your platform. Check the API logs for Chromium launch errors.
-
-### A nested page returns a 404 on Vercel
-
-Confirm `frontend/vercel.json` is present and that Vercel's Root Directory is `frontend`. The rewrite should route app paths to `index.html`.
-
-## Security and operations notes
-
-- Keep `.env` files, JWT secrets, SMTP credentials, and database credentials out of source control.
-- Use HTTPS for the deployed frontend and API.
-- Restrict MongoDB network access to the deployment environment where practical.
-- Email delivery is disabled unless SMTP is configured; logged development links should not be treated as a production email solution.
-- Back up the production MongoDB database independently of the application deployment.
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=22&duration=3500&pause=1500&color=8B7E74&center=true&vCenter=true&width=500&height=40&lines=Some+things+are+worth+writing+down." alt="Some things are worth writing down."/>
+  <br/>
+  <strong>Chronicle.</strong>
+  <br/>
+  <a href="https://chronicle-jet-ten.vercel.app/">Explore the application</a>
+  <br/><br/>
+  <sub>Built with care, one entry at a time.</sub>
+</p>
