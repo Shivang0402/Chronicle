@@ -2,7 +2,7 @@ const multer = require("multer");
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-const storage = multer.diskStorage();
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
