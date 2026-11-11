@@ -227,6 +227,21 @@ export default function EditorPage() {
     setSavedAt(null);
   };
 
+  const handleImageUpload = useCallback(
+    async (file) => {
+      if (!token) return null;
+
+      try {
+        const data = await chronicleApi.uploadImage(file, token);
+        return data?.url || null;
+      } catch (uploadError) {
+        setError(uploadError?.message || "Could not upload this image.");
+        return null;
+      }
+    },
+    [token],
+  );
+
   const handleDiscardDraft = () => {
     setDiscardDialogOpen(true);
   };
@@ -821,6 +836,7 @@ export default function EditorPage() {
                   setContent(nextContent);
                   markDirty();
                 }}
+                onUploadImage={handleImageUpload}
                 placeholder="Let the thought unfold, exactly as it came to you..."
                 spellCheck
                 editorClassName="ruled-paper -mx-6 mt-4 min-h-[468px] w-[calc(100%_+_3rem)] px-6 font-serif font-light text-charcoal caret-sage sm:-mx-10 sm:w-[calc(100%_+_5rem)] sm:px-10"

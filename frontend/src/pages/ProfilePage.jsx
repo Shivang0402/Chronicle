@@ -190,8 +190,8 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    logout();
     navigate("/", { replace: true });
+    logout();
   };
 
   const closeDeleteDialog = () => {
@@ -209,8 +209,8 @@ export default function ProfilePage() {
     try {
       await authApi.deleteAccount(token);
       clearDrafts(getDraftOwner(user));
-      logout();
       navigate("/", { replace: true });
+      logout();
     } catch (error) {
       setDeleteError(
         error?.message || "Could not delete your account. Please try again.",

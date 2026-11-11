@@ -6,6 +6,7 @@ const ORDERED = /^\s*\d+\.\s+(.*)$/;
 
 const stripInline = (text) =>
   text
+    .replace(/!\[[^\]]*\]\([^)\s]+\)/g, "")
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, "$1")
     .replace(/\*\*([^*]+)\*\*/g, "$1")
     .replace(/__([^_]+)__/g, "$1")

@@ -1,6 +1,7 @@
 import {
   Bold,
   Heading2,
+  ImagePlus,
   Italic,
   Link2,
   List,
@@ -65,6 +66,11 @@ const TOOLBAR_GROUPS = [
       icon: Link2,
       action: "link",
     },
+    {
+      label: "Insert image",
+      icon: ImagePlus,
+      action: "image",
+    },
   ],
 ];
 
@@ -107,14 +113,17 @@ export default function RichTextEditor({
   className = "",
   editorClassName = "",
   ariaLabel = "Entry content",
+  onUploadImage,
 }) {
   const editorRef = useRef(null);
+  const fileInputRef = useRef(null);
   const initializedRef = useRef(false);
   const lastEmittedRef = useRef(value || "");
   const latestRef = useRef({ value, onChange });
   const savedRangeRef = useRef(null);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [linkHasSelection, setLinkHasSelection] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     latestRef.current = { value, onChange };
@@ -237,6 +246,61 @@ export default function RichTextEditor({
     window.requestAnimationFrame(emitChange);
   };
 
+  const openImagePicker = () => {
+    const editor = editorRef.current;
+
+    if (!editor || !onUploadImage) return;
+
+    editor.focus();
+
+    const selection = window.getSelection();
+
+    if (selection && selection.rangeCount) {
+      savedRangeRef.current = selection.getRangeAt(0).cloneRange();
+    }
+
+    fileInputRef.current?.click();
+  };
+
+  const handleImageChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file || !onUploadImage) return;
+
+    setUploadingImage(true);
+
+    try {
+      const url = await onUploadImage(file);
+
+      if (!url) return;
+
+      const editor = editorRef.current;
+
+      if (!editor) return;
+
+      editor.focus();
+
+      const selection = window.getSelection();
+
+      if (selection && savedRangeRef.current) {
+        selection.removeAllRanges();
+        selection.addRange(savedRangeRef.current);
+      }
+
+      document.execCommand(
+        "insertHTML",
+        false,
+        `<img src="${escapeHtml(url)}" alt="${escapeHtml(file.name)}">`,
+      );
+
+      savedRangeRef.current = null;
+      window.requestAnimationFrame(emitChange);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const toolbarGroups = TOOLBAR_GROUPS;
 
   const handlePaste = (event) => {
@@ -277,11 +341,17 @@ export default function RichTextEditor({
                     return;
                   }
 
+                  if (action === "image") {
+                    openImagePicker();
+                    return;
+                  }
+
                   runCommand(command);
                 }}
                 title={label}
                 aria-label={label}
-                className="grid h-8 w-8 place-items-center rounded-lg text-charcoal-muted transition-colors hover:bg-warm-beige hover:text-charcoal focus-visible:ring-2 focus-visible:ring-sage/40"
+                disabled={action === "image" && (!onUploadImage || uploadingImage)}
+                className="grid h-8 w-8 place-items-center rounded-lg text-charcoal-muted transition-colors hover:bg-warm-beige hover:text-charcoal focus-visible:ring-2 focus-visible:ring-sage/40 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Icon className="h-4 w-4" />
               </button>
@@ -326,6 +396,16 @@ export default function RichTextEditor({
         onInput={emitChange}
         onPaste={handlePaste}
         className={`rich-editor w-full border-0 bg-transparent outline-none ${editorClassName}`}
+      />
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        className="hidden"
+        aria-hidden="true"
+        tabIndex={-1}
       />
 
       <LinkDialog

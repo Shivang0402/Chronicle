@@ -1,7 +1,7 @@
 import { parseMarkdownBlocks } from "./markdown";
 
 const INLINE_TOKEN =
-  /(\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|`[^`\n]+`)/g;
+  /(!\[[^\]\n]*\]\([^)\s]+\)|\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|`[^`\n]+`)/g;
 
 const BLOCK_TAGS = new Set([
   "ADDRESS",
@@ -44,11 +44,27 @@ export const safeHref = (value) => {
   return /^(https?:|mailto:)/i.test(href) ? href : "";
 };
 
+export const safeImageSrc = (value) => {
+  const src = String(value || "").trim();
+
+  return /^https?:/i.test(src) ? src : "";
+};
+
 const renderInline = (value) =>
   String(value ?? "")
     .split(INLINE_TOKEN)
     .filter((part) => part !== "")
     .map((part) => {
+      const image = part.match(/^!\[([^\]\n]*)\]\(([^)\s]+)\)$/);
+
+      if (image) {
+        const src = safeImageSrc(image[2]);
+
+        if (!src) return "";
+
+        return `<img src="${escapeHtml(src)}" alt="${escapeHtml(image[1])}">`;
+      }
+
       const link = part.match(/^\[([^\]\n]+)\]\(([^)\s]+)\)$/);
 
       if (link) {
@@ -151,6 +167,14 @@ const serializeInline = (node) => {
     const href = safeHref(node.getAttribute("href"));
 
     return href && inner.trim() ? `[${inner}](${href})` : inner;
+  }
+
+  if (tag === "IMG") {
+    const src = safeImageSrc(node.getAttribute("src"));
+
+    if (!src) return "";
+
+    return `![${node.getAttribute("alt") || ""}](${src})`;
   }
 
   return inner;

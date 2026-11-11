@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { parseMarkdownBlocks } from "../../lib/markdown";
 
 const INLINE_TOKEN =
-  /(\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|`[^`\n]+`)/g;
+  /(!\[[^\]\n]*\]\([^)\s]+\)|\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|`[^`\n]+`)/g;
 
 const safeHref = (value) => {
   const href = String(value || "").trim();
@@ -12,12 +12,36 @@ const safeHref = (value) => {
   return "#";
 };
 
+const safeImageSrc = (value) => {
+  const src = String(value || "").trim();
+
+  return /^https?:/i.test(src) ? src : "";
+};
+
 const renderInline = (text, keyPrefix) =>
   String(text)
     .split(INLINE_TOKEN)
     .filter((part) => part !== "")
     .map((part, index) => {
       const key = `${keyPrefix}-${index}`;
+      const image = part.match(/^!\[([^\]\n]*)\]\(([^)\s]+)\)$/);
+
+      if (image) {
+        const src = safeImageSrc(image[2]);
+
+        if (!src) return null;
+
+        return (
+          <img
+            key={key}
+            src={src}
+            alt={image[1]}
+            loading="lazy"
+            className="my-4 max-h-[28rem] w-full rounded-xl border border-hairline object-cover"
+          />
+        );
+      }
+
       const link = part.match(/^\[([^\]\n]+)\]\(([^)\s]+)\)$/);
 
       if (link) {

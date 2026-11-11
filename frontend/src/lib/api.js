@@ -119,6 +119,34 @@ export const chronicleApi = {
     request(`/chronicle/search${buildQuery({ query })}`, { token }),
   getMoods: (token) => request("/chronicle/moods", { token }),
   getTags: (token) => request("/chronicle/tags", { token }),
+  uploadImage: async (file, token) => {
+    const body = new FormData();
+    body.append("image", file);
+
+    const response = await fetch(buildUrl("/upload"), {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body,
+    });
+
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+
+    if (!response.ok) {
+      throw new ApiError(
+        data?.message || "Could not upload this image.",
+        response.status,
+        data,
+      );
+    }
+
+    return data;
+  },
   exportEntries: async (token, params = {}) => {
     const response = await fetch(
       buildUrl(`/chronicle/export${buildQuery(params)}`),
