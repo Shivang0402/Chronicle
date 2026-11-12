@@ -443,7 +443,7 @@ export default function AuthPage() {
                         name: event.target.value,
                       }))
                     }
-                    placeholder="Eleanor Hart"
+                    placeholder="Your name"
                     className="field-input pl-10"
                   />
                 </div>
