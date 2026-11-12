@@ -22,7 +22,7 @@ const pdfBenefits = [
 
 export default function Preservation() {
   return (
-    <section id="export" className="scroll-mt-24 overflow-hidden bg-warm-beige/40 py-20 md:py-28">
+    <section id="export" className="overflow-hidden bg-warm-beige/40 py-20 md:py-28">
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 sm:px-10 lg:grid-cols-12 lg:gap-16 lg:px-16">
         <div className="lg:col-span-5">
           <Reveal variant="right" y={18} blur={false}>
