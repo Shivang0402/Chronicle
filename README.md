@@ -52,6 +52,7 @@ Chronicle was built around a different philosophy:
 - **Meaningful organization:** Keep your memories organized through dates, moods, and tags.
 - **Reflection through insights:** Understand your writing habits and explore patterns over time.
 - **Preserving memories:** Keep your journal accessible and exportable.
+- **Control over your data:** Export your journal whenever you like, or permanently delete your account and its entries.
 
 The goal is to make journaling a natural part of everyday life, rather than another task to complete.
 
@@ -82,6 +83,16 @@ The goal is to make journaling a natural part of everyday life, rather than anot
   </tr>
   <tr>
     <td width="50%">
+      <h3>Image Attachments</h3>
+      Insert images directly into journal entries through authenticated, Cloudinary-backed uploads.
+    </td>
+    <td width="50%">
+      <h3>Account Control</h3>
+      Manage your profile and permanently delete your account and journal whenever you choose.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
       <h3>Authentication</h3>
       Account registration, email verification, secure password hashing, and protected API endpoints.
     </td>
@@ -96,7 +107,7 @@ The goal is to make journaling a natural part of everyday life, rather than anot
 
 ## Technology Stack
 
-Chronicle is built using the MERN ecosystem, with additional tools for frontend development, authentication, document generation, testing, and deployment.
+Chronicle is built using the MERN ecosystem, with additional tools for frontend development, authentication, media storage, document generation, testing, and deployment.
 
 ### Frontend
 
@@ -115,7 +126,7 @@ Chronicle is built using the MERN ecosystem, with additional tools for frontend 
 </p>
 
 <p align="center">
-  Node.js &nbsp; | &nbsp; Express.js &nbsp; | &nbsp; MongoDB &nbsp; | &nbsp; Mongoose
+  Node.js &nbsp; | &nbsp; Express.js &nbsp; | &nbsp; MongoDB &nbsp; | &nbsp; Mongoose &nbsp; | &nbsp; Cloudinary
 </p>
 
 ### Development and Infrastructure
@@ -138,6 +149,7 @@ Chronicle is built using the MERN ecosystem, with additional tools for frontend 
 | Database | MongoDB, Mongoose |
 | Authentication | JSON Web Tokens, bcrypt |
 | Email Services | SMTP, Nodemailer |
+| Media Storage | Cloudinary, Multer |
 | PDF Generation | Puppeteer, Chromium |
 | API Testing | Postman |
 | Testing | Node.js test runner |
@@ -150,7 +162,7 @@ Chronicle is built using the MERN ecosystem, with additional tools for frontend 
 
 Chronicle follows a client-server architecture in which the frontend communicates with the backend through RESTful APIs.
 
-The backend handles authentication, request validation, application logic, and database operations.
+The backend handles authentication, request validation, application logic, database operations, and media uploads. Journal entries and account data live in MongoDB, while entry images are stored in Cloudinary.
 
 ```mermaid
 flowchart TD
@@ -162,6 +174,7 @@ flowchart TD
     F --> G[("MongoDB Atlas")]
     E --> H["Puppeteer PDF Generation"]
     E --> I["Email Services"]
+    E --> J["Cloudinary Media Storage"]
     G --> F
     F --> E
     E --> C
@@ -178,12 +191,25 @@ flowchart TD
 - JWTs are issued after successful authentication.
 - Protected routes validate authentication before allowing access to user-specific resources.
 
+**Account Deletion**
+
+- Authenticated users can permanently delete their account from the profile page.
+- Deletion removes every journal entry associated with the account, followed by the account record itself.
+- The action is irreversible, and users are encouraged to export entries they want to keep beforehand.
+
 **Journal Management**
 
 - Users create and manage their journal entries.
 - Each entry is associated with its respective user.
 - Mongoose handles database interactions.
 - Search, filtering, sorting, and pagination help retrieve entries efficiently.
+
+**Image Uploads**
+
+- Images are uploaded through an authenticated endpoint and inserted directly into entry content.
+- Multer validates image-only files and enforces a 5 MB size limit.
+- Files are streamed from memory to Cloudinary, and the returned secure URL is inserted into the entry content.
+- Uploads require a valid JWT and are stored in a dedicated Chronicle media folder.
 
 **Insights and Analytics**
 
@@ -208,19 +234,23 @@ Chronicle/
 │   ├── public/
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── dashboard/      # Entries, profile, and account deletion dialogs
+│   │   │   ├── landing/
+│   │   │   ├── layout/
+│   │   │   └── ui/             # Rich text editor and shared components
 │   │   ├── pages/
 │   │   ├── context/
-│   │   └── ...
-│   ├── .env.example
+│   │   └── lib/
+│   ├── .env.production
 │   ├── vercel.json
 │   └── package.json
 │
 ├── src/
-│   ├── config/
-│   ├── controllers/
-│   ├── middlewares/
+│   ├── config/                 # Database and Cloudinary configuration
+│   ├── controllers/            # Auth, journal, and upload handlers
+│   ├── middlewares/            # Authentication and Multer upload middleware
 │   ├── models/
-│   ├── routes/
+│   ├── routes/                 # Auth, journal, and upload routes
 │   ├── templates/
 │   └── utils/
 │
@@ -249,7 +279,32 @@ Make sure you have:
 - Node.js 22+
 - npm
 - MongoDB Atlas account or a local MongoDB instance
+- Cloudinary account for image uploads
+- SMTP credentials for email delivery (optional for local development)
 - Git
+
+### Environment Variables
+
+Chronicle reads configuration from environment files. Create a `.env` file in the project root for the backend, and optionally `frontend/.env` for frontend overrides. Never commit real credentials.
+
+| Variable | Scope | Required | Purpose |
+|---|---|---|---|
+| `PORT` | Backend | No | API port. Defaults to `4444`. |
+| `MONGO_URI` | Backend | Yes | MongoDB Atlas or local MongoDB connection string. |
+| `JWT` | Backend | Yes | Secret used to sign authentication tokens. |
+| `CLIENT_URL` | Backend | Yes | Frontend origin used for CORS and email links. |
+| `SMTP_HOST` | Backend | No | SMTP server host for email delivery. |
+| `SMTP_PORT` | Backend | No | SMTP server port. Defaults to `587`. |
+| `SMTP_USER` | Backend | No | SMTP username. |
+| `SMTP_PASS` | Backend | No | SMTP password. |
+| `SMTP_FROM` | Backend | No | Sender address used in outgoing emails. |
+| `CLOUDINARY_CLOUD_NAME` | Backend | For images | Cloudinary cloud name for image uploads. |
+| `CLOUDINARY_API_KEY` | Backend | For images | Cloudinary API key. |
+| `CLOUDINARY_API_SECRET` | Backend | For images | Cloudinary API secret. |
+| `VITE_API_URL` | Frontend | No | API origin for frontend builds. Local development uses the Vite proxy when omitted. |
+| `VITE_API_PROXY` | Frontend | No | Vite development proxy target. Defaults to `http://localhost:4444`. |
+
+Without SMTP configuration, verification and password recovery links are printed to the server console for local development.
 
 ### 1. Clone the Repository
 
@@ -267,22 +322,7 @@ Install backend dependencies:
 npm ci
 ```
 
-Create your environment file:
-
-```bash
-cp .env.example .env
-```
-
-Configure the required environment variables:
-
-```env
-PORT=4444
-MONGO_URI=your_mongodb_connection_string
-JWT=your_jwt_secret
-CLIENT_URL=http://localhost:5173
-```
-
-Additional SMTP configuration can be added for email delivery.
+Create a `.env` file in the project root and provide the backend variables listed in the environment variable table above.
 
 ### 3. Start the Backend
 
@@ -304,17 +344,7 @@ cd frontend
 npm ci
 ```
 
-Create the frontend environment file:
-
-```bash
-cp .env.example .env
-```
-
-Configure the API URL if required by your frontend configuration:
-
-```env
-VITE_API_URL=http://localhost:4444
-```
+No frontend environment file is required for local development. The Vite dev server proxies `/api` requests to `http://localhost:4444`; set `VITE_API_URL` only when targeting a different API origin.
 
 ### 5. Start the Frontend
 
@@ -350,13 +380,16 @@ All API endpoints use the `/api` prefix.
 
 | Method | Endpoint | Description |
 |---|---|---|
+| GET | `/api/health` | Health check |
 | POST | `/api/auth/register` | Register a new user |
 | POST | `/api/auth/login` | Authenticate a user |
 | GET | `/api/auth/verify-email` | Verify email address |
+| POST | `/api/auth/resend-verification` | Resend the email verification message |
 | POST | `/api/auth/forgot-password` | Request password reset |
 | POST | `/api/auth/reset-password` | Reset password |
 | PATCH | `/api/auth/change-password` | Change password |
 | GET | `/api/auth/profile` | Retrieve user profile |
+| DELETE | `/api/auth/account` | Permanently delete the account and its entries |
 | GET | `/api/chronicle/getchronicles` | Retrieve journal entries |
 | POST | `/api/chronicle` | Create journal entry |
 | GET | `/api/chronicle/:id` | Retrieve an individual entry |
@@ -367,12 +400,15 @@ All API endpoints use the `/api` prefix.
 | GET | `/api/chronicle/moods` | Retrieve mood information |
 | GET | `/api/chronicle/tags` | Retrieve tags |
 | GET | `/api/chronicle/export` | Export journal entries |
+| POST | `/api/upload` | Upload an image for use in an entry |
 
 Protected endpoints require a valid JWT in the Authorization header:
 
 ```http
 Authorization: Bearer <your_token>
 ```
+
+Image uploads use `multipart/form-data` with the file sent in the `image` field. Only image files up to 5 MB are accepted, and the response includes the Cloudinary `url` and `publicId`.
 
 ---
 
@@ -389,10 +425,11 @@ Chronicle uses separate hosting services for its frontend and backend.
 | Frontend | Vercel |
 | Backend | Render |
 | Database | MongoDB Atlas |
+| Media Storage | Cloudinary |
 
 The frontend communicates with the deployed API using the `VITE_API_URL` environment variable.
 
-Sensitive configuration, including database credentials, JWT secrets, and SMTP credentials, is maintained through environment variables rather than committed to source control.
+Sensitive configuration, including database credentials, JWT secrets, SMTP credentials, and Cloudinary keys, is maintained through environment variables rather than committed to source control.
 
 ---
 
@@ -406,10 +443,13 @@ The application incorporates:
 - JWT-based authentication.
 - Protected API routes.
 - User-specific journal data access.
+- Authenticated, image-only uploads with a 5 MB size limit.
 - Environment-based configuration.
 - Database access restrictions.
 
-**Privacy is an important design goal, but the current application does not claim end-to-end encryption.** Stored journal content may be accessible to authorized backend and database operators.
+**Account deletion** gives users direct control over their data. Deleting an account permanently removes the account and all associated journal entries from the application database. Entry images are hosted on Cloudinary, so export or preserve any media you need before deleting your account.
+
+**Privacy is an important design goal, but the current application does not claim end-to-end encryption.** Stored journal content may be accessible to authorized backend, database, and media storage operators.
 
 ---
 
@@ -419,9 +459,9 @@ Chronicle is an evolving project. Some areas that could be explored further incl
 
 - End-to-end encryption for journal entries.
 - Advanced writing and formatting capabilities.
-- Image attachments within entries.
+- Media management, including cleanup of unused uploads.
 - More detailed writing analytics.
-- Complete diary backup and export.
+- Complete diary backup and export, including attached images.
 - Additional personalization and customization.
 
 ---
