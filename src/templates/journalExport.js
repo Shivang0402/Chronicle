@@ -12,7 +12,7 @@ const BLOCKQUOTE = /^>\s?(.*)$/;
 const BULLET = /^\s*[-*+]\s+(.*)$/;
 const ORDERED = /^\s*\d+[.)]\s+(.*)$/;
 const INLINE_TOKEN =
-  /(\[[^\]\n]+\]\([^\s)]+\)|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|`[^`\n]+`)/g;
+  /(!\[[^\]\n]*\]\([^)\s]+\)|\[[^\]\n]+\]\([^\s)]+\)|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|`[^`\n]+`)/g;
 
 const safeHref = (value) => {
   const href = String(value || "").trim();
@@ -20,11 +20,27 @@ const safeHref = (value) => {
   return /^(https?:|mailto:)/i.test(href) ? href : "";
 };
 
+const safeImageSrc = (value) => {
+  const src = String(value || "").trim();
+
+  return /^https?:/i.test(src) ? src : "";
+};
+
 const renderInline = (value) =>
   String(value ?? "")
     .split(INLINE_TOKEN)
     .filter((part) => part !== "")
     .map((part) => {
+      const image = part.match(/^!\[([^\]\n]*)\]\(([^)\s]+)\)$/);
+
+      if (image) {
+        const src = safeImageSrc(image[2]);
+
+        if (!src) return "";
+
+        return `<img src="${escapeHtml(src)}" alt="${escapeHtml(image[1])}">`;
+      }
+
       const link = part.match(/^\[([^\]\n]+)\]\(([^)\s]+)\)$/);
 
       if (link) {
@@ -196,101 +212,68 @@ const formatLongDate = (value) => {
   });
 };
 
-const formatShortDate = (value) => {
+const formatTime = (value) => {
   const date = toDate(value);
 
   if (!date) return "";
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
   });
 };
 
-const buildRangeLabel = (entries) => {
-  const dates = entries
-    .map((entry) => toDate(entry.date))
-    .filter(Boolean)
-    .sort((a, b) => a - b);
-
-  if (!dates.length) return "";
-
-  const first = formatShortDate(dates[0]);
-  const last = formatShortDate(dates[dates.length - 1]);
-
-  return first === last ? first : `${first} – ${last}`;
-};
-
-const buildContentsHtml = (entries) => {
-  if (entries.length < 3) return "";
-
-  const items = entries
-    .map(
-      (entry, index) => `
-        <li class="contents-item">
-          <span class="contents-num">${String(index + 1).padStart(2, "0")}</span>
-          <span class="contents-title">${escapeHtml(entry.title || "Untitled entry")}</span>
-          <span class="contents-date">${escapeHtml(formatShortDate(entry.date))}</span>
-        </li>`,
-    )
-    .join("");
-
-  return `
-    <section class="contents">
-      <div class="contents-head">
-        <span class="kicker">Contents</span>
-        <h2>Pages to return to</h2>
-      </div>
-      <ol class="contents-list">${items}</ol>
-    </section>
-  `;
-};
-
-const buildEntryHtml = (entry, index) => {
+const buildEntryHtml = (entry) => {
   const tags = (entry.tags || [])
     .filter(Boolean)
     .map((tag) => `<span class="tag">#${escapeHtml(tag)}</span>`)
     .join("");
+  const time = formatTime(entry.date);
+  const mood = entry.mood
+    ? `<span class="mood mood-${moodTone(entry.mood)}"><span class="emoji">${moodEmoji(entry.mood)}</span>${escapeHtml(entry.mood)}</span>`
+    : "";
 
   return `
     <article class="entry">
       <header class="entry-head">
         <div class="entry-meta">
           <div class="entry-date">
-            <span class="entry-number">${String(index + 1).padStart(2, "0")}</span>
-            <time>${escapeHtml(formatLongDate(entry.date))}</time>
+            ${time ? `<time>${escapeHtml(time)}</time><span class="meta-sep">·</span>` : ""}
+            <span>${escapeHtml(formatLongDate(entry.date))}</span>
           </div>
-          ${
-            entry.mood
-              ? `<span class="mood mood-${moodTone(entry.mood)}"><span class="emoji">${moodEmoji(entry.mood)}</span>${escapeHtml(entry.mood)}</span>`
-              : ""
-          }
+          ${mood}
         </div>
         <h2 class="entry-title">${escapeHtml(entry.title || "Untitled entry")}</h2>
-        ${tags ? `<div class="tags">${tags}</div>` : ""}
       </header>
       <div class="content">${renderMarkdown(entry.content)}</div>
-      <div class="entry-endmark">✦</div>
+      ${tags ? `<div class="tags">${tags}</div>` : ""}
     </article>
   `;
 };
 
+const buildDividerHtml = () => `
+  <div class="entry-divider" aria-hidden="true">
+    <span class="divider-rule"></span>
+    <span class="divider-mark"></span>
+    <span class="divider-rule"></span>
+  </div>
+`;
+
 const journalStyles = `
   :root {
-    --paper: #fcfbf8;
-    --ink: #292b27;
-    --body: #484941;
-    --muted: #89897f;
-    --sage: #74836b;
-    --sage-dark: #4d5e45;
-    --sage-light: #edf0e9;
+    --paper: #fcfaf5;
+    --ink: #252622;
+    --body: #34362f;
+    --muted: #777970;
+    --sage: #82947c;
+    --sage-deep: #52664f;
+    --sage-darker: #43543f;
+    --sage-light: #e8efe6;
     --gold-light: #f5f0e4;
     --clay-light: #f4ebe5;
     --blue-light: #eaf0f2;
-    --line: #e8e6df;
+    --line: #e3e0d7;
     --serif: "Playfair Display", Georgia, "Times New Roman", serif;
-    --book: Georgia, "Times New Roman", serif;
     --sans: "DM Sans", Arial, "Helvetica Neue", sans-serif;
   }
 
@@ -302,206 +285,70 @@ const journalStyles = `
   body {
     margin: 0;
     padding: 0;
-    background: var(--paper);
+    background-color: var(--paper);
   }
 
   body {
     color: var(--body);
-    font-family: var(--book);
-    font-size: 10.5pt;
-    line-height: 1.8;
+    font-family: var(--serif);
+    font-size: 10.8pt;
+    line-height: 1.78;
     font-kerning: normal;
     text-rendering: optimizeLegibility;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(rgba(37, 38, 34, 0.035) 0.55px, transparent 0.55px),
+      repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 6.94mm,
+        rgba(44, 46, 40, 0.045) 6.94mm,
+        rgba(44, 46, 40, 0.045) 7mm
+      );
+    background-size:
+      14px 14px,
+      100% 7mm;
   }
 
-  .cover {
-    min-height: 264mm;
-    padding: 20mm 16mm;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    page-break-after: always;
-    break-after: page;
-    background: linear-gradient(145deg, #fdfcf9 0%, #f8f7f3 62%, #f1efe8 100%);
-  }
-
-  .cover::after {
-    content: "";
-    position: absolute;
-    right: -34mm;
-    bottom: 16mm;
-    width: 104mm;
-    height: 104mm;
-    border: 1px solid rgba(116, 131, 107, 0.2);
-    border-radius: 50%;
-    box-shadow:
-      0 0 0 11mm rgba(116, 131, 107, 0.03),
-      0 0 0 22mm rgba(116, 131, 107, 0.02);
-  }
-
-  .brand {
-    position: relative;
-    z-index: 1;
-    color: var(--sage-dark);
-    font-family: var(--sans);
-    font-size: 10pt;
-    font-weight: 700;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-  }
-
-  .cover-copy {
-    position: relative;
-    z-index: 1;
-    margin-top: 18mm;
-    margin-bottom: 18mm;
-  }
-
-  .kicker {
-    display: block;
-    color: var(--sage);
-    font-family: var(--sans);
-    font-size: 8pt;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-
-  .cover-title {
-    max-width: 138mm;
-    margin: 9mm 0 7mm;
-    color: var(--ink);
-    font-family: var(--serif);
-    font-size: 39pt;
-    font-weight: 400;
-    line-height: 1.14;
-    letter-spacing: -0.04em;
-  }
-
-  .cover-deck {
-    max-width: 105mm;
-    margin: 0;
-    color: #77796f;
-    font-family: var(--book);
-    font-size: 12.5pt;
-    line-height: 1.8;
-  }
-
-  .cover-note {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 3mm 6mm;
-    padding-top: 5mm;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: 7.5pt;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .journal {
+  .page {
     width: 100%;
   }
 
-  .journal-head {
-    margin: 0 0 11mm;
-    break-after: avoid;
-    page-break-after: avoid;
-  }
-
-  .journal-head .kicker {
-    margin-bottom: 3mm;
-  }
-
-  .journal-title {
-    margin: 0 0 3mm;
-    color: var(--ink);
-    font-family: var(--serif);
-    font-size: 27pt;
-    font-weight: 400;
-    line-height: 1.2;
-    letter-spacing: -0.03em;
-  }
-
-  .journal-deck {
-    margin: 0;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: 8pt;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .contents {
-    break-after: page;
-    page-break-after: always;
-  }
-
-  .contents-head {
-    margin: 0 0 7mm;
-    break-after: avoid;
-    page-break-after: avoid;
-  }
-
-  .contents-head h2 {
-    margin: 0;
-    color: var(--ink);
-    font-family: var(--serif);
-    font-size: 21pt;
-    font-weight: 400;
-    line-height: 1.2;
-    letter-spacing: -0.03em;
-  }
-
-  .contents-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    column-count: 2;
-    column-gap: 12mm;
-  }
-
-  .contents-item {
+  .page-head {
     display: flex;
     align-items: baseline;
-    gap: 3mm;
-    padding: 2.2mm 0;
-    break-inside: avoid;
-    page-break-inside: avoid;
+    justify-content: space-between;
+    gap: 6mm;
+    margin: 0 0 8mm;
+    padding: 0 0 4mm;
+    border-bottom: 1px solid var(--line);
+    break-after: avoid;
+    page-break-after: avoid;
   }
 
-  .contents-num {
-    flex: 0 0 auto;
-    color: var(--sage);
-    font-family: var(--book);
-    font-style: italic;
-    font-size: 9.5pt;
-  }
-
-  .contents-title {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .brand {
     color: var(--ink);
-    font-size: 9.5pt;
+    font-family: var(--serif);
+    font-size: 18pt;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
   }
 
-  .contents-date {
-    flex: 0 0 auto;
+  .brand-dot {
+    color: var(--sage);
+  }
+
+  .page-date {
     color: var(--muted);
     font-family: var(--sans);
     font-size: 7pt;
-    white-space: nowrap;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0.16em;
+    text-align: right;
+    text-transform: uppercase;
   }
 
   .entry {
@@ -509,12 +356,8 @@ const journalStyles = `
     page-break-inside: auto;
   }
 
-  .entry + .entry {
-    margin-top: 13mm;
-  }
-
   .entry-head {
-    margin: 0 0 4.5mm;
+    margin: 0 0 4mm;
     break-inside: avoid;
     page-break-inside: avoid;
     break-after: avoid;
@@ -524,40 +367,42 @@ const journalStyles = `
   .entry-meta {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     align-items: center;
-    gap: 3mm 6mm;
-    margin-bottom: 3.5mm;
+    justify-content: space-between;
+    gap: 2mm 6mm;
+    margin: 0 0 3mm;
   }
 
   .entry-date {
     display: flex;
-    align-items: center;
-    gap: 3mm;
-    color: var(--sage-dark);
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2mm;
+    color: var(--sage-deep);
     font-family: var(--sans);
-    font-size: 7.5pt;
+    font-size: 7pt;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
 
-  .entry-number {
-    color: #a0aa98;
-    font-family: var(--book);
-    font-size: 11.5pt;
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: 0;
+  .entry-date time {
+    color: var(--sage-deep);
+  }
+
+  .meta-sep {
+    color: #b9c2b1;
   }
 
   .mood {
     display: inline-flex;
     align-items: center;
-    padding: 1.4mm 3mm;
-    border-radius: 20px;
+    padding: 1.2mm 2.8mm;
+    border-radius: 999px;
     font-family: var(--sans);
-    font-size: 7.5pt;
+    font-size: 6.8pt;
     font-weight: 600;
+    letter-spacing: 0.05em;
     white-space: nowrap;
   }
 
@@ -591,45 +436,24 @@ const journalStyles = `
   }
 
   .entry-title {
-    margin: 0 0 3mm;
+    margin: 0;
     color: var(--ink);
     font-family: var(--serif);
-    font-size: 22pt;
-    font-weight: 400;
-    line-height: 1.25;
-    letter-spacing: -0.03em;
+    font-size: 21pt;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.24;
+    letter-spacing: -0.025em;
     overflow-wrap: break-word;
     break-after: avoid;
     page-break-after: avoid;
   }
 
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2mm;
-    margin: 0 0 4mm;
-    break-inside: avoid;
-    page-break-inside: avoid;
-    break-after: avoid;
-    page-break-after: avoid;
-  }
-
-  .tag {
-    display: inline-block;
-    padding: 1mm 2.5mm;
-    background: #f0f1eb;
-    border-radius: 3px;
-    color: var(--sage-dark);
-    font-family: var(--sans);
-    font-size: 7pt;
-    font-weight: 500;
-  }
-
   .content {
     margin: 0;
     color: var(--body);
-    font-family: var(--book);
-    font-size: 10.5pt;
+    font-family: var(--serif);
+    font-size: 10.8pt;
     line-height: 1.82;
     overflow-wrap: break-word;
     word-wrap: break-word;
@@ -637,8 +461,19 @@ const journalStyles = `
     widows: 3;
   }
 
+  .content > p:first-of-type::first-letter {
+    float: left;
+    margin: 0.08em 0.14em 0 0;
+    color: var(--sage-deep);
+    font-family: var(--serif);
+    font-size: 3.3em;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 0.78;
+  }
+
   .content p {
-    margin: 0 0 4.5mm;
+    margin: 0 0 4.2mm;
   }
 
   .content p:last-child {
@@ -653,7 +488,7 @@ const journalStyles = `
     margin: 6mm 0 2.5mm;
     color: var(--ink);
     font-family: var(--serif);
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.3;
     break-after: avoid;
     page-break-after: avoid;
@@ -677,11 +512,11 @@ const journalStyles = `
   }
 
   .content h6 {
-    color: var(--sage-dark);
+    color: var(--sage-deep);
     font-family: var(--sans);
-    font-size: 8pt;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
@@ -703,11 +538,12 @@ const journalStyles = `
   .content blockquote {
     margin: 5mm 0;
     padding: 3mm 4mm;
-    border-radius: 3px;
-    background: #f3f4ef;
-    color: #6f7168;
+    border-left: 2px solid rgba(82, 102, 79, 0.4);
+    color: var(--muted);
     font-style: italic;
     line-height: 1.8;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .content hr {
@@ -716,8 +552,20 @@ const journalStyles = `
     border-top: 1px solid var(--line);
   }
 
+  .content img {
+    display: block;
+    max-width: 100%;
+    max-height: 110mm;
+    margin: 4.5mm 0;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    object-fit: cover;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
   .content a {
-    color: var(--sage-dark);
+    color: var(--sage-deep);
     text-decoration: underline;
     text-decoration-color: #a8b39f;
   }
@@ -740,44 +588,75 @@ const journalStyles = `
     color: var(--muted);
   }
 
-  .entry-endmark {
-    margin-top: 5mm;
-    color: #a1ad98;
-    font-size: 8pt;
-    text-align: center;
-    break-before: avoid;
-    page-break-before: avoid;
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2mm;
+    margin: 5mm 0 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 1mm 2.8mm;
+    border-radius: 999px;
+    background: #efeee7;
+    color: #5e655a;
+    font-family: var(--sans);
+    font-size: 6.8pt;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .entry-divider {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+    margin: 8mm 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .divider-rule {
+    flex: 1 1 auto;
+    height: 1px;
+    background: rgba(196, 200, 191, 0.65);
+  }
+
+  .divider-mark {
+    width: 4px;
+    height: 4px;
+    border: 1px solid rgba(82, 102, 79, 0.55);
+    transform: rotate(45deg);
   }
 
   .empty {
     padding: 7mm;
+    border: 1px solid var(--line);
     border-radius: 4px;
-    background: #f3f4ef;
+    background: #f5f4ed;
     color: var(--muted);
     font-style: italic;
     line-height: 1.8;
   }
 
   @media print {
-    .cover {
-      page-break-after: always;
-      break-after: page;
-    }
-
-    .entry-meta,
+    .page-head,
+    .entry-head,
     .entry-title,
     .tags,
     .content h2,
     .content h3,
     .content h4,
     .content h5,
-    .content h6 {
+    .content h6,
+    .content blockquote {
       break-inside: avoid;
     }
 
     .content p,
-    .content li,
-    .content blockquote {
+    .content li {
       orphans: 3;
       widows: 3;
     }
@@ -786,10 +665,9 @@ const journalStyles = `
 
 const renderJournalHtml = (entries, exportedOn) => {
   const safeEntries = Array.isArray(entries) ? entries : [];
-  const rangeLabel = buildRangeLabel(safeEntries);
-  const countLabel = `${safeEntries.length} ${
-    safeEntries.length === 1 ? "entry" : "entries"
-  }`;
+  const entriesHtml = safeEntries
+    .map((entry) => buildEntryHtml(entry))
+    .join(buildDividerHtml());
 
   return `<!doctype html>
 <html lang="en">
@@ -797,42 +675,23 @@ const renderJournalHtml = (entries, exportedOn) => {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light">
-  <meta name="description" content="A personal collection of thoughts, moments and reflections.">
-  <title>Chronicle — Personal Journal</title>
+  <meta name="description" content="A private collection of journal entries.">
+  <title>Chronicle — Journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,400..600&family=Playfair+Display:ital,wght@0,400..700;1,400..600&display=swap" rel="stylesheet">
   <style>${journalStyles}</style>
 </head>
 <body>
-  <section class="cover">
-    <div class="brand">Chronicle</div>
-    <div class="cover-copy">
-      <span class="kicker">A personal journal</span>
-      <p class="cover-title">Your days,<br>in your own words.</p>
-      <p class="cover-deck">A collection of thoughts, moments, reflections, and little details that make life your own.</p>
-    </div>
-    <div class="cover-note">
-      <span>${countLabel}</span>
-      ${rangeLabel ? `<span>${escapeHtml(rangeLabel)}</span>` : ""}
-      <span>Exported ${escapeHtml(exportedOn)}</span>
-    </div>
-  </section>
-
-  <main class="journal">
-    <header class="journal-head">
-      <span class="kicker">Chronicle collection</span>
-      <h1 class="journal-title">Your journal</h1>
-      <p class="journal-deck">${countLabel}${rangeLabel ? ` · ${escapeHtml(rangeLabel)}` : ""}</p>
+  <main class="page">
+    <header class="page-head">
+      <span class="brand">Chronicle<span class="brand-dot">.</span></span>
+      <span class="page-date">${escapeHtml(formatLongDate(exportedOn))}</span>
     </header>
-
-    ${buildContentsHtml(safeEntries)}
 
     ${
       safeEntries.length
-        ? safeEntries
-            .map((entry, index) => buildEntryHtml(entry, index))
-            .join("\n")
+        ? entriesHtml
         : '<p class="empty">Your pages will gather here as you write.</p>'
     }
   </main>

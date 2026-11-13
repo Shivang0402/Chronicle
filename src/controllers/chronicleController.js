@@ -83,6 +83,22 @@ const buildPdf = async (entries, exportedOn) => {
         new Promise((resolve) => setTimeout(resolve, 2500)),
       ]),
     );
+    await page.evaluate(() =>
+      Promise.race([
+        Promise.all(
+          Array.from(document.images).map(
+            (image) =>
+              image.complete ||
+              new Promise((resolve) => {
+                image.addEventListener("load", resolve, { once: true });
+                image.addEventListener("error", resolve, { once: true });
+                setTimeout(resolve, 5000);
+              }),
+          ),
+        ),
+        new Promise((resolve) => setTimeout(resolve, 6000)),
+      ]),
+    );
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
