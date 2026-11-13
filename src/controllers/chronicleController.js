@@ -102,11 +102,8 @@ const buildPdf = async (entries, exportedOn) => {
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
-      displayHeaderFooter: true,
-      headerTemplate: "<span></span>",
-      footerTemplate:
-        '<div style="width:100%;margin:0 14mm;color:#8a8b81;font:8px Arial,sans-serif;letter-spacing:1.6px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;"><span>Chronicle</span><span>Page <span class="pageNumber"></span> / <span class="totalPages"></span></span></div>',
-      margin: { top: "14mm", right: "14mm", bottom: "16mm", left: "14mm" },
+      displayHeaderFooter: false,
+      margin: { top: "0mm", right: "0mm", bottom: "0mm", left: "0mm" },
       outline: true,
       tagged: true,
     });

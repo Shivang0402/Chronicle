@@ -281,6 +281,10 @@ const journalStyles = `
     box-sizing: border-box;
   }
 
+  @page {
+    margin: 0;
+  }
+
   html,
   body {
     margin: 0;
@@ -314,6 +318,9 @@ const journalStyles = `
 
   .page {
     width: 100%;
+    padding: 16mm 17mm 18mm;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
   }
 
   .page-head {
