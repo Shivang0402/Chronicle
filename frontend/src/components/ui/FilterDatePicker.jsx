@@ -356,7 +356,7 @@ export default function FilterDatePicker({
                         disabled={disabled}
                         className={`grid h-8 place-items-center rounded-full text-[11px] transition-colors ${
                           isSelected
-                            ? "bg-sage-deep font-medium text-white shadow-sm"
+                            ? "bg-sage-deep font-medium text-on-primary shadow-sm"
                             : disabled
                               ? "cursor-not-allowed text-muted-gray/30"
                               : inMonth
@@ -402,7 +402,7 @@ export default function FilterDatePicker({
                       disabled={disabled}
                       className={`relative flex h-10 items-center justify-center rounded-xl text-[11px] transition-colors ${
                         selected
-                          ? "bg-sage-deep font-medium text-white shadow-sm"
+                          ? "bg-sage-deep font-medium text-on-primary shadow-sm"
                           : disabled
                             ? "cursor-not-allowed text-muted-gray/30"
                             : "text-charcoal-muted hover:bg-warm-beige hover:text-charcoal"
@@ -439,7 +439,7 @@ export default function FilterDatePicker({
                       disabled={disabled}
                       className={`relative flex h-10 items-center justify-center rounded-xl text-[11px] transition-colors ${
                         selected
-                          ? "bg-sage-deep font-medium text-white shadow-sm"
+                          ? "bg-sage-deep font-medium text-on-primary shadow-sm"
                           : disabled
                             ? "cursor-not-allowed text-muted-gray/30"
                             : "text-charcoal-muted hover:bg-warm-beige hover:text-charcoal"

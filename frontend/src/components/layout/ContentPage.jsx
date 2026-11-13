@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageTransition from "../ui/PageTransition";
 import Reveal from "../ui/Reveal";
+import ThemeToggle from "../ui/ThemeToggle";
 import Wordmark from "../ui/Wordmark";
 import Footer from "./Footer";
 
@@ -38,13 +39,16 @@ export default function ContentPage({
         <header className="border-b border-hairline bg-ivory/90 backdrop-blur">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 sm:px-10 lg:px-16">
             <Wordmark />
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 rounded-full border border-hairline bg-paper/70 px-4 py-2 text-[11px] font-medium uppercase tracking-wide2 text-charcoal-muted transition-colors hover:border-sage/40 hover:text-charcoal"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Back home
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 rounded-full border border-hairline bg-paper/70 px-4 py-2 text-[11px] font-medium uppercase tracking-wide2 text-charcoal-muted transition-colors hover:border-sage/40 hover:text-charcoal"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Back home
+              </Link>
+              <ThemeToggle />
+            </div>
           </div>
         </header>
 

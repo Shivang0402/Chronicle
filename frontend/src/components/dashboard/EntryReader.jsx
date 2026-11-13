@@ -51,7 +51,7 @@ export default function EntryReader({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-charcoal/30 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-scrim/30 p-0 backdrop-blur-sm sm:items-center sm:p-6"
         >
           <motion.article
             initial={{ opacity: 0, y: 24, scale: 0.99 }}
@@ -62,7 +62,7 @@ export default function EntryReader({
             role="dialog"
             aria-modal="true"
             aria-labelledby="reader-title"
-            className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-hairline bg-paper shadow-paper-lg sm:rounded-2xl"
+            className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-hairline bg-writing-folio shadow-paper-lg sm:rounded-2xl"
           >
             <div className="flex items-start justify-between gap-4 border-b border-hairline px-6 py-5 sm:px-9">
               <div>
@@ -104,7 +104,7 @@ export default function EntryReader({
 
               <FormattedContent
                 content={entry.content}
-                className="mt-7 font-serif text-lg font-light leading-[1.85] text-charcoal"
+                className="mt-7 font-reading text-lg font-light leading-[1.85] text-charcoal"
               />
             </div>
 
@@ -141,7 +141,7 @@ export default function EntryReader({
                           type="button"
                           onClick={() => onDelete(entry)}
                           disabled={deleting}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-danger px-3.5 py-2 text-[10px] font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-danger px-3.5 py-2 text-[10px] font-medium text-on-danger transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {deleting ? (
                             <Loader2 className="h-3 w-3 animate-spin" />

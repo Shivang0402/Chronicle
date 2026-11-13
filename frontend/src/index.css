@@ -23,6 +23,7 @@
     --color-sage-subtle: 232 239 230;
     --color-hairline: 232 230 223;
     --color-danger: 168 67 58;
+    --on-danger: 255 255 255;
 
     /* Supporting tones for texture, scrollbars and data visualisation. */
     --color-scrollbar: 201 199 191;
@@ -33,6 +34,94 @@
     --color-chart-stone: 102 104 95;
     --color-chart-stone-light: 168 168 160;
     --color-chart-sand: 216 201 181;
+
+    /* Semantic tokens for surfaces, typography and accent states. */
+    --surface: 248 247 243;
+    --surface-dim: 240 238 231;
+    --surface-bright: 252 251 249;
+    --surface-container-lowest: 252 251 249;
+    --surface-container-low: 248 247 243;
+    --surface-container: 240 238 231;
+    --surface-container-high: 232 230 223;
+    --surface-container-highest: 220 227 213;
+    --writing-folio: 252 251 249;
+    --on-surface: 37 38 34;
+    --on-surface-variant: 102 104 95;
+    --secondary-text: 102 104 95;
+    --outline: 107 109 100;
+    --outline-variant: 232 230 223;
+    --primary: 82 102 79;
+    --on-primary: 255 255 255;
+    --primary-container: 220 227 213;
+    --on-primary-container: 67 84 63;
+    --secondary: 139 122 105;
+    --secondary-container: 240 238 231;
+    --on-secondary-container: 102 104 95;
+    --interactive-hover: rgba(37, 38, 34, 0.045);
+    --ruled-line: rgba(232, 230, 223, 1);
+    --focus-ring: 130 148 124;
+    --vault-badge: 130 148 124;
+    --shadow-color: 37 38 34;
+    --scrim: 37 38 34;
+    --on-scrim: 248 247 243;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --color-ivory: 23 23 21;
+    --color-paper: 34 34 31;
+    --color-warm-beige: 28 28 25;
+    --color-charcoal: 233 228 217;
+    --color-charcoal-muted: 167 163 153;
+    --color-muted-gray: 167 163 153;
+    --color-sage: 130 148 124;
+    --color-sage-dark: 163 176 150;
+    --color-sage-deep: 130 148 124;
+    --color-sage-darker: 163 176 150;
+    --color-sage-light: 41 48 39;
+    --color-sage-subtle: 41 48 39;
+    --color-hairline: 41 40 34;
+    --color-danger: 224 154 146;
+    --on-danger: 42 20 18;
+
+    --color-scrollbar: 53 52 46;
+    --color-scrollbar-hover: 70 69 60;
+    --color-chart-sage: 130 148 124;
+    --color-chart-sage-soft: 163 176 150;
+    --color-chart-sage-pale: 196 208 189;
+    --color-chart-stone: 167 163 153;
+    --color-chart-stone-light: 120 117 108;
+    --color-chart-sand: 168 143 120;
+
+    --surface: 23 23 21;
+    --surface-dim: 17 17 15;
+    --surface-bright: 34 34 31;
+    --surface-container-lowest: 20 20 18;
+    --surface-container-low: 28 28 25;
+    --surface-container: 34 34 31;
+    --surface-container-high: 41 41 35;
+    --surface-container-highest: 50 50 43;
+    --writing-folio: 32 31 27;
+    --on-surface: 233 228 217;
+    --on-surface-variant: 167 163 153;
+    --secondary-text: 193 188 174;
+    --outline: 53 52 46;
+    --outline-variant: 41 40 34;
+    --primary: 130 148 124;
+    --on-primary: 17 21 15;
+    --primary-container: 41 48 39;
+    --on-primary-container: 196 208 189;
+    --secondary: 168 143 120;
+    --secondary-container: 48 40 32;
+    --on-secondary-container: 216 200 185;
+    --interactive-hover: rgba(233, 228, 217, 0.055);
+    --ruled-line: rgba(233, 228, 217, 0.065);
+    --focus-ring: 163 176 150;
+    --vault-badge: 130 148 124;
+    --shadow-color: 0 0 0;
+    --scrim: 17 17 15;
+    --on-scrim: 248 247 243;
   }
 
   html {
@@ -45,6 +134,9 @@
     margin: 0;
     min-height: 100vh;
     overscroll-behavior-y: none;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
   }
 
   ::selection {
@@ -76,7 +168,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid rgb(var(--color-sage) / 0.7);
+    outline: 2px solid rgb(var(--focus-ring) / 0.8);
     outline-offset: 3px;
   }
 }
@@ -117,7 +209,7 @@
   }
 
   .btn-sage {
-    @apply inline-flex items-center justify-center gap-2.5 rounded-full bg-sage-deep px-7 py-3.5 text-[11px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-all duration-300 hover:bg-sage-darker hover:shadow-paper disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2.5 rounded-full bg-sage-deep px-7 py-3.5 text-[11px] font-medium uppercase tracking-wide2 text-on-primary shadow-sm transition-all duration-300 hover:bg-sage-darker hover:shadow-paper disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .btn-ghost {
@@ -279,6 +371,73 @@
     margin: 0.6em 0;
     border: 0;
     border-top: 1px solid rgb(var(--color-hairline));
+  }
+
+  .dark .btn-primary {
+    background-color: rgb(var(--primary));
+    color: rgb(var(--on-primary));
+  }
+
+  .dark .btn-primary:hover {
+    background-color: rgb(var(--color-sage-darker));
+  }
+
+  .dark .field-input {
+    border-color: rgb(var(--outline-variant));
+    background-color: rgb(var(--surface-container-low));
+    color: rgb(var(--on-surface));
+  }
+
+  .dark .field-input::placeholder {
+    color: rgb(var(--on-surface-variant));
+  }
+
+  .dark .field-input:hover {
+    border-color: rgb(var(--outline));
+  }
+
+  .dark .field-input:focus {
+    border-color: rgb(var(--primary) / 0.7);
+    background-color: rgb(var(--surface-container));
+  }
+
+  .dark .ruled-paper {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 35px,
+      var(--ruled-line) 35px,
+      var(--ruled-line) 36px
+    );
+  }
+
+  .dark .paper-texture {
+    background-image: radial-gradient(
+      rgb(var(--primary) / 0.07) 1px,
+      transparent 1px
+    );
+  }
+
+  .dark .grain-overlay::after {
+    opacity: 0.22;
+  }
+
+  .profile-hero {
+    background-image: linear-gradient(
+      135deg,
+      rgb(var(--color-sage-darker)),
+      rgb(var(--color-sage-deep)) 52%,
+      rgb(var(--color-sage-deep))
+    );
+  }
+
+  .dark .profile-hero {
+    background-image: linear-gradient(
+      135deg,
+      rgb(41 48 39),
+      rgb(53 63 48) 52%,
+      rgb(41 48 39)
+    );
   }
 }
 

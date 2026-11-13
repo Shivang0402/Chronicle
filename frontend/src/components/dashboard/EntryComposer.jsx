@@ -260,7 +260,7 @@ export default function EntryComposer({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-charcoal/30 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-scrim/30 p-0 backdrop-blur-sm sm:items-center sm:p-6"
         >
           <motion.form
             initial={{ opacity: 0, y: 24, scale: 0.99 }}
@@ -272,7 +272,7 @@ export default function EntryComposer({
             role="dialog"
             aria-modal="true"
             aria-labelledby="composer-title"
-            className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-hairline bg-paper shadow-paper-lg sm:rounded-2xl"
+            className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-hairline bg-writing-folio shadow-paper-lg sm:rounded-2xl"
           >
             <div className="flex items-start justify-between gap-4 border-b border-hairline px-6 py-5 sm:px-8">
               <div>
@@ -340,7 +340,7 @@ export default function EntryComposer({
                     }}
                     className={`rounded-full px-3 py-1.5 text-[10px] font-medium transition-colors ${
                       mood === item
-                        ? "bg-sage-deep text-white shadow-sm"
+                        ? "bg-sage-deep text-on-primary shadow-sm"
                         : "bg-warm-beige/80 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
                     }`}
                   >
@@ -358,7 +358,7 @@ export default function EntryComposer({
                   }}
                   placeholder="Let the thought unfold, exactly as it came to you..."
                   autoFocus
-                  editorClassName="ruled-paper -mx-6 mt-4 min-h-[240px] w-[calc(100%_+_3rem)] px-6 font-serif font-light text-charcoal caret-sage sm:-mx-8 sm:w-[calc(100%_+_4rem)] sm:px-8"
+                  editorClassName="ruled-paper -mx-6 mt-4 min-h-[240px] w-[calc(100%_+_3rem)] px-6 font-reading font-light text-charcoal caret-sage sm:-mx-8 sm:w-[calc(100%_+_4rem)] sm:px-8"
                 />
               </div>
 

@@ -48,7 +48,7 @@ export default function LeaveDraftDialog({
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) onClose();
           }}
-          className="fixed inset-0 z-[90] flex items-end justify-center bg-charcoal/35 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+          className="fixed inset-0 z-[90] flex items-end justify-center bg-scrim/35 p-0 backdrop-blur-sm sm:items-center sm:p-6"
         >
           <motion.div
             role="dialog"

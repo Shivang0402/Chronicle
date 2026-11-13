@@ -76,7 +76,7 @@ export default function DeleteAccountDialog({
             type="button"
             onClick={onConfirm}
             disabled={deleting}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-danger px-5 py-2.5 text-[11px] font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-danger px-5 py-2.5 text-[11px] font-medium text-on-danger transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
           >
             {deleting ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

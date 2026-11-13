@@ -19,6 +19,7 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 import PageTransition from "../components/ui/PageTransition";
 import Reveal from "../components/ui/Reveal";
 import RichTextEditor from "../components/ui/RichTextEditor";
+import ThemeToggle from "../components/ui/ThemeToggle";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
@@ -560,6 +561,7 @@ export default function EditorPage() {
             </div>
 
             <div className="flex items-center gap-2">
+              <ThemeToggle className="h-9 w-9" />
               <button
                 type="button"
                 onClick={() => setFocusMode((value) => !value)}
@@ -689,7 +691,7 @@ export default function EditorPage() {
                         title={MOOD_EMOJI[item] || undefined}
                         className={`rounded-full px-2.5 py-1 text-[9px] font-medium transition-all ${
                           active
-                            ? "bg-sage-deep text-white shadow-sm"
+                            ? "bg-sage-deep text-on-primary shadow-sm"
                             : "bg-warm-beige/80 text-charcoal-muted hover:bg-sage-light/60 hover:text-charcoal"
                         }`}
                       >
@@ -774,7 +776,7 @@ export default function EditorPage() {
             y={20}
             delay={0.08}
             blur={false}
-            className={`overflow-hidden rounded-2xl border bg-paper ${
+            className={`overflow-hidden rounded-2xl border bg-writing-folio ${
               focusMode
                 ? "border-transparent shadow-none"
                 : "border-hairline shadow-paper"
@@ -839,7 +841,7 @@ export default function EditorPage() {
                 onUploadImage={handleImageUpload}
                 placeholder="Let the thought unfold, exactly as it came to you..."
                 spellCheck
-                editorClassName="ruled-paper -mx-6 mt-4 min-h-[468px] w-[calc(100%_+_3rem)] px-6 font-serif font-light text-charcoal caret-sage sm:-mx-10 sm:w-[calc(100%_+_5rem)] sm:px-10"
+                editorClassName="ruled-paper -mx-6 mt-4 min-h-[468px] w-[calc(100%_+_3rem)] px-6 font-reading font-light text-charcoal caret-sage sm:-mx-10 sm:w-[calc(100%_+_5rem)] sm:px-10"
               />
             </div>
 

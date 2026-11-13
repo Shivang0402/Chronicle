@@ -397,7 +397,7 @@ export default function ProfilePage() {
                     blur={false}
                     className="overflow-hidden rounded-3xl border border-hairline bg-paper shadow-paper"
                   >
-                    <div className="relative overflow-hidden bg-gradient-to-br from-sage-darker via-sage-deep to-sage-deep p-6 sm:p-8">
+                    <div className="profile-hero relative overflow-hidden p-6 sm:p-8">
                       <div className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full border border-white/15" />
                       <div className="pointer-events-none absolute -bottom-20 right-16 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
 

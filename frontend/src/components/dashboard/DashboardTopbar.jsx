@@ -1,5 +1,6 @@
 import { CalendarDays, Menu } from "lucide-react";
 import { todayLabel } from "../../lib/journal";
+import ThemeToggle from "../ui/ThemeToggle";
 import AccountMenu from "./AccountMenu";
 
 export default function DashboardTopbar({
@@ -31,6 +32,7 @@ export default function DashboardTopbar({
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <AccountMenu user={user} onLogout={onLogout} variant="topbar" />
         </div>
       </div>

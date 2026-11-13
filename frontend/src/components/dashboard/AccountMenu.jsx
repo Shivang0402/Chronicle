@@ -131,7 +131,7 @@ export default function AccountMenu({
           ref={triggerRef}
           type="button"
           onClick={() => setOpen((current) => !current)}
-          className={`grid h-8 w-8 place-items-center rounded-full bg-sage-subtle font-serif text-sm text-sage-deep transition-all hover:bg-sage-deep hover:text-white ${
+          className={`grid h-8 w-8 place-items-center rounded-full bg-sage-subtle font-serif text-sm text-sage-deep transition-all hover:bg-sage-deep hover:text-on-primary ${
             open ? "ring-2 ring-sage/30" : ""
           }`}
           aria-label="Account menu"

@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageTransition from "../components/ui/PageTransition";
+import ThemeToggle from "../components/ui/ThemeToggle";
 import Wordmark from "../components/ui/Wordmark";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 
@@ -11,6 +12,7 @@ export default function NotFoundPage() {
     <PageTransition variant="scale">
       <div className="relative grid min-h-screen place-items-center overflow-hidden bg-ivory px-6">
         <div className="pointer-events-none absolute inset-0 paper-texture opacity-60" />
+        <ThemeToggle className="absolute right-6 top-6" />
         <div className="relative text-center">
           <Wordmark className="mb-10 justify-center" />
           <span className="font-serif text-[110px] leading-none text-sage/25 sm:text-[160px]">

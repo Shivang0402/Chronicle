@@ -18,8 +18,8 @@ export default function Philosophy() {
                 className="aspect-[4/3] w-full object-cover"
                 loading="eager"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/55 via-transparent to-transparent" />
-              <p className="absolute bottom-5 left-5 font-serif text-lg italic text-ivory sm:bottom-7 sm:left-7 sm:text-xl">
+              <div className="absolute inset-0 bg-gradient-to-t from-scrim/55 via-transparent to-transparent" />
+              <p className="absolute bottom-5 left-5 font-serif text-lg italic text-on-scrim sm:bottom-7 sm:left-7 sm:text-xl">
                 A quieter place to return to.
               </p>
             </div>

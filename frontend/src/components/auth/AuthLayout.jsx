@@ -1,6 +1,7 @@
 import { ArrowLeft, Lock, Quote, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageTransition from "../ui/PageTransition";
+import ThemeToggle from "../ui/ThemeToggle";
 import Wordmark from "../ui/Wordmark";
 
 export default function AuthLayout({ children }) {
@@ -12,15 +13,18 @@ export default function AuthLayout({ children }) {
         <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-warm-beige/80 blur-3xl" />
 
         <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
-          <div className="mb-5 flex items-center justify-between">
+          <div className="mb-5 flex items-center justify-between gap-4">
             <Wordmark />
-            <Link
-              to="/"
-              className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-gray transition-colors hover:text-charcoal"
-            >
-              <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
-              Back to home
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-gray transition-colors hover:text-charcoal"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+                Back to home
+              </Link>
+              <ThemeToggle />
+            </div>
           </div>
 
           <div className="grid flex-1 overflow-hidden rounded-2xl border border-hairline bg-paper shadow-paper-lg lg:grid-cols-12">
@@ -45,9 +49,9 @@ export default function AuthLayout({ children }) {
                     className="h-60 w-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/10 to-transparent" />
-                  <div className="absolute bottom-5 left-5 right-5 text-ivory">
-                    <span className="block text-[9px] uppercase tracking-wide2 text-ivory/70">
+                  <div className="absolute inset-0 bg-gradient-to-t from-scrim/80 via-scrim/10 to-transparent" />
+                  <div className="absolute bottom-5 left-5 right-5 text-on-scrim">
+                    <span className="block text-[9px] uppercase tracking-wide2 text-on-scrim/70">
                       Master folio #0482
                     </span>
                     <span className="mt-1 block font-serif text-xl">

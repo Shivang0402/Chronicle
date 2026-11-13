@@ -76,7 +76,7 @@ function SidebarContent({
         <button
           type="button"
           onClick={onNewEntry}
-          className="mb-8 flex w-full items-center justify-center gap-2 rounded-xl bg-sage-deep px-4 py-3 text-[11px] font-medium uppercase tracking-wide2 text-white shadow-sm transition-colors hover:bg-sage-darker"
+          className="mb-8 flex w-full items-center justify-center gap-2 rounded-xl bg-sage-deep px-4 py-3 text-[11px] font-medium uppercase tracking-wide2 text-on-primary shadow-sm transition-colors hover:bg-sage-darker"
         >
           <PenLine className="h-4 w-4" />
           New Entry
@@ -103,6 +103,9 @@ function SidebarContent({
               >
                 <Icon className="h-4 w-4" />
                 {item.label}
+                {active && (
+                  <span className="ml-auto hidden h-1.5 w-1.5 rounded-full bg-vault-badge dark:block" />
+                )}
               </Link>
             );
           })}
@@ -206,7 +209,7 @@ export default function DashboardSidebar(props) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={onClose}
-              className="fixed inset-0 z-50 bg-charcoal/25 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-50 bg-scrim/25 backdrop-blur-sm lg:hidden"
               aria-label="Close navigation"
             />
             <motion.aside

@@ -744,7 +744,7 @@ export default function JournalPage() {
                           }}
                           className={`grid h-8 min-w-8 place-items-center rounded-full px-2 text-[11px] transition-colors ${
                             number === page
-                              ? "bg-sage-deep text-white shadow-sm"
+                              ? "bg-sage-deep text-on-primary shadow-sm"
                               : "border border-hairline bg-paper text-charcoal-muted hover:text-charcoal"
                           }`}
                           aria-label={`Page ${number}`}
