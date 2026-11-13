@@ -69,45 +69,45 @@
   .dark {
     color-scheme: dark;
 
-    --color-ivory: 23 23 21;
-    --color-paper: 34 34 31;
-    --color-warm-beige: 28 28 25;
-    --color-charcoal: 233 228 217;
-    --color-charcoal-muted: 167 163 153;
-    --color-muted-gray: 167 163 153;
+    --color-ivory: 22 22 21;
+    --color-paper: 29 29 28;
+    --color-warm-beige: 26 26 25;
+    --color-charcoal: 231 230 226;
+    --color-charcoal-muted: 170 168 161;
+    --color-muted-gray: 170 168 161;
     --color-sage: 130 148 124;
     --color-sage-dark: 163 176 150;
     --color-sage-deep: 130 148 124;
     --color-sage-darker: 163 176 150;
     --color-sage-light: 41 48 39;
-    --color-sage-subtle: 41 48 39;
-    --color-hairline: 41 40 34;
+    --color-sage-subtle: 39 45 37;
+    --color-hairline: 39 39 36;
     --color-danger: 224 154 146;
     --on-danger: 42 20 18;
 
-    --color-scrollbar: 53 52 46;
-    --color-scrollbar-hover: 70 69 60;
+    --color-scrollbar: 51 51 48;
+    --color-scrollbar-hover: 67 67 63;
     --color-chart-sage: 130 148 124;
     --color-chart-sage-soft: 163 176 150;
     --color-chart-sage-pale: 196 208 189;
-    --color-chart-stone: 167 163 153;
-    --color-chart-stone-light: 120 117 108;
+    --color-chart-stone: 170 168 161;
+    --color-chart-stone-light: 122 120 114;
     --color-chart-sand: 168 143 120;
 
-    --surface: 23 23 21;
-    --surface-dim: 17 17 15;
-    --surface-bright: 34 34 31;
-    --surface-container-lowest: 20 20 18;
-    --surface-container-low: 28 28 25;
-    --surface-container: 34 34 31;
-    --surface-container-high: 41 41 35;
-    --surface-container-highest: 50 50 43;
-    --writing-folio: 32 31 27;
-    --on-surface: 233 228 217;
-    --on-surface-variant: 167 163 153;
-    --secondary-text: 193 188 174;
-    --outline: 53 52 46;
-    --outline-variant: 41 40 34;
+    --surface: 22 22 21;
+    --surface-dim: 17 17 16;
+    --surface-bright: 29 29 28;
+    --surface-container-lowest: 20 20 19;
+    --surface-container-low: 26 26 25;
+    --surface-container: 29 29 28;
+    --surface-container-high: 36 36 35;
+    --surface-container-highest: 45 45 43;
+    --writing-folio: 27 27 26;
+    --on-surface: 231 230 226;
+    --on-surface-variant: 170 168 161;
+    --secondary-text: 195 192 185;
+    --outline: 51 51 48;
+    --outline-variant: 39 39 36;
     --primary: 130 148 124;
     --on-primary: 17 21 15;
     --primary-container: 41 48 39;
@@ -115,12 +115,12 @@
     --secondary: 168 143 120;
     --secondary-container: 48 40 32;
     --on-secondary-container: 216 200 185;
-    --interactive-hover: rgba(233, 228, 217, 0.055);
-    --ruled-line: rgba(233, 228, 217, 0.065);
+    --interactive-hover: rgba(231, 230, 226, 0.055);
+    --ruled-line: rgba(231, 230, 226, 0.065);
     --focus-ring: 163 176 150;
     --vault-badge: 130 148 124;
     --shadow-color: 0 0 0;
-    --scrim: 17 17 15;
+    --scrim: 17 17 16;
     --on-scrim: 248 247 243;
   }
 

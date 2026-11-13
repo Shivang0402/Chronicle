@@ -12,7 +12,7 @@ function applyTheme(theme) {
 
   const meta = document.getElementById("theme-color-meta");
   if (meta) {
-    meta.setAttribute("content", dark ? "#171715" : "#F8F7F3");
+    meta.setAttribute("content", dark ? "#161615" : "#F8F7F3");
   }
 }
 
