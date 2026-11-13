@@ -100,12 +100,12 @@ export default function AuthPage() {
     setResendNotice("");
 
     if (registerForm.password.length < 8) {
-      setError("Your passphrase needs to be at least 8 characters.");
+      setError("Your passwords needs to be at least 8 characters.");
       return;
     }
 
     if (registerForm.password !== registerForm.confirmPassword) {
-      setError("The passphrases do not match yet.");
+      setError("The passwords do not match yet.");
       return;
     }
 
@@ -336,7 +336,7 @@ export default function AuthPage() {
 
               <div>
                 <div className="field-label">
-                  <label htmlFor="login-password">Master Passphrase</label>
+                  <label htmlFor="login-password"> Password</label>
                   <Link
                     to="/forgot-password"
                     state={{ email: loginForm.email }}
@@ -476,7 +476,7 @@ export default function AuthPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="field-label" htmlFor="register-password">
-                    Passphrase
+                    Password
                   </label>
                   <div className={inputWrap}>
                     <KeyRound className="pointer-events-none absolute left-3.5 h-4 w-4 text-muted-gray" />
