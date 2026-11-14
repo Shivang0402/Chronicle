@@ -53,7 +53,7 @@ export default function ArchiveLedger() {
             />
           </div>
           <Reveal variant="right" className="md:col-span-4 md:justify-self-end" delay={0.2} y={20} blur={false}>
-            <p className="max-w-xs text-sm leading-relaxed text-charcoal-muted md:text-right">
+            <p className="max-w-none text-sm leading-relaxed text-charcoal-muted sm:max-w-xs md:text-right">
               Revisit a feeling or follow a thought back to where it began.
             </p>
           </Reveal>

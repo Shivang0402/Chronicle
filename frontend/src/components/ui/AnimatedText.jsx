@@ -106,7 +106,7 @@ export default function AnimatedText({
         {lineWords.map((words, lineIndex) => (
           <motion.span
             key={lineIndex}
-            className="block"
+            className="contents sm:block"
             variants={{
               hidden: {},
               visible: {
@@ -120,7 +120,11 @@ export default function AnimatedText({
                 className="inline-flex overflow-hidden pb-[0.12em] align-bottom"
                 style={{
                   marginBottom: "-0.12em",
-                  marginRight: index === words.length - 1 ? 0 : "0.26em",
+                  marginRight:
+                    lineIndex === lineWords.length - 1 &&
+                    index === words.length - 1
+                      ? 0
+                      : "0.26em",
                 }}
               >
                 <motion.span

@@ -123,7 +123,7 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          <motion.p initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 1 }} className="max-w-xs text-sm font-light leading-relaxed text-charcoal-muted lg:col-span-4 lg:justify-self-end lg:text-right">
+          <motion.p initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 1 }} className="max-w-none text-sm font-light leading-relaxed text-charcoal-muted sm:max-w-xs lg:col-span-4 lg:justify-self-end lg:text-right">
             A few quiet minutes can change how you remember an ordinary day.
           </motion.p>
         </div>
