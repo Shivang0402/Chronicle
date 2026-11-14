@@ -29,8 +29,8 @@ export default function Footer() {
   return (
     <footer className="border-t border-hairline bg-ivory">
       <div className="mx-auto max-w-7xl px-6 py-10 sm:px-10 md:py-12 lg:px-16">
-        <div className="grid grid-cols-1 gap-8 pb-8 md:grid-cols-12 md:gap-10">
-          <Reveal variant="left" y={20} amount={0.1} className="md:col-span-5">
+        <div className="grid grid-cols-2 gap-8 pb-8 md:grid-cols-12 md:gap-10">
+          <Reveal variant="left" y={20} amount={0.1} className="col-span-2 md:col-span-5">
             <Wordmark />
             <p className="mt-4 max-w-sm text-sm font-light leading-relaxed text-charcoal-muted">
               A thoughtful home for the moments, ideas, and little details you want to remember.
@@ -40,7 +40,7 @@ export default function Footer() {
             </p>
           </Reveal>
 
-          <Reveal variant="down" y={18} delay={0.06} amount={0.1} className="md:col-span-3">
+          <Reveal variant="down" y={18} delay={0.06} amount={0.1} className="col-span-1 md:col-span-3">
             <p className="mb-5 text-[11px] uppercase tracking-wide2 text-muted-gray">
               Explore
             </p>
@@ -58,7 +58,7 @@ export default function Footer() {
             </ul>
           </Reveal>
 
-          <Reveal variant="right" y={20} delay={0.12} amount={0.1} className="md:col-span-4">
+          <Reveal variant="right" y={20} delay={0.12} amount={0.1} className="col-span-1 md:col-span-4">
             <p className="mb-5 text-[11px] uppercase tracking-wide2 text-muted-gray">
               Resources
             </p>

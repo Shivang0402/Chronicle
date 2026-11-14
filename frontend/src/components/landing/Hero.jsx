@@ -39,7 +39,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div
           aria-hidden="true"
-          className="pointer-events-none mb-6 select-none text-center font-serif text-[13vw] font-medium leading-none tracking-tight text-charcoal/[0.15] md:mb-0 md:text-left lg:text-[150px]"
+          className="pointer-events-none mb-6 select-none text-left font-serif text-[13vw] font-medium leading-none tracking-tight text-charcoal/[0.15] md:mb-0 lg:text-[150px]"
         >
           {WORDMARK.split("").map((letter, index) => (
             <span
@@ -130,7 +130,7 @@ export default function Hero() {
 
         <div className="mt-12 grid grid-cols-1 items-stretch overflow-hidden border border-hairline bg-paper shadow-paper md:mt-16 lg:grid-cols-12">
           <div
-            className="group relative lg:col-span-7"
+            className="group relative flex flex-col lg:col-span-7"
             ref={imageRef}
           >
             <RevealImage
@@ -139,9 +139,9 @@ export default function Hero() {
               delay={0.75}
               y={0}
               duration={1}
-              className="h-full"
+              className="lg:min-h-0 lg:flex-1"
             >
-              <div className="aspect-[16/10] overflow-hidden bg-hairline">
+              <div className="aspect-[16/10] overflow-hidden bg-hairline lg:aspect-auto lg:h-full">
                 <motion.img
                   src="/images/hero-journal.jpg"
                   alt="Open linen journal on a sunlit wooden writing desk"
@@ -159,7 +159,7 @@ export default function Hero() {
               <span className="font-serif italic text-charcoal">
                 Study of morning light and desk journal
               </span>
-              <span className="uppercase tracking-wider">October 14th</span>
+              <span className="uppercase tracking-wider">Morning study</span>
             </motion.div>
           </div>
 
