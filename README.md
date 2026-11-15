@@ -31,14 +31,13 @@
 
 ## About Chronicle
 
-Chronicle is a personal digital journaling application designed to give your thoughts, experiences, and reflections a place of their own.
+Chronicle is a personal journaling space designed to give your thoughts, experiences, and reflections a place of their own.
 
-Not everything needs to be shared. Not every thought needs an audience.
+In a world driven by social feeds and constant sharing, Chronicle offers something different — a private space to write freely, preserve memories, and reflect on the moments that shape your life.
 
-In a digital world dominated by social feeds, notifications, and constant interaction, Chronicle takes a different approach. It provides a dedicated space where you can write freely, organize your experiences, revisit old memories, and understand your journaling habits.
+Whether it's a passing thought or a day worth remembering, every entry becomes a part of your personal story.
 
-From a passing thought to a detailed account of an important day, Chronicle makes it easier to document the things that make up your story.
-
+Not everything needs an audience. Some things simply deserve to be remembered.
 **It isn't about creating more content. It's about preserving more meaning.**
 
 ## Why Chronicle?
@@ -141,20 +140,20 @@ Chronicle is built using the MERN ecosystem, with additional tools for frontend 
 
 ### Technology Breakdown
 
-| Category | Technologies |
-|---|---|
-| Frontend | React.js, React Router, Vite |
-| Styling and Animation | Tailwind CSS, Framer Motion |
-| Backend | Node.js, Express.js |
-| Database | MongoDB, Mongoose |
-| Authentication | JSON Web Tokens, bcrypt |
-| Email Services | SMTP, Nodemailer |
-| Media Storage | Cloudinary, Multer |
-| PDF Generation | Puppeteer, Chromium |
-| API Testing | Postman |
-| Testing | Node.js test runner |
-| Containerization | Docker, Docker Compose |
-| Deployment | Vercel, Render, MongoDB Atlas |
+| Category              | Technologies                  |
+| --------------------- | ----------------------------- |
+| Frontend              | React.js, React Router, Vite  |
+| Styling and Animation | Tailwind CSS, Framer Motion   |
+| Backend               | Node.js, Express.js           |
+| Database              | MongoDB, Mongoose             |
+| Authentication        | JSON Web Tokens, bcrypt       |
+| Email Services        | SMTP, Nodemailer              |
+| Media Storage         | Cloudinary, Multer            |
+| PDF Generation        | Puppeteer, Chromium           |
+| API Testing           | Postman                       |
+| Testing               | Node.js test runner           |
+| Containerization      | Docker, Docker Compose        |
+| Deployment            | Vercel, Render, MongoDB Atlas |
 
 ---
 
@@ -287,22 +286,22 @@ Make sure you have:
 
 Chronicle reads configuration from environment files. Create a `.env` file in the project root for the backend, and optionally `frontend/.env` for frontend overrides. Never commit real credentials.
 
-| Variable | Scope | Required | Purpose |
-|---|---|---|---|
-| `PORT` | Backend | No | API port. Defaults to `4444`. |
-| `MONGO_URI` | Backend | Yes | MongoDB Atlas or local MongoDB connection string. |
-| `JWT` | Backend | Yes | Secret used to sign authentication tokens. |
-| `CLIENT_URL` | Backend | Yes | Frontend origin used for CORS and email links. |
-| `SMTP_HOST` | Backend | No | SMTP server host for email delivery. |
-| `SMTP_PORT` | Backend | No | SMTP server port. Defaults to `587`. |
-| `SMTP_USER` | Backend | No | SMTP username. |
-| `SMTP_PASS` | Backend | No | SMTP password. |
-| `SMTP_FROM` | Backend | No | Sender address used in outgoing emails. |
-| `CLOUDINARY_CLOUD_NAME` | Backend | For images | Cloudinary cloud name for image uploads. |
-| `CLOUDINARY_API_KEY` | Backend | For images | Cloudinary API key. |
-| `CLOUDINARY_API_SECRET` | Backend | For images | Cloudinary API secret. |
-| `VITE_API_URL` | Frontend | No | API origin for frontend builds. Local development uses the Vite proxy when omitted. |
-| `VITE_API_PROXY` | Frontend | No | Vite development proxy target. Defaults to `http://localhost:4444`. |
+| Variable                | Scope    | Required   | Purpose                                                                             |
+| ----------------------- | -------- | ---------- | ----------------------------------------------------------------------------------- |
+| `PORT`                  | Backend  | No         | API port. Defaults to `4444`.                                                       |
+| `MONGO_URI`             | Backend  | Yes        | MongoDB Atlas or local MongoDB connection string.                                   |
+| `JWT`                   | Backend  | Yes        | Secret used to sign authentication tokens.                                          |
+| `CLIENT_URL`            | Backend  | Yes        | Frontend origin used for CORS and email links.                                      |
+| `SMTP_HOST`             | Backend  | No         | SMTP server host for email delivery.                                                |
+| `SMTP_PORT`             | Backend  | No         | SMTP server port. Defaults to `587`.                                                |
+| `SMTP_USER`             | Backend  | No         | SMTP username.                                                                      |
+| `SMTP_PASS`             | Backend  | No         | SMTP password.                                                                      |
+| `SMTP_FROM`             | Backend  | No         | Sender address used in outgoing emails.                                             |
+| `CLOUDINARY_CLOUD_NAME` | Backend  | For images | Cloudinary cloud name for image uploads.                                            |
+| `CLOUDINARY_API_KEY`    | Backend  | For images | Cloudinary API key.                                                                 |
+| `CLOUDINARY_API_SECRET` | Backend  | For images | Cloudinary API secret.                                                              |
+| `VITE_API_URL`          | Frontend | No         | API origin for frontend builds. Local development uses the Vite proxy when omitted. |
+| `VITE_API_PROXY`        | Frontend | No         | Vite development proxy target. Defaults to `http://localhost:4444`.                 |
 
 Without SMTP configuration, verification and password recovery links are printed to the server console for local development.
 
@@ -378,29 +377,29 @@ docker compose down
 
 All API endpoints use the `/api` prefix.
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/health` | Health check |
-| POST | `/api/auth/register` | Register a new user |
-| POST | `/api/auth/login` | Authenticate a user |
-| GET | `/api/auth/verify-email` | Verify email address |
-| POST | `/api/auth/resend-verification` | Resend the email verification message |
-| POST | `/api/auth/forgot-password` | Request password reset |
-| POST | `/api/auth/reset-password` | Reset password |
-| PATCH | `/api/auth/change-password` | Change password |
-| GET | `/api/auth/profile` | Retrieve user profile |
-| DELETE | `/api/auth/account` | Permanently delete the account and its entries |
-| GET | `/api/chronicle/getchronicles` | Retrieve journal entries |
-| POST | `/api/chronicle` | Create journal entry |
-| GET | `/api/chronicle/:id` | Retrieve an individual entry |
-| PATCH | `/api/chronicle/:id` | Update an entry |
-| DELETE | `/api/chronicle/:id` | Delete an entry |
-| GET | `/api/chronicle/search` | Search journal entries |
-| GET | `/api/chronicle/stats` | Retrieve journaling statistics |
-| GET | `/api/chronicle/moods` | Retrieve mood information |
-| GET | `/api/chronicle/tags` | Retrieve tags |
-| GET | `/api/chronicle/export` | Export journal entries |
-| POST | `/api/upload` | Upload an image for use in an entry |
+| Method | Endpoint                        | Description                                    |
+| ------ | ------------------------------- | ---------------------------------------------- |
+| GET    | `/api/health`                   | Health check                                   |
+| POST   | `/api/auth/register`            | Register a new user                            |
+| POST   | `/api/auth/login`               | Authenticate a user                            |
+| GET    | `/api/auth/verify-email`        | Verify email address                           |
+| POST   | `/api/auth/resend-verification` | Resend the email verification message          |
+| POST   | `/api/auth/forgot-password`     | Request password reset                         |
+| POST   | `/api/auth/reset-password`      | Reset password                                 |
+| PATCH  | `/api/auth/change-password`     | Change password                                |
+| GET    | `/api/auth/profile`             | Retrieve user profile                          |
+| DELETE | `/api/auth/account`             | Permanently delete the account and its entries |
+| GET    | `/api/chronicle/getchronicles`  | Retrieve journal entries                       |
+| POST   | `/api/chronicle`                | Create journal entry                           |
+| GET    | `/api/chronicle/:id`            | Retrieve an individual entry                   |
+| PATCH  | `/api/chronicle/:id`            | Update an entry                                |
+| DELETE | `/api/chronicle/:id`            | Delete an entry                                |
+| GET    | `/api/chronicle/search`         | Search journal entries                         |
+| GET    | `/api/chronicle/stats`          | Retrieve journaling statistics                 |
+| GET    | `/api/chronicle/moods`          | Retrieve mood information                      |
+| GET    | `/api/chronicle/tags`           | Retrieve tags                                  |
+| GET    | `/api/chronicle/export`         | Export journal entries                         |
+| POST   | `/api/upload`                   | Upload an image for use in an entry            |
 
 Protected endpoints require a valid JWT in the Authorization header:
 
@@ -420,12 +419,12 @@ Chronicle uses separate hosting services for its frontend and backend.
   <img src="https://skillicons.dev/icons?i=vercel,docker,mongodb" alt="Deployment technology logos"/>
 </p>
 
-| Component | Platform |
-|---|---|
-| Frontend | Vercel |
-| Backend | Render |
-| Database | MongoDB Atlas |
-| Media Storage | Cloudinary |
+| Component     | Platform      |
+| ------------- | ------------- |
+| Frontend      | Vercel        |
+| Backend       | Render        |
+| Database      | MongoDB Atlas |
+| Media Storage | Cloudinary    |
 
 The frontend communicates with the deployed API using the `VITE_API_URL` environment variable.
 
