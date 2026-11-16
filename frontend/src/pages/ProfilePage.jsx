@@ -29,6 +29,7 @@ import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { authApi, chronicleApi } from "../lib/api";
 import { clearDrafts, getDraftOwner } from "../lib/drafts";
+import { exportFileName, exportNotice } from "../lib/exportFormats";
 import { formatEntryDate } from "../lib/journal";
 
 const EMPTY_PASSWORD_FORM = {
@@ -36,27 +37,6 @@ const EMPTY_PASSWORD_FORM = {
   newPassword: "",
   confirmPassword: "",
 };
-
-const EXPORT_FORMATS = [
-  {
-    id: "pdf",
-    label: "PDF journal",
-    dialogLabel: "PDF",
-    dialogHint: "A typeset keepsake ready to print",
-  },
-  {
-    id: "json",
-    label: "JSON backup",
-    dialogLabel: "JSON",
-    dialogHint: "A structured data backup of your entries",
-  },
-];
-
-const EXPORT_DIALOG_FORMATS = EXPORT_FORMATS.map((item) => ({
-  id: item.id,
-  label: item.dialogLabel,
-  description: item.dialogHint,
-}));
 
 const todayStamp = () => new Date().toISOString().slice(0, 10);
 
@@ -244,12 +224,9 @@ export default function ProfilePage() {
         format,
       });
       const date = todayStamp();
-      const extension = format;
-      const label =
-        EXPORT_FORMATS.find((item) => item.id === format)?.label || format;
 
-      triggerDownload(blob, `chronicles-${date}.${extension}`);
-      setNotice(`${label} export is ready.`);
+      triggerDownload(blob, exportFileName(format, date));
+      setNotice(exportNotice(format));
       return true;
     } catch (error) {
       setExportError(error?.message || "Could not export your journal.");
@@ -500,8 +477,9 @@ export default function ProfilePage() {
 
                     <p className="mt-5 flex items-start gap-2 border-t border-hairline/70 pt-4 text-[10px] leading-relaxed text-muted-gray">
                       <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sage" />
-                      Export a print-ready PDF or a JSON backup, then choose
-                      which part of your journal to include.
+                      Export a styled PDF, a print-friendly PDF, or a JSON
+                      backup, then choose which part of your journal to
+                      include.
                     </p>
 
                     {exportError && (
@@ -876,7 +854,6 @@ export default function ProfilePage() {
           token={token}
           exporting={Boolean(exporting)}
           exportError={exportError}
-          formats={EXPORT_DIALOG_FORMATS}
           initialFormat={exportFormat}
           onClose={() => setExportDialogOpen(false)}
           onExport={handleDialogExport}

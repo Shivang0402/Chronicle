@@ -521,6 +521,20 @@ describe("chronicles", () => {
     assert.equal(pdf.body.subarray(0, 4).toString(), "%PDF");
     assert.ok(pdf.body.length > 1000);
 
+    const printPdf = await request(app)
+      .get(`/api/chronicle/export?format=pdf-print&ids=${olderId}`)
+      .set(auth(token))
+      .buffer(true)
+      .parse(binaryParser);
+    assert.equal(printPdf.status, 200);
+    assert.match(printPdf.headers["content-type"], /application\/pdf/);
+    assert.match(
+      printPdf.headers["content-disposition"],
+      /chronicles-print-\d{4}-\d{2}-\d{2}\.pdf/,
+    );
+    assert.equal(printPdf.body.subarray(0, 4).toString(), "%PDF");
+    assert.ok(printPdf.body.length > 1000);
+
     assert.equal(
       (await request(app).get("/api/chronicle/export?format=xml").set(auth(token)))
         .status,

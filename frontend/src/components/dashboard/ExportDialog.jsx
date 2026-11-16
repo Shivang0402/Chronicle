@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronLeft, ChevronRight, Download, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { chronicleApi } from "../../lib/api";
+import { EXPORT_FORMATS } from "../../lib/exportFormats";
 import { formatEntryDate } from "../../lib/journal";
 import FilterDatePicker from "../ui/FilterDatePicker";
 
@@ -10,18 +11,6 @@ const scopes = [
   { id: "year", label: "By year", description: "Entries written in one year" },
   { id: "range", label: "Date range", description: "Choose a start and end date" },
   { id: "selected", label: "Choose entries", description: "Select individual pages" },
-];
-const DEFAULT_FORMATS = [
-  {
-    id: "pdf",
-    label: "PDF",
-    description: "A typeset keepsake ready to print",
-  },
-  {
-    id: "json",
-    label: "JSON",
-    description: "A structured data backup of your entries",
-  },
 ];
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -32,7 +21,7 @@ export default function ExportDialog({
   onClose,
   onExport,
   exportError = "",
-  formats = DEFAULT_FORMATS,
+  formats = EXPORT_FORMATS,
   initialFormat = "pdf",
 }) {
   const [format, setFormat] = useState(initialFormat);
@@ -59,7 +48,7 @@ export default function ExportDialog({
 
   const showFormatPicker = formats.length > 1;
   const selectedFormat =
-    formats.find((item) => item.id === format) || formats[0] || DEFAULT_FORMATS[0];
+    formats.find((item) => item.id === format) || formats[0] || EXPORT_FORMATS[0];
 
   useEffect(() => {
     if (!open || scope !== "selected" || !token) return undefined;

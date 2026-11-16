@@ -25,6 +25,7 @@ import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
+import { exportFileName, exportNotice } from "../lib/exportFormats";
 import { dayKey, formatEntryDate } from "../lib/journal";
 
 const emptyStats = {
@@ -961,12 +962,12 @@ export default function InsightsPage() {
       const today = new Date().toISOString().slice(0, 10);
 
       link.href = url;
-      link.download = `chronicles-${today}.${format}`;
+      link.download = exportFileName(format, today);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setNotice(`Your ${format === "json" ? "JSON" : "PDF"} is ready.`);
+      setNotice(exportNotice(format));
       setExportDialogOpen(false);
     } catch (exportError) {
       setExportError(exportError?.message || "Could not export your journal.");

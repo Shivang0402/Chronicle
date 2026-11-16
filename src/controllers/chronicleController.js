@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const Chronicle = require("../models/chronicleModel");
 const { renderJournalHtml } = require("../templates/journalExport");
+const { renderPrintHtml } = require("../templates/printExport");
 
 const MIN_CONTENT_LENGTH = 10;
 const MAX_CONTENT_LENGTH = 100000;
@@ -62,9 +63,7 @@ const getRangeStart = (range) => {
   return null;
 };
 
-const buildPdf = async (entries, exportedOn) => {
-  const html = renderJournalHtml(entries, exportedOn);
-
+const renderPdf = async (html, options = {}) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -106,12 +105,36 @@ const buildPdf = async (entries, exportedOn) => {
       margin: { top: "0mm", right: "0mm", bottom: "0mm", left: "0mm" },
       outline: true,
       tagged: true,
+      ...options,
     });
 
     return Buffer.from(pdf);
   } finally {
     await browser.close();
   }
+};
+
+const buildPdf = async (entries, exportedOn) => {
+  const html = renderJournalHtml(entries, exportedOn);
+  return renderPdf(html);
+};
+
+const printFooterTemplate = `
+  <div style="width: 100%; padding: 0 20mm; color: #555555; font-family: Arial, Helvetica, sans-serif; font-size: 9px; text-align: center;">
+    Page <span class="pageNumber"></span> of <span class="totalPages"></span>
+  </div>
+`;
+
+const buildPrintPdf = async (entries) => {
+  const html = renderPrintHtml(entries);
+
+  return renderPdf(html, {
+    printBackground: false,
+    displayHeaderFooter: true,
+    headerTemplate: "<div></div>",
+    footerTemplate: printFooterTemplate,
+    margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
+  });
 };
 
 const validateContent = (content) => {
@@ -417,7 +440,7 @@ const exportChronicles = async (req, res) => {
   const format = req.query.format || "json";
   const { ids, year, from, to } = req.query;
 
-  if (!["json", "markdown", "pdf"].includes(format)) {
+  if (!["json", "markdown", "pdf", "pdf-print"].includes(format)) {
     return res.status(400).json({ message: "Invalid format" });
   }
 
@@ -474,6 +497,17 @@ const exportChronicles = async (req, res) => {
       res.set(
         "Content-Disposition",
         `attachment; filename="chronicles-${date}.pdf"`,
+      );
+      res.type("application/pdf");
+      return res.status(200).send(pdf);
+    }
+
+    if (format === "pdf-print") {
+      const pdf = await buildPrintPdf(chronicles);
+
+      res.set(
+        "Content-Disposition",
+        `attachment; filename="chronicles-print-${date}.pdf"`,
       );
       res.type("application/pdf");
       return res.status(200).send(pdf);

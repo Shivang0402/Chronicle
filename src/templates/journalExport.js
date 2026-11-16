@@ -706,4 +706,4 @@ const renderJournalHtml = (entries, exportedOn) => {
 </html>`;
 };
 
-module.exports = { renderJournalHtml };
+module.exports = { renderJournalHtml, renderMarkdown, escapeHtml };
