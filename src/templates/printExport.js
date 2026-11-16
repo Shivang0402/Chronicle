@@ -72,8 +72,8 @@ const printStyles = `
   body {
     color: #111111;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: 11pt;
-    line-height: 1.75;
+    font-size: 10.5pt;
+    line-height: 1.55;
   }
 
   .entry {
@@ -119,7 +119,7 @@ const printStyles = `
   }
 
   .entry-content p {
-    margin: 0 0 3.5mm;
+    margin: 0 0 3mm;
   }
 
   .entry-content p:last-child {
