@@ -402,21 +402,22 @@ export default function JournalPage() {
     setExporting(true);
 
     try {
-      const blob = await chronicleApi.exportEntries(token, { ...filters, format: "pdf" });
+      const format = filters.format || "pdf";
+      const blob = await chronicleApi.exportEntries(token, { ...filters, format });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       const today = new Date().toISOString().slice(0, 10);
 
       link.href = url;
-      link.download = `chronicles-${today}.pdf`;
+      link.download = `chronicles-${today}.${format}`;
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setNotice("Your PDF is ready.");
+      setNotice(`Your ${format === "json" ? "JSON" : "PDF"} is ready.`);
       setExportDialogOpen(false);
     } catch (exportError) {
-      setExportError(exportError?.message || "Could not export your PDF.");
+      setExportError(exportError?.message || "Could not export your journal.");
     } finally {
       setExporting(false);
     }

@@ -17,6 +17,11 @@ const DEFAULT_FORMATS = [
     label: "PDF",
     description: "A typeset keepsake ready to print",
   },
+  {
+    id: "json",
+    label: "JSON",
+    description: "A structured data backup of your entries",
+  },
 ];
 const CURRENT_YEAR = new Date().getFullYear();
 

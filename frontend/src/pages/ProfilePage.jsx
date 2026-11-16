@@ -44,6 +44,12 @@ const EXPORT_FORMATS = [
     dialogLabel: "PDF",
     dialogHint: "A typeset keepsake ready to print",
   },
+  {
+    id: "json",
+    label: "JSON backup",
+    dialogLabel: "JSON",
+    dialogHint: "A structured data backup of your entries",
+  },
 ];
 
 const EXPORT_DIALOG_FORMATS = EXPORT_FORMATS.map((item) => ({
@@ -494,8 +500,8 @@ export default function ProfilePage() {
 
                     <p className="mt-5 flex items-start gap-2 border-t border-hairline/70 pt-4 text-[10px] leading-relaxed text-muted-gray">
                       <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sage" />
-                      Create a print-ready PDF, then choose which part of your
-                      journal to include.
+                      Export a print-ready PDF or a JSON backup, then choose
+                      which part of your journal to include.
                     </p>
 
                     {exportError && (
