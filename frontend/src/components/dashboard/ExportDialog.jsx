@@ -176,9 +176,12 @@ export default function ExportDialog({
                         <span className="text-sm font-medium text-charcoal">
                           {item.label}
                         </span>
-                        {format === item.id && (
-                          <Check className="h-4 w-4 text-sage-deep" />
-                        )}
+                        <Check
+                          className={`h-4 w-4 text-sage-deep ${
+                            format === item.id ? "opacity-100" : "opacity-0"
+                          }`}
+                          aria-hidden="true"
+                        />
                       </span>
                       <span className="mt-0.5 block text-[11px] leading-relaxed text-muted-gray">
                         {item.description}
@@ -217,7 +220,12 @@ export default function ExportDialog({
                     <span className="block text-sm font-medium text-charcoal">{item.label}</span>
                     <span className="mt-0.5 block text-xs text-muted-gray">{item.description}</span>
                   </span>
-                  {scope === item.id && <Check className="mt-1 h-4 w-4 text-sage-deep" />}
+                  <Check
+                    className={`mt-1 h-4 w-4 text-sage-deep ${
+                      scope === item.id ? "opacity-100" : "opacity-0"
+                    }`}
+                    aria-hidden="true"
+                  />
                 </label>
               ))}
             </fieldset>
