@@ -496,7 +496,7 @@ export default function JournalPage() {
                 y={16}
                 delay={0.06}
                 blur={false}
-                className="mt-7 rounded-2xl border border-hairline bg-paper p-4 shadow-paper sm:p-5"
+                className="relative z-30 mt-7 rounded-2xl border border-hairline bg-paper p-4 shadow-paper sm:p-5"
               >
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-gray" />
