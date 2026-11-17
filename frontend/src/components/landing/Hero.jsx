@@ -39,7 +39,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div
           aria-hidden="true"
-          className="pointer-events-none mb-6 select-none text-left font-serif text-[13vw] font-medium leading-none tracking-tight text-charcoal/[0.15] md:mb-0 lg:text-[150px]"
+          className="pointer-events-none mb-6 select-none text-center font-serif text-[13vw] font-medium leading-none tracking-tight text-charcoal/[0.15] md:mb-0 lg:text-[150px]"
         >
           {WORDMARK.split("").map((letter, index) => (
             <span
@@ -58,8 +58,8 @@ export default function Hero() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-8">
-          <div className="flex flex-col justify-end lg:col-span-8">
+        <div className="flex flex-col items-center text-center">
+          <div className="flex w-full max-w-4xl flex-col items-center">
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -77,7 +77,7 @@ export default function Hero() {
               stagger={0.045}
               lineStagger={0.16}
               as="h1"
-              className="max-w-4xl font-serif text-[42px] leading-[1.08] tracking-tight text-charcoal sm:text-6xl lg:text-[74px]"
+              className="max-w-4xl text-center font-serif text-[42px] leading-[1.08] tracking-tight text-charcoal sm:text-6xl lg:text-[74px]"
               lines={[
                 [{ text: "Make room for what" }],
                 [
@@ -107,7 +107,7 @@ export default function Hero() {
                 delay: 0.9,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="mt-10 flex flex-wrap items-center gap-4"
+              className="mt-10 flex flex-wrap items-center justify-center gap-4"
             >
               <Link to="/auth?mode=register" className="btn-primary group">
                 <span>Start your journal</span>
@@ -123,7 +123,7 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          <motion.p initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 1 }} className="max-w-none text-sm font-light leading-relaxed text-charcoal-muted sm:max-w-xs lg:col-span-4 lg:justify-self-end lg:text-right">
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1 }} className="mt-8 max-w-sm text-sm font-light leading-relaxed text-charcoal-muted">
             A few quiet minutes can change how you remember an ordinary day.
           </motion.p>
         </div>
