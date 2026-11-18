@@ -1,4 +1,4 @@
-import { BookOpen, CalendarDays, Download, FileText, ListChecks, Lock } from "lucide-react";
+import { BookOpen, Braces, CalendarDays, Download, FileText, ListChecks, Lock } from "lucide-react";
 import AnimatedText from "../ui/AnimatedText";
 import Reveal, { RevealImage } from "../ui/Reveal";
 
@@ -17,6 +17,11 @@ const pdfBenefits = [
     title: "Only the pages you want",
     description: "Select individual entries for a more personal copy.",
     icon: ListChecks,
+  },
+  {
+    title: "A flexible JSON backup",
+    description: "Keep your entries in a portable format for reuse or safekeeping.",
+    icon: Braces,
   },
 ];
 
@@ -43,7 +48,8 @@ export default function Preservation() {
           <Reveal variant="right" delay={0.22} y={16} blur={false}>
             <p className="mt-5 max-w-md text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
               Turn your entries into a beautifully typeset PDF journal—ready to
-              print, revisit, and keep. Export your whole collection or choose
+              print, revisit, and keep, or choose a portable JSON backup for
+              safekeeping and reuse. Export your whole collection or choose
               entries by date, year, or selection.
             </p>
           </Reveal>
@@ -79,7 +85,7 @@ export default function Preservation() {
                   Chronicle<span className="text-sage">.</span>
                 </span>
                 <span className="rounded-full border border-sage/30 px-2 py-1 text-[8px] font-medium uppercase tracking-[0.14em] text-sage-deep sm:text-[9px]">
-                  PDF journal
+                  PDF + JSON export
                 </span>
               </header>
 
@@ -136,7 +142,7 @@ export default function Preservation() {
               ))}
               <span className="inline-flex items-center gap-2 pl-1 pt-1 text-[9px] font-medium uppercase tracking-wider text-muted-gray">
                 <Download className="h-3 w-3 text-sage-deep" />
-                Save a print-ready PDF
+                Save a print-ready PDF or JSON backup
               </span>
             </div>
           </div>
