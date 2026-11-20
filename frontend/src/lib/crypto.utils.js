@@ -3,12 +3,7 @@ export const CRYPTO_SETTINGS = Object.freeze({
   version: 1,
   algorithm: "AES-256-GCM",
   ivBytes: 12,
-  saltBytes: 16,
-  recoveryKeyBytes: 32,
-  kdfProfile: "argon2id-v1",
-  memoryKiB: 64 * 1024,
-  passes: 3,
-  lanes: 1,
+  masterKeyBytes: 32,
 });
 
 const encoder = new TextEncoder();
