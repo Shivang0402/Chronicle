@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { fromBase64Url, randomBytes, toBase64Url, utf8Decode, utf8Encode } from "./crypto.utils.js";
 import {
   createMasterKey,
   createPassphraseWrap,
@@ -13,6 +14,14 @@ import {
 } from "./crypto.js";
 
 const context = { ownerId: "user-1", entryId: "entry-1", date: "2026-11-20" };
+
+test("crypto utilities round-trip encoded values and reject malformed encodings", () => {
+  const bytes = randomBytes(32);
+  assert.deepEqual(fromBase64Url(toBase64Url(bytes)), bytes);
+  assert.equal(utf8Decode(utf8Encode("Chronicle ✓")), "Chronicle ✓");
+  assert.throws(() => fromBase64Url("not valid!"));
+  assert.throws(() => randomBytes(0));
+});
 
 test("encrypted entries round-trip and detect changes", async () => {
   const key = await createWorkingMasterKey(await createMasterKey());

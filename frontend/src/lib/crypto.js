@@ -1,46 +1,23 @@
 import { argon2id } from "hash-wasm";
+import {
+  CRYPTO_SETTINGS,
+  fromBase64Url,
+  randomBytes,
+  toBase64Url,
+  utf8Decode,
+  utf8Encode,
+} from "./crypto.utils.js";
 
-// Keep the protocol settings together so they're easy to review and version.
-export const CRYPTO_SETTINGS = Object.freeze({
-  version: 1,
-  algorithm: "AES-256-GCM",
-  ivBytes: 12,
-  saltBytes: 16,
-  recoveryKeyBytes: 32,
-  kdfProfile: "argon2id-v1",
-  memoryKiB: 64 * 1024,
-  passes: 3,
-  lanes: 1,
-});
+export { CRYPTO_SETTINGS };
 
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
 const subtle = crypto.subtle;
 
-function randomBytes(length) {
-  return crypto.getRandomValues(new Uint8Array(length));
-}
-
-function toBase64Url(bytes) {
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
-
-function fromBase64Url(value) {
-  if (typeof value !== "string" || !/^[A-Za-z0-9_-]+$/.test(value)) {
-    throw new TypeError("Invalid encoded crypto value");
-  }
-  const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
-  return Uint8Array.from(atob(base64 + "=".repeat((4 - (base64.length % 4)) % 4)), (c) => c.charCodeAt(0));
-}
-
 function entryAad({ ownerId, entryId, date }) {
-  return encoder.encode(JSON.stringify(["chronicle-entry", 1, ownerId, entryId, date]));
+  return utf8Encode(JSON.stringify(["chronicle-entry", 1, ownerId, entryId, date]));
 }
 
 function wrapAad(ownerId, purpose) {
-  return encoder.encode(JSON.stringify(["chronicle-master-key", 1, ownerId, purpose]));
+  return utf8Encode(JSON.stringify(["chronicle-master-key", 1, ownerId, purpose]));
 }
 
 function checkEntryContext(context) {
@@ -112,7 +89,7 @@ async function derivePassphraseKey(passphrase, salt) {
   }
   if (salt.length !== CRYPTO_SETTINGS.saltBytes) throw new TypeError("Invalid passphrase salt");
 
-  const password = encoder.encode(passphrase.normalize("NFC"));
+  const password = utf8Encode(passphrase.normalize("NFC"));
   let rawKey;
   try {
     rawKey = await argon2id({
@@ -180,7 +157,7 @@ export async function encryptEntry(masterKey, payload, context) {
   const ciphertext = await subtle.encrypt(
     { name: "AES-GCM", iv, additionalData: entryAad(context), tagLength: 128 },
     masterKey,
-    encoder.encode(JSON.stringify(payload)),
+    utf8Encode(JSON.stringify(payload)),
   );
   return {
     algorithm: CRYPTO_SETTINGS.algorithm,
@@ -202,5 +179,5 @@ export async function decryptEntry(masterKey, envelope, context) {
     masterKey,
     fromBase64Url(envelope.ciphertext),
   );
-  return JSON.parse(decoder.decode(plaintext));
+  return JSON.parse(utf8Decode(plaintext));
 }
