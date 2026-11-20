@@ -1,0 +1,174 @@
+CHRONICLE E2EE PROJECT HANDOFF
+Updated: 2026-11-19
+Repository root: C:\Users\SHIVANG PANDEY\Downloads\chronicle
+
+PURPOSE
+This file preserves the user's requirements, the completed repository audit, decisions supplied so far, and the next approval-gated steps for adding genuine end-to-end encryption (E2EE) to Chronicle. It is a handoff/context file, not an implementation specification that has already been approved. Keep it synchronized as decisions and milestones are approved and implemented.
+
+USER'S WORKING STYLE AND APPROVAL RULES
+- The user wants to learn and review the architecture and code, not receive blind autonomous or vibe-coded changes.
+- Inspect the actual repository before proposing changes; do not assume the supplied tech list fully describes it.
+- Explain important concepts and technical decisions.
+- Break the work into small logical milestones.
+- Implement only what the user explicitly authorizes.
+- Never move to a later phase without approval. Phase 0 audit was requested first; after reviewing it, user supplied several key requirements. Phase 1 architecture still awaits authorization.
+- Never modify files during the initial audit. The audit was read-only; no dependencies were installed and no tests were run.
+- Never install dependencies without explaining and receiving approval.
+- Never delete or overwrite existing functionality without approval; no unrelated refactors.
+- Never perform destructive DB operations without approval.
+- Never claim tests passed unless actually run. Use synthetic test data.
+- No existing plaintext-data migration during the initial implementation. Migration must be separately designed, browser-side, safe, and approved.
+- Maintain an implementation log and keep documentation synchronized with actual functionality. Clearly label planned versus implemented behavior.
+- If a serious architecture flaw is found, stop and explain it.
+- For each approved milestone: explain goal/concepts/files, implement only that milestone, run its relevant tests, report changes/results/security implications/remaining issues, then stop for review.
+
+USER'S E2EE OBJECTIVE
+Build real E2EE such that journal data is encrypted in the browser before requests reach the backend, MongoDB stores ciphertext, and decryption happens in the browser. The server handles authentication, authorization, storage, and delivery, and never receives plaintext journal content or plaintext encryption keys. Users should use journals across devices and have recovery capability if they forget their encryption passphrase.
+
+SECURITY MODEL AND LIMITATIONS TO DOCUMENT
+- Intended protection: backend operators, database operators, and database backups should not be able to read encrypted journal fields without user-held unlock/recovery secrets.
+- The server still learns account/authentication data, ciphertext sizes/timing, record ownership, and the entry date (date is explicitly allowed to remain plaintext). Other metadata should be encrypted per user's decision below.
+- E2EE does not protect plaintext while the user is actively viewing/editing it in a compromised device/browser.
+- XSS or malicious same-origin JavaScript can potentially access plaintext and an unlocked CryptoKey. A malicious or compromised app update delivered to the browser can subvert the client-side crypto.
+- Browser extensions, malware, screenshots, clipboard, compromised devices, service operators, and availability/data deletion attacks remain outside E2EE protection.
+- Recovery is conditional: if both encryption passphrase and Recovery Key are lost, the backend cannot recover the Master Key or plaintext. A Chronicle login-password reset must not reset E2EE keys.
+- Avoid claiming perfect memory erasure for JS buffers; overwriting temporary typed arrays is best effort only.
+
+USER DECISIONS ALREADY GIVEN (TREAT AS REQUIREMENTS)
+1. Encrypt all journal fields except date. That means title, content, mood, tags, and other entry payload fields should be included in ciphertext. Date remains plaintext by explicit choice.
+2. Apply encryption to all entries, not merely new entries. Existing plaintext entries are in scope for a later browser-side migration after unlock; do not execute migration in the initial implementation. Preserve originals until encrypted copies are verified; migration must tolerate interruption and avoid duplicate/destructive work.
+3. Leave image encryption out of scope for now. Existing Cloudinary images remain unencrypted; this is a known limitation to disclose. Encrypting the entry content may conceal image URLs in the database but does not encrypt image bytes hosted by Cloudinary.
+4. Disable drafts for now. The existing local draft behavior stores plaintext in localStorage; encrypted mode must not silently continue that behavior. This is a deliberate functionality tradeoff pending future design.
+5. Use AES-GCM for all encryption, including journal payloads and key wrapping. Do not silently switch key wrapping to AES-KW. Any exact Web Crypto API design must be checked for support and handled correctly.
+
+IMPORTANT: These are user-level constraints. The complete architecture (including KDF, payload envelope, APIs, schemas, migration and tests) has NOT yet been proposed or approved. In particular, "GCM for all" means the architecture should use AES-GCM for wrapping too; explain fresh random IVs and why wrapped Master Key copies need independent IVs.
+
+PHASE STATUS / WHAT HAS BEEN DONE
+Phase 0 — Repository Audit: completed read-only and reported to user. User reviewed and supplied the five decisions above. No source code was changed during the audit; no dependencies installed; no tests run.
+Phase 1 — Architecture Design: not yet produced/approved. The next substantive project phase, but user must authorize moving into it. Prepare a complete proposal, do not implement code, then stop for approval.
+Phase 2 — Implementation Roadmap: not yet produced/approved. Only prepare after architecture review/approval; then stop for approval.
+Phase 3+ — Incremental implementation: not started. Do not implement until the roadmap and an individual milestone are explicitly approved.
+
+REPOSITORY AUDIT FINDINGS (ACTUAL CODE)
+Architecture:
+- React/Vite frontend in frontend/src.
+- Express API and Mongoose/MongoDB backend in src.
+- MongoDB is the persistent DB; auth uses bcrypt password hashes and JWT bearer tokens.
+- Cloudinary stores uploaded images, Nodemailer handles email, Puppeteer generates server-side PDFs.
+- Docker setup exists. README describes Vercel frontend, Render backend, and MongoDB Atlas; render.yaml contains backend deployment config.
+
+Authentication flow:
+- src/controllers/authController.js registers accounts, bcrypt-hashes Chronicle login passwords, starts email verification, logs in, issues JWTs, and handles password reset/change.
+- Email verification/reset tokens are random tokens whose hashes are stored server-side with expiry.
+- src/middlewares/authMiddleware.js verifies JWT bearer tokens; controllers scope entry access by req.user.id.
+- frontend/src/context/AuthContext.jsx stores the JWT in localStorage or sessionStorage and fetches the authenticated profile.
+- frontend/src/lib/api.js attaches the token to API calls.
+- Current Chronicle password reset/change is separate from any proposed E2EE passphrase/key recovery.
+
+Journal flow:
+- frontend/src/pages/EditorPage.jsx calls chronicleApi to load/create/update entries.
+- frontend/src/lib/api.js defines journal CRUD, list, search, export, tags, moods, and stats requests.
+- src/controllers/chronicleController.js validates and writes title, content, date, mood, tags as plaintext. It queries plaintext for server search/filter/analytics/export.
+- src/models/chronicleModel.js stores plaintext fields and indexes (user,date), (user,mood), and (user,tags).
+- Journal routes in src/routes/chronicleRoutes.js require authMiddleware.
+- frontend/src/lib/drafts.js stores drafts as plaintext JSON in browser localStorage. Must be disabled per user requirement for now.
+- Images are uploaded to Cloudinary through authenticated upload routes; image bytes are plaintext at Cloudinary and out of current E2EE scope.
+- Server exports include JSON/Markdown/PDF and process plaintext. PDF generation uses Puppeteer in src/controllers/chronicleController.js and src/templates/.
+- Frontend renders Markdown through React-based FormattedContent and markdown helpers. The display component renders React nodes and limits links/images to http(s); rich editor serializes Markdown.
+
+Key files audited:
+- src/server.js, src/app.js
+- src/models/userModel.js, src/models/chronicleModel.js
+- src/controllers/authController.js, src/controllers/chronicleController.js
+- src/routes/authRoute.js, src/routes/chronicleRoutes.js
+- src/middlewares/authMiddleware.js
+- src/controllers/uploadController.js, src/routes/uploadRoute.js, src/middlewares/uploadMiddleware.js, src/config/cloudinary.js
+- frontend/src/context/AuthContext.jsx, frontend/src/lib/api.js
+- frontend/src/pages/EditorPage.jsx, JournalPage.jsx, InsightsPage.jsx, VaultPage.jsx, ProfilePage.jsx, DraftsPage.jsx
+- frontend/src/lib/drafts.js, journal.js, markdownHtml.js
+- frontend/src/components/ui/FormattedContent.jsx, RichTextEditor.jsx
+- tests/auth.test.js, tests/chronicle.test.js, tests/helper.js
+
+Known compatibility/security implications:
+- Current title/content/mood/tags are plaintext in MongoDB and sent to backend. All must switch to a ciphertext envelope; date stays plaintext.
+- Search by text/title/tags, mood/tag filters, server pagination tied to search/filter, word counts, mood summaries, analytics, and server-side PDF/JSON/Markdown generation currently depend on plaintext. Must define client-side alternatives and data-fetching/performance tradeoffs.
+- Keeping date plaintext permits server date sort/filter and database date indexes but reveals journaling dates/frequency.
+- A first encrypted release must define behavior for legacy plaintext entries and avoid presenting them as E2EE before migration.
+- Cloudinary image content remains out of scope and plaintext.
+- Current draft localStorage is plaintext and must be disabled under the user's request.
+- Current JWT web-storage persistence means same-origin script compromise can steal auth. An unlocked in-memory key is also exposed to malicious same-origin code; E2EE does not address XSS.
+- Backend validation currently assumes plaintext strings and must be changed to validate bounded ciphertext fields, algorithm/version metadata, encodings, IV sizes, and required fields without decrypting.
+- Existing account deletion deletes journal records then user, so new crypto metadata must also be covered.
+- User model currently contains name, email, login password hash, verification/reset tokens, timestamps; it has no crypto metadata.
+
+PROPOSED CRYPTOGRAPHIC MODEL TO EVALUATE IN PHASE 1 (NOT YET APPROVED)
+Key hierarchy:
+- Random 256-bit Master Key (MK) encrypts journal payloads using AES-256-GCM.
+- Separate user-created encryption passphrase is never sent to server and is distinct from Chronicle login password.
+- Derive a KEK from passphrase, random 16-byte salt, and KDF parameters. The KEK only encrypts/wraps MK.
+- A random Recovery Key independently protects a second copy of MK. Show it once, require confirmation, and explain safe offline storage. Never store it plaintext server-side.
+- Backend stores KDF identifier/parameters, salt, wrapped MK and GCM IV; recovery-wrapped MK and its independent GCM IV; algorithm/version metadata. No passphrase, raw MK, Recovery Key, or KEK on backend.
+- Each GCM encryption operation under any particular AES key MUST have a unique fresh random 12-byte IV. Salt is for KDF and must not be confused with IV. AES key size 256 bits.
+- Consider AES-GCM AAD to bind ciphertext to stable context such as owner ID, entry ID, schema/version and field purpose, preventing ciphertext substitution across records/contexts. Decide exact canonical encoding and migration rules. Avoid AAD fields that change during normal editing unless planned.
+- Web Crypto wrapKey('raw', masterKey, kek, {name:'AES-GCM',iv}) requires the wrapped key be extractable. Proposed lifecycle: generate transient extractable MK only for setup/wrapping; create both independently wrapped copies; then import/use a non-extractable working CryptoKey limited to encrypt/decrypt. Verify exact browser support/API semantics. Use separate keys/IVs for passphrase and recovery wraps.
+- For recovery, unwrap with Recovery Key, create a new salt and KEK from a new passphrase, rewrap same MK with fresh IV, verify unwrap/decrypt, then update only passphrase-wrap metadata. Recovery wrap remains unchanged. For Recovery Key rotation, unlock MK, create and confirm new key, rewrap MK with fresh IV, verify, and atomically update recovery metadata.
+- Passphrase change rewraps same MK; journal data does not need bulk re-encryption.
+- No device-specific key is needed for the simple multi-device goal: each device authenticates, downloads public encryption metadata, and derives/unlocks from same passphrase. Keep MK only in memory as a non-extractable CryptoKey after unlock; logout/expiry locks and discards references. Refresh requires unlock again. Define cross-tab lock behavior using messages/events without storing key material.
+
+KDF CHOICE STILL OPEN:
+- Must critically compare native Web Crypto PBKDF2-SHA-256 to audited browser Argon2id implementation.
+- PBKDF2 has native broad Web Crypto compatibility and low dependency complexity, but is compute-hard rather than memory-hard.
+- Argon2id is memory-hard, but needs browser/WASM dependency, compatibility/performance analysis and supply-chain review.
+- Do not choose a count/parameter arbitrarily. Benchmark on target device classes and select documented parameters that produce a reasonable user unlock delay while resisting offline guessing. Exact recommendation and benchmark plan belong to Phase 1; any benchmark implementation/run needs authorization if it changes files or installs dependencies.
+
+JOURNAL ENVELOPE / METADATA DIRECTION TO EVALUATE:
+- Encrypt one canonical UTF-8 JSON payload containing title, content, mood, tags, and any additional sensitive per-entry fields. Keep date outside ciphertext as required. One payload reduces leakage between fields and simplifies authenticated encryption/versioning.
+- Store opaque ciphertext, fresh GCM IV, encryption/schema version, plaintext date, owner/user reference, and standard DB timestamps/ID. Decide whether createdAt/updatedAt remain visible (likely operational metadata leakage) and document it.
+- Backend treats ciphertext as opaque and does not decrypt or inspect encrypted fields. Validate strict types, byte/encoded sizes, exact IV length, supported algorithm/version and date; do not permit unbounded payloads.
+- Since date remains plaintext, server may sort/filter on date and paginate unfiltered date pages. Encrypted content/title/mood/tags require browser-side filtering/search/stats after decryption. To correctly paginate search results, client may need all entries or a separately approved strategy; explain scaling impacts.
+
+USER FLOWS REQUIRED IN ARCHITECTURE PROPOSAL:
+1. Initial setup: user opts in; create passphrase; random salt; derive KEK; generate MK; make passphrase-wrapped copy; generate recovery secret and independently wrap MK; show recovery key; require user confirmation; test that recovery material can unwrap; persist metadata only after both wrapping paths and confirmation work. Design failure-safe ordering to avoid a half-enabled unrecoverable account.
+2. Login/unlock: existing Chronicle login remains; fetch crypto metadata; user enters separate passphrase; derive KEK; unwrap MK; on error show generic unlock failure; keep working non-extractable key in memory. Logged-in-but-locked UI must not send/render plaintext journal content.
+3. CRUD: encrypt fields in browser before API create/update; retrieve ciphertext; decrypt in browser; handle tampered/corrupt ciphertext safely without silently overwriting; lock state prevents CRUD.
+4. Passphrase change: unlock existing MK, derive new KEK with fresh salt, wrap same MK with fresh IV, verify and update metadata. Existing recovery wrap stays valid. Explain network failure/concurrent-update behavior.
+5. Recovery: login, request recovery-wrapped MK, input saved Recovery Key, unwrap, choose new passphrase, derive fresh KEK/salt, create verified new passphrase-wrap; keep recovery wrap valid.
+6. Recovery-key rotation: unlock, generate new random recovery key, create/verify new wrapped copy, user confirms saved key, then update server metadata; old recovery key invalidated only after successful update.
+7. Multi-device: same account, retrieve same metadata, enter passphrase, derive same KEK, unlock same MK. No server decryption.
+8. Logout/token expiration/refresh/tabs: no localStorage/sessionStorage persistence for MK, KEK, passphrase or Recovery Key. Define in-memory lock lifecycle and cross-tab signaling.
+9. Legacy migration: separately approved future work; browser unlocks, fetches original plaintext entry, encrypts complete payload, verifies by decrypting locally, writes ciphertext with concurrency/idempotency marker, confirms encrypted record before preserving/deleting old copy. Do not destructively remove plaintext without explicit user approval. Handle interrupted/repeated runs and mixed old/new entries clearly.
+
+API AND SCHEMA ARE NOT YET DESIGNED/APPROVED. Phase 1 should propose endpoints and exact validation. Likely areas: authenticated encryption metadata setup/read/update; existing journal CRUD adapted to opaque encrypted envelope; date and ownership remain server-managed. Do not invent or implement routes until approved. All crypto metadata endpoints must authorize owner, reject malformed or oversized values, version updates, and never log sensitive fields.
+
+FEATURE IMPACTS TO COVER IN PHASE 1:
+- Search: client-side after decrypting entries.
+- Mood/tag filtering: client-side after decrypting.
+- Date sort/filter: may remain server-side; date is plaintext by user choice.
+- Pagination: date-only pagination possible; search/filter pagination may require loading more/all encrypted records, a practical scale limit to discuss.
+- Mood/tag statistics, word counts, monthly statistics, streaks and insights: move to browser over decrypted records, except date-only aggregates might technically be server-computable but user's privacy preference is all entry data except date encrypted. Explain whether a date-only aggregate could leak behavior.
+- PDF/JSON/Markdown export: generate client-side from decrypted data; do not send plaintext to backend exporter.
+- Rich text editor: continues editing plaintext in browser only while unlocked; protect drafts by disabling them.
+- Images: unchanged, unencrypted, explicitly out of scope.
+- Existing E2EE migration: browser-only, later milestone, no migration now.
+
+SECURITY REVIEW / TEST PLAN TO DESIGN (DO NOT CLAIM EXECUTION):
+- AES-GCM encrypt/decrypt roundtrip, wrong key/passphrase, modified ciphertext, modified IV, wrong AAD/context, malformed/truncated encoding.
+- IV uniqueness through generated IVs; independent wrap IVs; verify no IV reuse design.
+- KEK derivation determinism for same passphrase+salt+parameters; distinct salt behavior; KDF boundary/parameter validation.
+- Master-key wrapping/unwrapping through passphrase and recovery; wrong recovery/passphrase; verify wrapped material integrity.
+- Passphrase change retains ability to decrypt existing entries and retains recovery route.
+- Recovery updates passphrase while original MK and journal ciphertext remain decryptable.
+- Recovery-key rotation, with old key rejected only after successful update.
+- Client CRUD encrypts before network request and decrypts after response; backend tests assert no plaintext sensitive entry fields in DB/API records.
+- Authorization, tamper, malformed metadata/envelope, bounds, unsupported version, corrupted record, stale updates.
+- Multi-device simulation: independent browser crypto contexts derive/unlock same MK from stored metadata/passphrase.
+- Migration tests with synthetic data: interruption, retry/idempotency, verification before preservation/deletion, mixed datasets; only in migration milestone.
+- Verify backend never receives passphrase, recovery secret, plaintext MK/KEK or plaintext journal content. Prefer inspecting outgoing request payloads with synthetic fixtures and server-side tests.
+- Review CSP, script dependencies/third-party scripts, XSS surface, storage/logging, auth authorization and error messages. No cryptography eliminates malicious client-code risk.
+
+NEXT REQUIRED STEP
+Wait for the user to authorize Phase 1 (for example, “Prepare the architecture proposal” / “Proceed to Phase 1”). Then deliver a thorough architecture proposal only: threat model, cryptographic decisions including KDF tradeoffs/benchmark plan, key hierarchy and exact Web Crypto usage, setup/unlock/recovery/change/rotation/device flows, schema and API shapes, frontend lock state, feature tradeoffs, migration plan, security/testing plan, documentation plan. Clearly distinguish recommended choices from user's fixed constraints. Do not edit code or install dependencies in Phase 1. Stop and wait for architecture approval.
+
+After Phase 1 approval, prepare Phase 2 milestone roadmap only and wait for approval. Then implement only one explicitly approved milestone, test/review that milestone, and stop for approval before the next.
+
+END OF HANDOFF
