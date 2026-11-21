@@ -5,6 +5,7 @@ const app = express();
 const authRoutes = require("./routes/authRoute");
 const chronicleRoutes = require("./routes/chronicleRoutes");
 const uploadRoutes = require("./routes/uploadRoute");
+const e2eeRoutes = require("./routes/e2eeRoutes");
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
 app.use(express.json());
 
@@ -15,6 +16,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/chronicle", chronicleRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/e2ee", e2eeRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

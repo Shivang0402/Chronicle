@@ -1,7 +1,7 @@
 import { argon2id } from "hash-wasm";
-import { CRYPTO_SETTINGS, fromBase64Url, randomBytes, toBase64Url, utf8Encode } from "./crypto.utils.js";
+import { CRYPTO_SETTINGS, fromBase64Url, getSubtleCrypto, randomBytes, toBase64Url, utf8Encode } from "./crypto.utils.js";
 
-const subtle = crypto.subtle;
+const subtle = () => getSubtleCrypto();
 
 // Persist every Argon2id input needed to derive the same key on another device.
 // Only this profile is accepted so untrusted metadata cannot request arbitrary work.
@@ -35,7 +35,7 @@ function readKdfMetadata(metadata) {
     throw new Error("Unsupported passphrase KDF metadata");
   }
   const salt = fromBase64Url(kdf.salt);
-  if (salt.length !== SALT_BYTES) throw new TypeError("Invalid passphrase salt");
+  if (salt.length !== SALT_BYTES || kdf.salt.length !== 22) throw new TypeError("Invalid passphrase salt");
   return { kdf, salt };
 }
 
@@ -43,18 +43,29 @@ async function derivePassphraseKey(passphrase, salt, kdf = KDF_PROFILE) {
   if (typeof passphrase !== "string" || passphrase.length === 0) throw new TypeError("Passphrase is required");
 
   const password = utf8Encode(passphrase.normalize("NFC"));
+  if (password.length > CRYPTO_SETTINGS.maxPassphraseBytes) {
+    password.fill(0);
+    throw new RangeError("Passphrase exceeds the supported size limit");
+  }
   let rawKey;
   try {
-    rawKey = await argon2id({
-      password,
-      salt,
-      iterations: kdf.passes,
-      parallelism: kdf.parallelism,
-      memorySize: kdf.memoryKiB,
-      hashLength: kdf.outputBytes,
-      outputType: "binary",
-    });
-    return await subtle.importKey("raw", rawKey, "AES-GCM", false, ["wrapKey", "unwrapKey"]);
+    if (typeof WebAssembly !== "object" || typeof argon2id !== "function") {
+      throw new Error("Argon2id is unavailable in this browser");
+    }
+    try {
+      rawKey = await argon2id({
+        password,
+        salt,
+        iterations: kdf.passes,
+        parallelism: kdf.parallelism,
+        memorySize: kdf.memoryKiB,
+        hashLength: kdf.outputBytes,
+        outputType: "binary",
+      });
+    } catch (cause) {
+      throw new Error("Argon2id key derivation is unavailable or failed in this browser", { cause });
+    }
+    return await subtle().importKey("raw", rawKey, "AES-GCM", false, ["wrapKey", "unwrapKey"]);
   } finally {
     password.fill(0);
     rawKey?.fill(0);
@@ -64,7 +75,7 @@ async function derivePassphraseKey(passphrase, salt, kdf = KDF_PROFILE) {
 async function wrapMasterKey(masterKey, wrappingKey, ownerId, purpose) {
   if (!masterKey.extractable) throw new TypeError("Master Key must be extractable to create a wrapped copy");
   const iv = randomBytes(CRYPTO_SETTINGS.ivBytes);
-  const ciphertext = await subtle.wrapKey("raw", masterKey, wrappingKey, {
+  const ciphertext = await subtle().wrapKey("raw", masterKey, wrappingKey, {
     name: "AES-GCM",
     iv,
     additionalData: keyWrapAad(ownerId, purpose),
@@ -82,6 +93,9 @@ async function unwrapMasterKey(envelope, wrappingKey, ownerId, purpose, extracta
   if (envelope?.algorithm !== CRYPTO_SETTINGS.algorithm || envelope.version !== CRYPTO_SETTINGS.version) {
     throw new TypeError("Unsupported key envelope");
   }
+  if (typeof envelope.iv !== "string" || envelope.iv.length !== 16 || typeof envelope.ciphertext !== "string" || envelope.ciphertext.length !== 64) {
+    throw new TypeError("Invalid key envelope");
+  }
   const iv = fromBase64Url(envelope.iv);
   const ciphertext = fromBase64Url(envelope.ciphertext);
   if (iv.length !== CRYPTO_SETTINGS.ivBytes || ciphertext.length !== CRYPTO_SETTINGS.masterKeyBytes + 16) {
@@ -89,7 +103,7 @@ async function unwrapMasterKey(envelope, wrappingKey, ownerId, purpose, extracta
   }
 
   try {
-    return await subtle.unwrapKey(
+    return await subtle().unwrapKey(
       "raw",
       ciphertext,
       wrappingKey,
@@ -108,8 +122,8 @@ async function verifySameMasterKey(firstKey, secondKey) {
   const iv = randomBytes(CRYPTO_SETTINGS.ivBytes);
   let decrypted;
   try {
-    const encrypted = await subtle.encrypt({ name: "AES-GCM", iv }, firstKey, challenge);
-    decrypted = new Uint8Array(await subtle.decrypt({ name: "AES-GCM", iv }, secondKey, encrypted));
+    const encrypted = await subtle().encrypt({ name: "AES-GCM", iv }, firstKey, challenge);
+    decrypted = new Uint8Array(await subtle().decrypt({ name: "AES-GCM", iv }, secondKey, encrypted));
     return challenge.every((byte, index) => byte === decrypted[index]);
   } finally {
     challenge.fill(0);
@@ -118,13 +132,13 @@ async function verifySameMasterKey(firstKey, secondKey) {
 }
 
 export function createMasterKey() {
-  return subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
+  return subtle().generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
 }
 
 export async function createWorkingMasterKey(setupKey) {
-  const rawKey = new Uint8Array(await subtle.exportKey("raw", setupKey));
+  const rawKey = new Uint8Array(await subtle().exportKey("raw", setupKey));
   try {
-    return await subtle.importKey("raw", rawKey, "AES-GCM", false, ["encrypt", "decrypt"]);
+    return await subtle().importKey("raw", rawKey, "AES-GCM", false, ["encrypt", "decrypt"]);
   } finally {
     rawKey.fill(0);
   }
@@ -152,10 +166,11 @@ export async function unlockWithPassphrase(passphrase, ownerId, metadata, { extr
 }
 
 export async function createRecoveryWrap(masterKey, recoveryKey, ownerId) {
+  if (typeof recoveryKey !== "string" || recoveryKey.length !== 43) throw new TypeError("Invalid Recovery Key");
   const rawKey = fromBase64Url(recoveryKey);
   try {
     if (rawKey.length !== RECOVERY_KEY_BYTES) throw new TypeError("Invalid Recovery Key");
-    const wrappingKey = await subtle.importKey("raw", rawKey, "AES-GCM", false, ["wrapKey", "unwrapKey"]);
+    const wrappingKey = await subtle().importKey("raw", rawKey, "AES-GCM", false, ["wrapKey", "unwrapKey"]);
     return await wrapMasterKey(masterKey, wrappingKey, ownerId, "recovery-wrap");
   } finally {
     rawKey.fill(0);
@@ -163,10 +178,11 @@ export async function createRecoveryWrap(masterKey, recoveryKey, ownerId) {
 }
 
 export async function unlockWithRecoveryKey(recoveryKey, ownerId, envelope, { extractable = false } = {}) {
+  if (typeof recoveryKey !== "string" || recoveryKey.length !== 43) throw new TypeError("Invalid Recovery Key");
   const rawKey = fromBase64Url(recoveryKey);
   try {
     if (rawKey.length !== RECOVERY_KEY_BYTES) throw new TypeError("Invalid Recovery Key");
-    const wrappingKey = await subtle.importKey("raw", rawKey, "AES-GCM", false, ["wrapKey", "unwrapKey"]);
+    const wrappingKey = await subtle().importKey("raw", rawKey, "AES-GCM", false, ["wrapKey", "unwrapKey"]);
     return await unwrapMasterKey(envelope, wrappingKey, ownerId, "recovery-wrap", extractable);
   } finally {
     rawKey.fill(0);

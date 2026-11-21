@@ -103,6 +103,20 @@ export const authApi = {
     request("/auth/account", { method: "DELETE", token }),
 };
 
+export const e2eeApi = {
+  getMetadata: (token) => request("/e2ee/metadata", { token }),
+
+  setInitialMetadata: (metadata, token) =>
+    request("/e2ee/metadata", { method: "POST", body: metadata, token }),
+
+  updateMetadata: (metadata, expectedRevision, token) =>
+    request("/e2ee/metadata", {
+      method: "PUT",
+      body: { ...metadata, expectedRevision },
+      token,
+    }),
+};
+
 export const chronicleApi = {
   getStats: (token, params) =>
     request(`/chronicle/stats${buildQuery(params)}`, { token }),
