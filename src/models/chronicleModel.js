@@ -1,4 +1,20 @@
 const mongoose = require("mongoose");
+
+const encryptedPayloadSchema = new mongoose.Schema(
+  {
+    algorithm: { type: String, enum: ["AES-256-GCM"], required: true },
+    version: { type: Number, enum: [1], required: true },
+    iv: { type: String, required: true, minlength: 16, maxlength: 16 },
+    ciphertext: {
+      type: String,
+      required: true,
+      minlength: 24,
+      maxlength: 349547,
+    },
+  },
+  { _id: false, strict: "throw" },
+);
+
 const chronicleSchema = new mongoose.Schema(
   {
     title: {
@@ -12,8 +28,29 @@ const chronicleSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      required: true,
+      required: function contentRequired() {
+        return !this.encrypted;
+      },
       trim: true,
+    },
+    // Date, mood, tags, and wordCount remain available for stats and filtering.
+    // The encrypted title and text are stored together in encryptedPayload.
+    encrypted: {
+      type: Boolean,
+      default: false,
+    },
+    encryptedPayload: {
+      type: encryptedPayloadSchema,
+      required: function encryptedPayloadRequired() {
+        return this.encrypted === true;
+      },
+      default: undefined,
+    },
+    wordCount: {
+      type: Number,
+      min: 0,
+      max: 100000,
+      default: undefined,
     },
     mood: {
       type: String,
