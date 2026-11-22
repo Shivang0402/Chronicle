@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const Chronicle = require("../models/chronicleModel");
+const User = require("../models/userModel");
 const { renderJournalHtml } = require("../templates/journalExport");
 const { renderPrintHtml } = require("../templates/printExport");
 
@@ -162,7 +163,95 @@ const validateContent = (content) => {
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
+const hasExactKeys = (value, keys) =>
+  value &&
+  typeof value === "object" &&
+  !Array.isArray(value) &&
+  Object.keys(value).length === keys.length &&
+  keys.every((key) => Object.hasOwn(value, key));
+
+const isCanonicalBase64Url = (value, minLength, maxLength) => {
+  if (
+    typeof value !== "string" ||
+    value.length < minLength ||
+    value.length > maxLength ||
+    !/^[A-Za-z0-9_-]+$/.test(value)
+  ) return false;
+
+  const decoded = Buffer.from(value, "base64url");
+  return decoded.toString("base64url") === value;
+};
+
+const isValidEncryptedPayload = (payload) =>
+  hasExactKeys(payload, ["algorithm", "version", "iv", "ciphertext"]) &&
+  payload.algorithm === "AES-256-GCM" &&
+  payload.version === 1 &&
+  isCanonicalBase64Url(payload.iv, 16, 16) &&
+  Buffer.from(payload.iv, "base64url").length === 12 &&
+  isCanonicalBase64Url(payload.ciphertext, 24, 349547) &&
+  Buffer.from(payload.ciphertext, "base64url").length >= 17;
+
+const createEncryptedChronicle = async (req, res) => {
+  const body = req.body;
+  const allowedKeys = ["_id", "date", "wordCount", "encryptedPayload", "mood", "tags"];
+  const requiredKeys = ["_id", "date", "wordCount", "encryptedPayload"];
+
+  if (
+    !body ||
+    typeof body !== "object" ||
+    Array.isArray(body) ||
+    Object.keys(body).some((key) => !allowedKeys.includes(key)) ||
+    requiredKeys.some((key) => !Object.hasOwn(body, key)) ||
+    !isValidObjectId(body._id) ||
+    typeof body.date !== "string" ||
+    Number.isNaN(new Date(body.date).getTime()) ||
+    !Number.isSafeInteger(body.wordCount) ||
+    body.wordCount < 0 ||
+    body.wordCount > 100000 ||
+    (body.mood !== undefined && (typeof body.mood !== "string" || body.mood.length > 128)) ||
+    (body.tags !== undefined && (!Array.isArray(body.tags) || body.tags.length > 100 || body.tags.some((tag) => typeof tag !== "string" || tag.length > 256))) ||
+    !isValidEncryptedPayload(body.encryptedPayload)
+  ) {
+    return res.status(400).json({ message: "Invalid encrypted entry" });
+  }
+
+  const encryptionConfigured = await User.exists({
+    _id: req.user.id,
+    e2eeMetadata: { $exists: true },
+  });
+  if (!encryptionConfigured) {
+    return res.status(409).json({ message: "Configure encryption before saving encrypted entries" });
+  }
+
+  try {
+    const chronicle = await Chronicle.create({
+      _id: body._id,
+      date: new Date(body.date),
+      mood: body.mood,
+      tags: body.tags,
+      wordCount: body.wordCount,
+      encrypted: true,
+      encryptedPayload: body.encryptedPayload,
+      user: req.user.id,
+    });
+
+    return res.status(201).json({
+      message: "Encrypted chronicle created successfully",
+      chronicle,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ message: "Entry already exists" });
+    }
+    return res.status(400).json({ message: "Could not save encrypted entry" });
+  }
+};
+
 const createChronicle = async (req, res) => {
+  if (req.body?.encryptedPayload !== undefined) {
+    return createEncryptedChronicle(req, res);
+  }
+
   const { title, date, content, mood, tags } = req.body;
   const validation = validateContent(content);
 
