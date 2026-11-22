@@ -7,7 +7,7 @@ const chronicleRoutes = require("./routes/chronicleRoutes");
 const uploadRoutes = require("./routes/uploadRoute");
 const e2eeRoutes = require("./routes/e2eeRoutes");
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
-app.use(express.json());
+app.use(express.json({ limit: "400kb" }));
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
