@@ -33,8 +33,7 @@ const chronicleSchema = new mongoose.Schema(
       },
       trim: true,
     },
-    // Date, mood, tags, and wordCount remain available for stats and filtering.
-    // The encrypted title and text are stored together in encryptedPayload.
+    // Date remains available for ordering/filtering; diary fields stay encrypted.
     encrypted: {
       type: Boolean,
       default: false,
@@ -44,12 +43,6 @@ const chronicleSchema = new mongoose.Schema(
       required: function encryptedPayloadRequired() {
         return this.encrypted === true;
       },
-      default: undefined,
-    },
-    wordCount: {
-      type: Number,
-      min: 0,
-      max: 100000,
       default: undefined,
     },
     mood: {

@@ -193,8 +193,8 @@ const isValidEncryptedPayload = (payload) =>
 
 const createEncryptedChronicle = async (req, res) => {
   const body = req.body;
-  const allowedKeys = ["_id", "date", "wordCount", "encryptedPayload", "mood", "tags"];
-  const requiredKeys = ["_id", "date", "wordCount", "encryptedPayload"];
+  const allowedKeys = ["_id", "date", "encryptedPayload"];
+  const requiredKeys = ["_id", "date", "encryptedPayload"];
 
   if (
     !body ||
@@ -205,11 +205,6 @@ const createEncryptedChronicle = async (req, res) => {
     !isValidObjectId(body._id) ||
     typeof body.date !== "string" ||
     Number.isNaN(new Date(body.date).getTime()) ||
-    !Number.isSafeInteger(body.wordCount) ||
-    body.wordCount < 0 ||
-    body.wordCount > 100000 ||
-    (body.mood !== undefined && (typeof body.mood !== "string" || body.mood.length > 128)) ||
-    (body.tags !== undefined && (!Array.isArray(body.tags) || body.tags.length > 100 || body.tags.some((tag) => typeof tag !== "string" || tag.length > 256))) ||
     !isValidEncryptedPayload(body.encryptedPayload)
   ) {
     return res.status(400).json({ message: "Invalid encrypted entry" });
@@ -227,9 +222,6 @@ const createEncryptedChronicle = async (req, res) => {
     const chronicle = await Chronicle.create({
       _id: body._id,
       date: new Date(body.date),
-      mood: body.mood,
-      tags: body.tags,
-      wordCount: body.wordCount,
       encrypted: true,
       encryptedPayload: body.encryptedPayload,
       user: req.user.id,

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { authApi } from "../lib/api";
 import AuthContext from "./authContextStore";
+import { clearEncryptionSession } from "../lib/cryptoSession.js";
 
 const TOKEN_KEY = "chronicle.auth.token";
 
@@ -58,6 +59,7 @@ export function AuthProvider({ children }) {
         if (!active) return;
 
         if (error?.status === 401 || error?.status === 403) {
+          clearEncryptionSession();
           clearStoredToken();
           setToken(null);
         }
@@ -76,6 +78,7 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   const login = useCallback(async ({ email, password, remember = true }) => {
+    clearEncryptionSession();
     const data = await authApi.login({ email, password });
     persistToken(data.token, remember);
     setLoading(true);
@@ -84,6 +87,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    clearEncryptionSession();
     clearStoredToken();
     setToken(null);
     setUser(null);

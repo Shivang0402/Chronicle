@@ -1,3 +1,8 @@
+import { decryptEntry, encryptEntry } from "./entryCrypto.js";
+import { countWords } from "./journal.js";
+import { getEncryptionKey } from "./cryptoSession.js";
+import { randomBytes } from "./crypto.utils.js";
+
 const rawBase = import.meta.env.VITE_API_URL || "";
 export const API_BASE = rawBase.replace(/\/$/, "");
 
@@ -123,8 +128,44 @@ export const chronicleApi = {
   getChronicles: (token, params) =>
     request(`/chronicle/getchronicles${buildQuery(params)}`, { token }),
   getEntry: (id, token) => request(`/chronicle/${id}`, { token }),
-  createEntry: (payload, token) =>
-    request("/chronicle", { method: "POST", body: payload, token }),
+  createEntry: async (payload, token, ownerId) => {
+    const masterKey = getEncryptionKey(ownerId);
+    if (!masterKey) {
+      const metadata = await e2eeApi.getMetadata(token);
+      if (metadata.configured) {
+        throw new ApiError("Unlock encryption before creating an entry.", 423);
+      }
+      return request("/chronicle", { method: "POST", body: payload, token });
+    }
+
+    const entryId = Array.from(randomBytes(12), (byte) => byte.toString(16).padStart(2, "0")).join("");
+    const date = payload.date ? new Date(payload.date).toISOString() : new Date().toISOString();
+    const privateFields = {
+      title: typeof payload.title === "string" ? payload.title : "",
+      content: payload.content,
+      wordCount: countWords(payload.content || ""),
+      ...(typeof payload.mood === "string" ? { mood: payload.mood } : {}),
+      ...(Array.isArray(payload.tags) ? { tags: payload.tags } : {}),
+    };
+    const encryptedPayload = await encryptEntry(masterKey, privateFields, {
+      ownerId,
+      entryId,
+      date,
+    });
+    const body = {
+      _id: entryId,
+      date,
+      encryptedPayload,
+    };
+    const data = await request("/chronicle", { method: "POST", body, token });
+    const chronicle = data?.chronicle;
+    const decryptedPayload = await decryptEntry(masterKey, chronicle.encryptedPayload, {
+      ownerId,
+      entryId: String(chronicle._id),
+      date: new Date(chronicle.date).toISOString(),
+    });
+    return { ...data, chronicle: { ...chronicle, ...decryptedPayload } };
+  },
   updateEntry: (id, payload, token) =>
     request(`/chronicle/${id}`, { method: "PATCH", body: payload, token }),
   deleteEntry: (id, token) =>

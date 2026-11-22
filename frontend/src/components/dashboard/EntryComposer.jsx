@@ -233,7 +233,7 @@ export default function EntryComposer({
         onUpdated?.(data?.chronicle);
         clearDraft(draftOwner, draftEntryId);
       } else {
-        const data = await chronicleApi.createEntry(payload, token);
+        const data = await chronicleApi.createEntry(payload, token, user?._id || user?.id);
         onCreated?.(data?.chronicle);
         clearDraft(draftOwner, draftEntryId);
       }

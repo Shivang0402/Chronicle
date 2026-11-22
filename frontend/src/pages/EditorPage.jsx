@@ -408,7 +408,7 @@ export default function EditorPage() {
         setDraftRestoredAt(null);
         setDraftSavedAt(null);
       } else {
-        await chronicleApi.createEntry(payload, token);
+        await chronicleApi.createEntry(payload, token, user?._id || user?.id);
         clearDraft(draftOwner, null);
         dirtyRef.current = false;
         setDirty(false);
@@ -435,6 +435,7 @@ export default function EditorPage() {
     tags,
     title,
     token,
+    user,
   ]);
 
   useEffect(() => {

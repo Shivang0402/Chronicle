@@ -1,4 +1,4 @@
-import { CRYPTO_SETTINGS, canonicalPayloadBytes, fromBase64Url, getSubtleCrypto, randomBytes, toBase64Url, utf8Decode } from "./crypto.utils.js";
+import { CRYPTO_SETTINGS, canonicalPayloadBytes, fromBase64Url, getSubtleCrypto, randomBytes, toBase64Url, utf8Decode, utf8Encode } from "./crypto.utils.js";
 
 const subtle = () => getSubtleCrypto();
 
