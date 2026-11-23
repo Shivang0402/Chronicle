@@ -852,6 +852,7 @@ export default function ProfilePage() {
           key={exportDialogOpen ? `export-open-${exportFormat}` : "export-closed"}
           open={exportDialogOpen}
           token={token}
+          ownerId={user?.id}
           exporting={Boolean(exporting)}
           exportError={exportError}
           initialFormat={exportFormat}

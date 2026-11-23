@@ -29,6 +29,36 @@ export class ApiError extends Error {
   }
 }
 
+async function decryptChronicle(data, ownerId) {
+  const chronicles = Array.isArray(data?.chronicles) ? data.chronicles : null;
+  const chronicle = data?.chronicle;
+  const entries = chronicles || (chronicle ? [chronicle] : []);
+  const encryptedEntries = entries.filter((entry) => entry?.encrypted || entry?.encryptedPayload);
+  if (!encryptedEntries.length) return data;
+
+  const masterKey = getEncryptionKey(ownerId);
+  if (!masterKey) throw new ApiError("Unlock encryption to read your entries.", 423);
+
+  const decryptOne = async (entry) => {
+    if (!entry?.encryptedPayload || !entry?._id || !entry?.date) {
+      throw new ApiError("An encrypted entry has an invalid envelope.", 422);
+    }
+    const payload = await decryptEntry(masterKey, entry.encryptedPayload, {
+      ownerId,
+      entryId: String(entry._id),
+      date: new Date(entry.date).toISOString(),
+    });
+    return { ...entry, ...payload };
+  };
+
+  const decrypted = await Promise.all(entries.map((entry) =>
+    entry?.encrypted || entry?.encryptedPayload ? decryptOne(entry) : entry,
+  ));
+  return chronicles
+    ? { ...data, chronicles: decrypted }
+    : { ...data, chronicle: decrypted[0] };
+}
+
 async function request(path, { method = "GET", body, token } = {}) {
   const headers = { Accept: "application/json" };
 
@@ -125,9 +155,16 @@ export const e2eeApi = {
 export const chronicleApi = {
   getStats: (token, params) =>
     request(`/chronicle/stats${buildQuery(params)}`, { token }),
-  getChronicles: (token, params) =>
-    request(`/chronicle/getchronicles${buildQuery(params)}`, { token }),
-  getEntry: (id, token) => request(`/chronicle/${id}`, { token }),
+  getChronicles: async (token, params, ownerId) =>
+    decryptChronicle(await request(`/chronicle/getchronicles${buildQuery(params)}`, { token }), ownerId),
+  getEntry: async (id, token) => {
+    const data = await request(`/chronicle/${id}`, { token });
+    const entry = data?.chronicle;
+    if (entry?.encrypted || entry?.encryptedPayload) {
+      throw new ApiError("Editing encrypted entries is not available yet.", 423);
+    }
+    return data;
+  },
   createEntry: async (payload, token, ownerId) => {
     const masterKey = getEncryptionKey(ownerId);
     if (!masterKey) {

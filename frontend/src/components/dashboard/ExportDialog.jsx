@@ -17,6 +17,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 export default function ExportDialog({
   open,
   token,
+  ownerId,
   exporting = false,
   onClose,
   onExport,
@@ -54,7 +55,7 @@ export default function ExportDialog({
     if (!open || scope !== "selected" || !token) return undefined;
     let active = true;
     chronicleApi
-      .getChronicles(token, { page, limit: 20 })
+      .getChronicles(token, { page, limit: 20 }, ownerId)
       .then((data) => {
         if (!active) return;
         setEntries(data?.chronicles || []);
@@ -71,7 +72,7 @@ export default function ExportDialog({
     return () => {
       active = false;
     };
-  }, [open, scope, page, token]);
+  }, [open, scope, page, token, ownerId]);
 
   useEffect(() => {
     if (!open) return undefined;

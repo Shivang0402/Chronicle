@@ -241,7 +241,7 @@ export default function JournalPage() {
         ...(mood ? { mood } : {}),
         ...(tag ? { tag } : {}),
         ...(date ? { date } : {}),
-      })
+      }, user?.id)
       .then((data) => {
         if (!active) return;
         setEntries(data?.chronicles || []);
@@ -262,7 +262,7 @@ export default function JournalPage() {
     return () => {
       active = false;
     };
-  }, [token, page, query, mood, tag, date, sort, reloadKey]);
+  }, [token, user?.id, page, query, mood, tag, date, sort, reloadKey]);
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -788,6 +788,7 @@ export default function JournalPage() {
         <ExportDialog
           open={exportDialogOpen}
           token={token}
+          ownerId={user?.id}
           exporting={exporting}
           exportError={exportError}
           onClose={() => setExportDialogOpen(false)}

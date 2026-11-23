@@ -394,6 +394,7 @@ export default function DraftsPage() {
         <ExportDialog
           open={exportDialogOpen}
           token={token}
+          ownerId={user?.id}
           exporting={exporting}
           exportError={exportError}
           onClose={() => setExportDialogOpen(false)}

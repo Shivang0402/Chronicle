@@ -30,13 +30,13 @@ const emptyStats = {
   trend: [],
 };
 
-const fetchDashboard = async (token, activeTag) => {
+const fetchDashboard = async (token, activeTag, ownerId) => {
   const [statsData, entriesData, tagsData] = await Promise.all([
     chronicleApi.getStats(token, { range: "all" }),
     chronicleApi.getChronicles(token, {
       limit: 20,
       ...(activeTag ? { tag: activeTag } : {}),
-    }),
+    }, ownerId),
     chronicleApi.getTags(token),
   ]);
 
@@ -70,7 +70,7 @@ export default function VaultPage() {
 
     let active = true;
 
-    fetchDashboard(token, activeTag)
+    fetchDashboard(token, activeTag, user?.id)
       .then(({ statsData, entriesData, tagsData }) => {
         if (!active) return;
 
@@ -96,7 +96,7 @@ export default function VaultPage() {
     return () => {
       active = false;
     };
-  }, [token, activeTag, reloadKey]);
+  }, [token, user?.id, activeTag, reloadKey]);
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -302,6 +302,7 @@ export default function VaultPage() {
         <ExportDialog
           open={exportDialogOpen}
           token={token}
+          ownerId={user?.id}
           exporting={exporting}
           exportError={exportError}
           onClose={() => setExportDialogOpen(false)}

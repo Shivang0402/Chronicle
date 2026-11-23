@@ -1206,6 +1206,7 @@ export default function InsightsPage() {
         <ExportDialog
           open={exportDialogOpen}
           token={token}
+          ownerId={user?.id}
           exporting={exporting}
           exportError={exportError}
           onClose={() => setExportDialogOpen(false)}
