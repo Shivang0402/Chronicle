@@ -2,6 +2,7 @@ import { Loader2 } from "lucide-react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import Wordmark from "../ui/Wordmark";
+import EncryptionGate from "./EncryptionGate";
 
 export default function ProtectedRoute({ children }) {
   const { token, loading } = useAuth();
@@ -26,5 +27,5 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to={`/auth?${params.toString()}`} replace />;
   }
 
-  return children;
+  return <EncryptionGate>{children}</EncryptionGate>;
 }
