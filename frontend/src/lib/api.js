@@ -157,11 +157,21 @@ export const chronicleApi = {
     request(`/chronicle/stats${buildQuery(params)}`, { token }),
   getChronicles: async (token, params, ownerId) =>
     decryptChronicle(await request(`/chronicle/getchronicles${buildQuery(params)}`, { token }), ownerId),
-  getEntry: async (id, token) => {
+  getEntry: async (id, token, ownerId) => {
     const data = await request(`/chronicle/${id}`, { token });
     const entry = data?.chronicle;
     if (entry?.encrypted || entry?.encryptedPayload) {
-      throw new ApiError("Editing encrypted entries is not available yet.", 423);
+      const masterKey = getEncryptionKey(ownerId);
+      if (!masterKey) throw new ApiError("Unlock encryption to edit this entry.", 423);
+      if (!entry?.encryptedPayload || !entry?._id || !entry?.date) {
+        throw new ApiError("An encrypted entry has an invalid envelope.", 422);
+      }
+      const payload = await decryptEntry(masterKey, entry.encryptedPayload, {
+        ownerId,
+        entryId: String(entry._id),
+        date: new Date(entry.date).toISOString(),
+      });
+      return { ...data, chronicle: { ...entry, ...payload } };
     }
     return data;
   },
@@ -203,8 +213,39 @@ export const chronicleApi = {
     });
     return { ...data, chronicle: { ...chronicle, ...decryptedPayload } };
   },
-  updateEntry: (id, payload, token) =>
-    request(`/chronicle/${id}`, { method: "PATCH", body: payload, token }),
+  updateEntry: async (id, payload, token, ownerId, entryDate, encrypted = false) => {
+    if (!encrypted) {
+      return request(`/chronicle/${id}`, { method: "PATCH", body: payload, token });
+    }
+
+    const masterKey = getEncryptionKey(ownerId);
+    if (!masterKey) throw new ApiError("Unlock encryption to update this entry.", 423);
+    const date = new Date(entryDate).toISOString();
+    const privateFields = {
+      title: typeof payload.title === "string" ? payload.title : "",
+      content: payload.content,
+      wordCount: countWords(payload.content || ""),
+      ...(typeof payload.mood === "string" ? { mood: payload.mood } : {}),
+      ...(Array.isArray(payload.tags) ? { tags: payload.tags } : {}),
+    };
+    const encryptedPayload = await encryptEntry(masterKey, privateFields, {
+      ownerId,
+      entryId: String(id),
+      date,
+    });
+    const data = await request(`/chronicle/${id}`, {
+      method: "PATCH",
+      body: { encryptedPayload },
+      token,
+    });
+    const chronicle = data?.chronicle;
+    const decryptedPayload = await decryptEntry(masterKey, chronicle.encryptedPayload, {
+      ownerId,
+      entryId: String(chronicle._id),
+      date: new Date(chronicle.date).toISOString(),
+    });
+    return { ...data, chronicle: { ...chronicle, ...decryptedPayload } };
+  },
   deleteEntry: (id, token) =>
     request(`/chronicle/${id}`, { method: "DELETE", token }),
   search: (query, token) =>

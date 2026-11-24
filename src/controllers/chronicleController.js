@@ -407,6 +407,38 @@ const updateChronicleById = async (req, res) => {
       return res.status(404).json({ message: "No such chronicle exists." });
     }
 
+    if (chronicle.encrypted) {
+      const body = req.body;
+      if (
+        !body ||
+        typeof body !== "object" ||
+        Array.isArray(body) ||
+        !hasExactKeys(body, ["encryptedPayload"]) ||
+        !isValidEncryptedPayload(body.encryptedPayload)
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Invalid encrypted entry update" });
+      }
+
+      const encryptionConfigured = await User.exists({
+        _id: req.user.id,
+        e2eeMetadata: { $exists: true },
+      });
+      if (!encryptionConfigured) {
+        return res.status(409).json({
+          message: "Configure encryption before updating encrypted entries",
+        });
+      }
+
+      chronicle.encryptedPayload = body.encryptedPayload;
+      await chronicle.save();
+      return res.status(200).json({
+        message: "Encrypted chronicle updated successfully",
+        chronicle,
+      });
+    }
+
     const { title, date, content, mood, tags } = req.body;
     const validation = content === undefined ? null : validateContent(content);
 

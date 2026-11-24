@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 export default function LeaveDraftDialog({
   open,
   isEditing = false,
+  canSaveDraft = true,
   onClose,
   onSaveDraft,
   onAbandon,
@@ -88,7 +89,9 @@ export default function LeaveDraftDialog({
                 id="leave-draft-description"
                 className="relative mt-2 text-[12px] leading-relaxed text-charcoal-muted"
               >
-                {isEditing
+                {!canSaveDraft
+                  ? "Unsaved changes for encrypted entries are not stored as browser drafts. Leaving will discard them."
+                  : isEditing
                   ? "Your unsaved changes will be saved as a draft, so you can pick them up whenever you return."
                   : "Your writing will be saved as a draft, so you can return whenever you are ready."}
               </p>
@@ -96,21 +99,23 @@ export default function LeaveDraftDialog({
 
             <div className="p-5">
               <div className="flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={onSaveDraft}
-                  className="btn-sage w-full !px-4 !py-3 text-[10px]"
-                >
-                  <Save className="h-3.5 w-3.5" />
-                  Save as draft & leave
-                </button>
+                {canSaveDraft && (
+                  <button
+                    type="button"
+                    onClick={onSaveDraft}
+                    className="btn-sage w-full !px-4 !py-3 text-[10px]"
+                  >
+                    <Save className="h-3.5 w-3.5" />
+                    Save as draft & leave
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={onAbandon}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-danger/20 bg-paper px-4 py-3 text-[11px] font-medium text-danger transition-colors hover:bg-danger/5"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  Abandon writing
+                  {canSaveDraft ? "Abandon writing" : "Discard changes & leave"}
                 </button>
                 <button
                   ref={cancelRef}
@@ -122,7 +127,7 @@ export default function LeaveDraftDialog({
                 </button>
               </div>
               <p className="mt-2 text-center text-[10px] leading-relaxed text-muted-gray">
-                Abandoning will not keep a draft.
+                {canSaveDraft ? "Abandoning will not keep a draft." : "This will not change the saved entry."}
               </p>
             </div>
           </motion.div>
