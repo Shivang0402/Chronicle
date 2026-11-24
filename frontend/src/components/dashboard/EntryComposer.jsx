@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ConfirmDialog from "../ui/ConfirmDialog";
 import RichTextEditor from "../ui/RichTextEditor";
 import { chronicleApi } from "../../lib/api";
+import { getAccountId } from "../../lib/cryptoSession.js";
 import {
   clearDraft,
   getDraftOwner,
@@ -233,7 +234,7 @@ export default function EntryComposer({
         onUpdated?.(data?.chronicle);
         clearDraft(draftOwner, draftEntryId);
       } else {
-        const data = await chronicleApi.createEntry(payload, token, user?._id || user?.id);
+        const data = await chronicleApi.createEntry(payload, token, getAccountId(user));
         onCreated?.(data?.chronicle);
         clearDraft(draftOwner, draftEntryId);
       }

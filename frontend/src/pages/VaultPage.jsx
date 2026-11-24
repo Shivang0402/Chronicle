@@ -13,6 +13,7 @@ import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
+import { getAccountId } from "../lib/cryptoSession.js";
 import { exportFileName, exportNotice } from "../lib/exportFormats";
 import { greetingForNow } from "../lib/journal";
 
@@ -70,7 +71,7 @@ export default function VaultPage() {
 
     let active = true;
 
-    fetchDashboard(token, activeTag, user?.id)
+    fetchDashboard(token, activeTag, getAccountId(user))
       .then(({ statsData, entriesData, tagsData }) => {
         if (!active) return;
 
@@ -302,7 +303,7 @@ export default function VaultPage() {
         <ExportDialog
           open={exportDialogOpen}
           token={token}
-          ownerId={user?.id}
+          ownerId={getAccountId(user)}
           exporting={exporting}
           exportError={exportError}
           onClose={() => setExportDialogOpen(false)}

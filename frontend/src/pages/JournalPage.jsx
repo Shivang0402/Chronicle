@@ -27,6 +27,7 @@ import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
+import { getAccountId } from "../lib/cryptoSession.js";
 import { exportFileName, exportNotice } from "../lib/exportFormats";
 import {
   countWords,
@@ -241,7 +242,7 @@ export default function JournalPage() {
         ...(mood ? { mood } : {}),
         ...(tag ? { tag } : {}),
         ...(date ? { date } : {}),
-      }, user?.id)
+      }, getAccountId(user))
       .then((data) => {
         if (!active) return;
         setEntries(data?.chronicles || []);
@@ -788,7 +789,7 @@ export default function JournalPage() {
         <ExportDialog
           open={exportDialogOpen}
           token={token}
-          ownerId={user?.id}
+          ownerId={getAccountId(user)}
           exporting={exporting}
           exportError={exportError}
           onClose={() => setExportDialogOpen(false)}

@@ -1,5 +1,10 @@
 let currentSession = null;
 
+export function getAccountId(user) {
+  const id = user?._id ?? user?.id;
+  return id == null ? "" : String(id);
+}
+
 export function setEncryptionSession(ownerId, masterKey) {
   if (typeof ownerId !== "string" || !masterKey) {
     throw new TypeError("Encryption session requires an account and master key");

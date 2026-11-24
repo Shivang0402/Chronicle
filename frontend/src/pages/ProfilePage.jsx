@@ -28,6 +28,7 @@ import Reveal from "../components/ui/Reveal";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { authApi, chronicleApi } from "../lib/api";
+import { getAccountId } from "../lib/cryptoSession.js";
 import { clearDrafts, getDraftOwner } from "../lib/drafts";
 import { exportFileName, exportNotice } from "../lib/exportFormats";
 import { formatEntryDate } from "../lib/journal";
@@ -852,7 +853,7 @@ export default function ProfilePage() {
           key={exportDialogOpen ? `export-open-${exportFormat}` : "export-closed"}
           open={exportDialogOpen}
           token={token}
-          ownerId={user?.id}
+          ownerId={getAccountId(user)}
           exporting={Boolean(exporting)}
           exportError={exportError}
           initialFormat={exportFormat}

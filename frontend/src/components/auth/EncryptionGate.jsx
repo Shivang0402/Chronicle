@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, Check, Copy, KeyRound, Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { e2eeApi } from "../../lib/api";
@@ -11,14 +11,14 @@ import {
   unlockWithPassphrase,
   unlockWithRecoveryKey,
 } from "../../lib/keyManager.js";
-import { getEncryptionKey, setEncryptionSession } from "../../lib/cryptoSession.js";
+import { getAccountId, getEncryptionKey, setEncryptionSession } from "../../lib/cryptoSession.js";
 
 const fieldClass = "w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm text-charcoal outline-none transition focus:border-sage";
 const buttonClass = "inline-flex items-center justify-center gap-2 rounded-xl bg-sage-deep px-5 py-3 text-sm font-medium text-white transition hover:bg-charcoal disabled:cursor-not-allowed disabled:opacity-50";
 
 export default function EncryptionGate({ children }) {
   const { user, token, logout } = useAuth();
-  const ownerId = useMemo(() => String(user?._id || user?.id || ""), [user]);
+  const ownerId = getAccountId(user);
   const [metadata, setMetadata] = useState(undefined);
   const [reloadKey, setReloadKey] = useState(0);
   const [loadError, setLoadError] = useState("");

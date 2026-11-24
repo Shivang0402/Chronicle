@@ -23,6 +23,7 @@ import ThemeToggle from "../components/ui/ThemeToggle";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
+import { getAccountId } from "../lib/cryptoSession.js";
 import {
   clearDraft,
   getDraftOwner,
@@ -99,7 +100,7 @@ export default function EditorPage() {
     let active = true;
 
     chronicleApi
-      .getEntry(id, token)
+      .getEntry(id, token, getAccountId(user))
       .then((data) => {
         if (!active) return;
 
@@ -113,7 +114,8 @@ export default function EditorPage() {
         const baseContent = next.content || "";
         const baseMood = next.mood || "";
         const baseTags = Array.isArray(next.tags) ? next.tags : [];
-        const draft = readDraft(draftOwner, id);
+        const draft = next.encrypted ? null : readDraft(draftOwner, id);
+        if (next.encrypted) clearDraft(draftOwner, id);
         const hasRestorableDraft =
           draft &&
           (draft.title !== baseTitle ||
@@ -157,13 +159,13 @@ export default function EditorPage() {
     return () => {
       active = false;
     };
-  }, [draftOwner, id, isEditing, token, loadKey]);
+  }, [draftOwner, id, isEditing, token, user, loadKey]);
 
   useEffect(() => {
     if (!dirty) return undefined;
 
     const handleBeforeUnload = (event) => {
-      if (draftSnapshotRef.current) {
+      if (draftSnapshotRef.current && !entry?.encrypted) {
         writeDraft(draftOwner, id || null, draftSnapshotRef.current);
       }
 
@@ -174,7 +176,7 @@ export default function EditorPage() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () =>
       window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [dirty, draftOwner, id]);
+  }, [dirty, draftOwner, entry?.encrypted, id]);
 
   useEffect(() => {
     draftSnapshotRef.current = { title, content, mood, tags };
@@ -186,15 +188,15 @@ export default function EditorPage() {
 
   useEffect(
     () => () => {
-      if (!dirtyRef.current || !draftSnapshotRef.current) return;
+      if (!dirtyRef.current || !draftSnapshotRef.current || entry?.encrypted) return;
 
       writeDraft(draftOwner, id || null, draftSnapshotRef.current);
     },
-    [draftOwner, id],
+    [draftOwner, entry?.encrypted, id],
   );
 
   useEffect(() => {
-    if (!token || !dirty) return undefined;
+    if (!token || !dirty || entry?.encrypted) return undefined;
 
     const timeout = window.setTimeout(() => {
       if (!dirtyRef.current) return;
@@ -210,7 +212,7 @@ export default function EditorPage() {
     }, 700);
 
     return () => window.clearTimeout(timeout);
-  }, [content, dirty, draftOwner, id, mood, tags, title, token]);
+  }, [content, dirty, draftOwner, entry?.encrypted, id, mood, tags, title, token]);
 
   const words = countWords(content);
   const reading = readingTime(words);
@@ -340,16 +342,22 @@ export default function EditorPage() {
   };
 
   const handleSaveDraftAndLeave = () => {
-    writeDraft(
-      draftOwner,
-      id || null,
-      draftSnapshotRef.current || { title, content, mood, tags },
-    );
+    if (!entry?.encrypted) {
+      writeDraft(
+        draftOwner,
+        id || null,
+        draftSnapshotRef.current || { title, content, mood, tags },
+      );
+    }
     dirtyRef.current = false;
     setDirty(false);
     setLeaveDialogOpen(false);
     navigate("/journal", {
-      state: { notice: "Draft saved. Continue whenever you're ready." },
+      state: {
+        notice: entry?.encrypted
+          ? "Unsaved changes discarded."
+          : "Draft saved. Continue whenever you're ready.",
+      },
     });
   };
 
@@ -399,7 +407,14 @@ export default function EditorPage() {
 
     try {
       if (isEditing) {
-        const data = await chronicleApi.updateEntry(id, payload, token);
+        const data = await chronicleApi.updateEntry(
+          id,
+          payload,
+          token,
+          getAccountId(user),
+          entry?.date,
+          Boolean(entry?.encrypted),
+        );
         setEntry(data?.chronicle || entry);
         clearDraft(draftOwner, id);
         dirtyRef.current = false;
@@ -408,7 +423,7 @@ export default function EditorPage() {
         setDraftRestoredAt(null);
         setDraftSavedAt(null);
       } else {
-        await chronicleApi.createEntry(payload, token, user?._id || user?.id);
+        await chronicleApi.createEntry(payload, token, getAccountId(user));
         clearDraft(draftOwner, null);
         dirtyRef.current = false;
         setDirty(false);
@@ -911,6 +926,7 @@ export default function EditorPage() {
         <LeaveDraftDialog
           open={leaveDialogOpen}
           isEditing={isEditing}
+          canSaveDraft={!entry?.encrypted}
           onClose={closeLeaveDialog}
           onSaveDraft={handleSaveDraftAndLeave}
           onAbandon={handleAbandonWriting}
