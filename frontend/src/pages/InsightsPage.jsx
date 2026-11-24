@@ -13,7 +13,7 @@ import {
   TrendingUp,
   Trophy,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ActivityHeatmap from "../components/dashboard/ActivityHeatmap";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
@@ -27,23 +27,7 @@ import { getAccountId } from "../lib/cryptoSession.js";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
 import { exportFileName, exportNotice } from "../lib/exportFormats";
-import { dayKey, formatEntryDate } from "../lib/journal";
-
-const emptyStats = {
-  totalChronicles: 0,
-  totalWords: 0,
-  averageWords: 0,
-  entriesThisMonth: 0,
-  entriesThisYear: 0,
-  mostCommonMood: "",
-  currentStreak: 0,
-  longestStreak: 0,
-  range: "year",
-  rangeStart: null,
-  activity: [],
-  moodBreakdown: [],
-  trend: [],
-};
+import { countWords, dayKey, formatEntryDate } from "../lib/journal";
 
 const RANGE_OPTIONS = [
   { value: "week", label: "Week" },
@@ -121,6 +105,138 @@ const getRangeStartForLabel = (range) => {
   }
 
   return null;
+};
+
+const getRangeStart = (range) => {
+  if (range === "all") return null;
+  return getRangeStartForLabel(range);
+};
+
+const buildClientInsights = (entries, range) => {
+  const now = new Date();
+  const todayKey = dayKey(now);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const rangeStart = getRangeStart(range);
+  const ordered = [...entries].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
+  const wordCountFor = (entry) => countWords(entry.content || "");
+  const totalWords = ordered.reduce((sum, entry) => sum + wordCountFor(entry), 0);
+  const moodCounts = new Map();
+
+  for (const entry of ordered) {
+    const mood = typeof entry.mood === "string" ? entry.mood.trim() : "";
+    if (mood) moodCounts.set(mood, (moodCounts.get(mood) || 0) + 1);
+  }
+
+  const allMoodBreakdown = [...moodCounts]
+    .map(([mood, count]) => ({ mood, count }))
+    .sort((a, b) => b.count - a.count);
+  const dateKeys = [...new Set(ordered.map((entry) => dayKey(entry.date)))].sort();
+  const oneDay = 24 * 60 * 60 * 1000;
+  let longestStreak = 0;
+  let streak = 0;
+  let previousDay = null;
+
+  for (const key of dateKeys) {
+    const [year, month, day] = key.split("-").map(Number);
+    const value = Date.UTC(year, month - 1, day);
+    streak = previousDay !== null && value - previousDay === oneDay ? streak + 1 : 1;
+    longestStreak = Math.max(longestStreak, streak);
+    previousDay = value;
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const lastDateKey = dateKeys.at(-1);
+  const currentStreak = lastDateKey === todayKey || lastDateKey === dayKey(yesterday)
+    ? (() => {
+        let current = 1;
+        for (let index = dateKeys.length - 1; index > 0; index -= 1) {
+          const [year, month, day] = dateKeys[index].split("-").map(Number);
+          const [previousYear, previousMonth, previousDate] = dateKeys[index - 1].split("-").map(Number);
+          if (Date.UTC(year, month - 1, day) - Date.UTC(previousYear, previousMonth - 1, previousDate) !== oneDay) break;
+          current += 1;
+        }
+        return current;
+      })()
+    : 0;
+
+  const ranged = rangeStart
+    ? ordered.filter((entry) => new Date(entry.date) >= rangeStart)
+    : ordered;
+  const activityByDay = new Map();
+  const moodBreakdownByMood = new Map();
+  const trendByLabel = new Map();
+  const tagCounts = new Map();
+  const allTagCounts = new Map();
+  const monthly = range === "year" || range === "all";
+
+  for (const entry of ordered) {
+    for (const rawTag of Array.isArray(entry.tags) ? entry.tags : []) {
+      const tag = typeof rawTag === "string" ? rawTag.trim() : "";
+      if (tag) allTagCounts.set(tag, (allTagCounts.get(tag) || 0) + 1);
+    }
+  }
+
+  for (const entry of ranged) {
+    const words = wordCountFor(entry);
+    const date = new Date(entry.date);
+    const day = dayKey(date);
+    const mood = typeof entry.mood === "string" ? entry.mood.trim() : "";
+    const activity = activityByDay.get(day) || { date: day, entries: 0, words: 0 };
+    activity.entries += 1;
+    activity.words += words;
+    activityByDay.set(day, activity);
+
+    if (mood) moodBreakdownByMood.set(mood, (moodBreakdownByMood.get(mood) || 0) + 1);
+
+    const labelDate = new Date(date);
+    if (!monthly) labelDate.setDate(labelDate.getDate() - ((labelDate.getDay() + 6) % 7));
+    const label = monthly ? day.slice(0, 7) : dayKey(labelDate);
+    const trend = trendByLabel.get(label) || { label, entries: 0, words: 0 };
+    trend.entries += 1;
+    trend.words += words;
+    trendByLabel.set(label, trend);
+
+    for (const rawTag of Array.isArray(entry.tags) ? entry.tags : []) {
+      const tag = typeof rawTag === "string" ? rawTag.trim() : "";
+      if (tag) tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+    }
+  }
+
+  const moodBreakdown = [...moodBreakdownByMood]
+    .map(([mood, count]) => ({ mood, count }))
+    .sort((a, b) => b.count - a.count);
+  const tags = [...tagCounts]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count);
+  const rangedWords = ranged.reduce((sum, entry) => sum + wordCountFor(entry), 0);
+
+  return {
+    stats: {
+      totalChronicles: ordered.length,
+      totalWords,
+      averageWords: ordered.length ? Math.round(totalWords / ordered.length) : 0,
+      entriesThisMonth: ordered.filter((entry) => new Date(entry.date) >= monthStart).length,
+      entriesThisYear: ordered.filter((entry) => new Date(entry.date) >= yearStart).length,
+      mostCommonMood: allMoodBreakdown[0]?.mood || "",
+      currentStreak,
+      longestStreak,
+      range,
+      rangeStart,
+      rangeTotalWords: rangedWords,
+      rangeAverageWords: ranged.length ? Math.round(rangedWords / ranged.length) : 0,
+      activity: [...activityByDay.values()].sort((a, b) => a.date.localeCompare(b.date)),
+      moodBreakdown,
+      trend: [...trendByLabel.values()].sort((a, b) => a.label.localeCompare(b.label)),
+    },
+    tags,
+    allTags: [...allTagCounts]
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count),
+  };
 };
 
 const RANGE_META = {
@@ -206,6 +322,35 @@ const buildTrendSeries = (trend, range, rangeStart, activity) => {
   }
 
   return series;
+};
+
+const fetchAllEntries = async (token, ownerId) => {
+  const firstPage = await chronicleApi.getChronicles(
+    token,
+    { page: 1, limit: 20, sort: "oldest" },
+    ownerId,
+  );
+  const totalPages = Math.max(Number(firstPage?.totalPages) || 1, 1);
+  const entries = [...(firstPage?.chronicles || [])];
+
+  for (let startPage = 2; startPage <= totalPages; startPage += 4) {
+    const pageNumbers = Array.from(
+      { length: Math.min(4, totalPages - startPage + 1) },
+      (_, index) => startPage + index,
+    );
+    const pages = await Promise.all(
+      pageNumbers.map((page) =>
+        chronicleApi.getChronicles(
+          token,
+          { page, limit: 20, sort: "oldest" },
+          ownerId,
+        ),
+      ),
+    );
+    pages.forEach((page) => entries.push(...(page?.chronicles || [])));
+  }
+
+  return entries;
 };
 
 function MoodDonut({ moodBreakdown = [], mostCommonMood = "", loading }) {
@@ -768,9 +913,8 @@ export default function InsightsPage() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [stats, setStats] = useState(emptyStats);
-  const [tags, setTags] = useState([]);
-  const [sidebarTags, setSidebarTags] = useState([]);
+  const ownerId = getAccountId(user);
+  const [entries, setEntries] = useState([]);
   const [range, setRange] = useState("year");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -784,25 +928,17 @@ export default function InsightsPage() {
   useDocumentTitle("Insights");
 
   useEffect(() => {
-    if (!token) return undefined;
+    if (!token || !ownerId) return undefined;
 
     let active = true;
+    setLoading(true);
+    setEntries([]);
 
-    const loadInsights = async () => {
-      const [statsData, tagsData] = await Promise.all([
-        chronicleApi.getStats(token, { range }),
-        chronicleApi.getTags(token, { range }).catch(() => []),
-      ]);
-
-      return { statsData, tagsData };
-    };
-
-    loadInsights()
-      .then(({ statsData, tagsData }) => {
+    fetchAllEntries(token, ownerId)
+      .then((allEntries) => {
         if (!active) return;
 
-        setStats({ ...emptyStats, ...(statsData || {}) });
-        setTags(Array.isArray(tagsData) ? tagsData : []);
+        setEntries(allEntries);
         setError("");
       })
       .catch((loadError) => {
@@ -820,27 +956,7 @@ export default function InsightsPage() {
     return () => {
       active = false;
     };
-  }, [token, range, reloadKey]);
-
-  useEffect(() => {
-    if (!token) return undefined;
-
-    let active = true;
-
-    chronicleApi
-      .getTags(token)
-      .then((tagsData) => {
-        if (!active) return;
-        setSidebarTags(Array.isArray(tagsData) ? tagsData : []);
-      })
-      .catch(() => {
-        if (active) setSidebarTags([]);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [token, reloadKey]);
+  }, [token, ownerId, reloadKey]);
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -848,6 +964,12 @@ export default function InsightsPage() {
     const timer = window.setTimeout(() => setNotice(""), 4000);
     return () => window.clearTimeout(timer);
   }, [notice]);
+
+  const { stats, tags, allTags } = useMemo(
+    () => buildClientInsights(entries, range),
+    [entries, range],
+  );
+  const sidebarTags = allTags;
 
   const rangeMeta = RANGE_META[range] || RANGE_META.year;
   const rangeEntries = stats.trend.reduce(
@@ -920,10 +1042,6 @@ export default function InsightsPage() {
     if (nextRange === range) return;
 
     setRange(nextRange);
-    setStats(emptyStats);
-    setTags([]);
-    setLoading(true);
-    setError("");
   };
 
   const handleRetry = () => {
