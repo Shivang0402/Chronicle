@@ -3,7 +3,7 @@ import { Check, ChevronLeft, ChevronRight, Download, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { chronicleApi } from "../../lib/api";
 import { EXPORT_FORMATS } from "../../lib/exportFormats";
-import { formatEntryDate } from "../../lib/journal";
+import { dayKey, formatEntryDate } from "../../lib/journal";
 import FilterDatePicker from "../ui/FilterDatePicker";
 
 const scopes = [
@@ -13,6 +13,36 @@ const scopes = [
   { id: "selected", label: "Choose entries", description: "Select individual pages" },
 ];
 const CURRENT_YEAR = new Date().getFullYear();
+const PAGE_SIZE = 20;
+
+const fetchAllEntries = async (token, ownerId) => {
+  const firstPage = await chronicleApi.getChronicles(
+    token,
+    { page: 1, limit: PAGE_SIZE, sort: "oldest" },
+    ownerId,
+  );
+  const totalPages = Math.max(Number(firstPage?.totalPages) || 1, 1);
+  const entries = [...(firstPage?.chronicles || [])];
+
+  for (let startPage = 2; startPage <= totalPages; startPage += 4) {
+    const pageNumbers = Array.from(
+      { length: Math.min(4, totalPages - startPage + 1) },
+      (_, index) => startPage + index,
+    );
+    const pages = await Promise.all(
+      pageNumbers.map((page) =>
+        chronicleApi.getChronicles(
+          token,
+          { page, limit: PAGE_SIZE, sort: "oldest" },
+          ownerId,
+        ),
+      ),
+    );
+    pages.forEach((result) => entries.push(...(result?.chronicles || [])));
+  }
+
+  return entries;
+};
 
 export default function ExportDialog({
   open,
@@ -31,12 +61,11 @@ export default function ExportDialog({
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [page, setPage] = useState(1);
-  const [entries, setEntries] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [entryCount, setEntryCount] = useState(0);
+  const [archiveEntries, setArchiveEntries] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const [loadKey, setLoadKey] = useState(0);
 
   const closeDialog = useCallback(() => {
     setScope("all");
@@ -44,6 +73,8 @@ export default function ExportDialog({
     setPage(1);
     setSelectedIds([]);
     setLoadingEntries(false);
+    setArchiveEntries([]);
+    setLoadError("");
     onClose();
   }, [onClose, initialFormat]);
 
@@ -52,15 +83,15 @@ export default function ExportDialog({
     formats.find((item) => item.id === format) || formats[0] || EXPORT_FORMATS[0];
 
   useEffect(() => {
-    if (!open || scope !== "selected" || !token) return undefined;
+    if (!open || !token || !ownerId) return undefined;
     let active = true;
-    chronicleApi
-      .getChronicles(token, { page, limit: 20 }, ownerId)
-      .then((data) => {
+    setLoadingEntries(true);
+    setLoadError("");
+    setSelectedIds([]);
+    fetchAllEntries(token, ownerId)
+      .then((allEntries) => {
         if (!active) return;
-        setEntries(data?.chronicles || []);
-        setTotalPages(Math.max(1, data?.totalPages || 1));
-        setEntryCount(data?.totalChronicles || 0);
+        setArchiveEntries(allEntries);
       })
       .catch((error) => {
         if (active) setLoadError(error?.message || "Could not load your entries.");
@@ -72,7 +103,11 @@ export default function ExportDialog({
     return () => {
       active = false;
     };
-  }, [open, scope, page, token, ownerId]);
+  }, [open, token, ownerId, loadKey]);
+
+  const totalPages = Math.max(1, Math.ceil(archiveEntries.length / PAGE_SIZE));
+  const entryCount = archiveEntries.length;
+  const entries = archiveEntries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -109,7 +144,16 @@ export default function ExportDialog({
       filters.to = to;
     }
     if (scope === "selected") filters.ids = selectedIds.join(",");
-    onExport(filters);
+    const selectedEntries = archiveEntries.filter((entry) => {
+      if (scope === "selected") return selectedIds.includes(String(entry._id));
+      if (scope === "year") return String(new Date(entry.date).getFullYear()) === year;
+      if (scope === "range") {
+        const entryDay = dayKey(entry.date);
+        return entryDay >= from && entryDay <= to;
+      }
+      return true;
+    });
+    onExport(filters, selectedEntries);
   };
 
   return (
@@ -144,7 +188,9 @@ export default function ExportDialog({
                     : `Export as ${selectedFormat.label}`}
                 </h2>
                 <p className="mt-2 text-sm leading-relaxed text-charcoal-muted">
-                  Choose a format and which journal entries to include.
+                  {format === "json"
+                    ? "Choose which journal entries to include. The structured backup downloads directly."
+                    : "Choose which entries to include. A browser print view will open; choose Save as PDF there."}
                 </p>
               </div>
               <button
@@ -213,7 +259,6 @@ export default function ExportDialog({
                       setScope(item.id);
                       setPage(1);
                       setLoadError("");
-                      setLoadingEntries(item.id === "selected");
                     }}
                     className="mt-1 accent-sage-deep"
                   />
@@ -230,6 +275,27 @@ export default function ExportDialog({
                 </label>
               ))}
             </fieldset>
+
+            <p className="mt-3 text-[11px] text-muted-gray">
+              {loadingEntries
+                ? "Loading and decrypting your entries in this browser…"
+                : `${entryCount.toLocaleString("en-US")} entries available for export`}
+            </p>
+            {loadError && (
+              <p role="alert" className="mt-2 text-xs text-danger">
+                {loadError}{" "}
+                <button
+                  type="button"
+                  className="underline"
+                  onClick={() => {
+                    setLoadingEntries(true);
+                    setLoadKey((value) => value + 1);
+                  }}
+                >
+                  Retry
+                </button>
+              </p>
+            )}
 
             {scope === "year" && (
               <label className="mt-4 block text-xs font-medium text-charcoal">
@@ -318,11 +384,13 @@ export default function ExportDialog({
               <button type="button" onClick={closeDialog} disabled={exporting} className="btn-ghost justify-center border border-hairline disabled:opacity-50">
                 Cancel
               </button>
-              <button type="submit" disabled={Boolean(validationError) || exporting || (scope === "selected" && loadingEntries)} className="btn-primary justify-center disabled:cursor-wait">
+              <button type="submit" disabled={Boolean(validationError) || exporting || loadingEntries || Boolean(loadError)} className="btn-primary justify-center disabled:cursor-wait">
                 <Download className="h-4 w-4" />
                 {exporting
                   ? `Preparing ${selectedFormat.label}…`
-                  : `Download ${selectedFormat.label}`}
+                  : format === "json"
+                    ? `Download ${selectedFormat.label}`
+                    : "Open print dialog"}
               </button>
             </div>
           </motion.form>

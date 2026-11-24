@@ -14,7 +14,8 @@ import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
 import { getAccountId } from "../lib/cryptoSession.js";
-import { exportFileName, exportNotice } from "../lib/exportFormats";
+import { exportNotice } from "../lib/exportFormats";
+import { exportEntriesInBrowser } from "../lib/clientExport.js";
 import { countWords, dayKey, greetingForNow } from "../lib/journal";
 
 const fetchAllEntries = async (token, ownerId) => {
@@ -200,24 +201,14 @@ export default function VaultPage() {
     setExportDialogOpen(true);
   };
 
-  const handleExportDownload = async (filters) => {
+  const handleExportDownload = (filters, selectedEntries) => {
     if (!token || exporting) return;
 
     setExporting(true);
 
     try {
       const format = filters.format || "pdf";
-      const blob = await chronicleApi.exportEntries(token, { ...filters, format });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      const date = new Date().toISOString().slice(0, 10);
-
-      link.href = url;
-      link.download = exportFileName(format, date);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      exportEntriesInBrowser(selectedEntries, format);
       setNotice(exportNotice(format));
       setExportDialogOpen(false);
     } catch (exportError) {

@@ -8,7 +8,7 @@ export const EXPORT_FORMATS = [
   {
     id: "pdf-print",
     label: "Print-friendly PDF",
-    description: "Plain text and images with page numbers",
+    description: "A simple layout for printing or saving as PDF",
     extension: "pdf",
   },
   {
@@ -29,4 +29,7 @@ export const exportFileName = (id, date) => {
   return `chronicles-${date}${suffix}.${format.extension}`;
 };
 
-export const exportNotice = (id) => `${getExportFormat(id).label} is ready.`;
+export const exportNotice = (id) =>
+  id === "pdf" || id === "pdf-print"
+    ? "Print view opened. Choose Save as PDF in the print dialog."
+    : `${getExportFormat(id).label} downloaded.`;

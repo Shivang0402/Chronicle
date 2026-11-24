@@ -26,7 +26,8 @@ import { useAuth } from "../hooks/useAuth";
 import { getAccountId } from "../lib/cryptoSession.js";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
-import { exportFileName, exportNotice } from "../lib/exportFormats";
+import { exportNotice } from "../lib/exportFormats";
+import { exportEntriesInBrowser } from "../lib/clientExport.js";
 import { countWords, dayKey, formatEntryDate } from "../lib/journal";
 
 const RANGE_OPTIONS = [
@@ -1068,24 +1069,14 @@ export default function InsightsPage() {
     setExportDialogOpen(true);
   };
 
-  const handleExportDownload = async (filters) => {
+  const handleExportDownload = (filters, selectedEntries) => {
     if (!token || exporting) return;
 
     setExporting(true);
 
     try {
       const format = filters.format || "pdf";
-      const blob = await chronicleApi.exportEntries(token, { ...filters, format });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      const today = new Date().toISOString().slice(0, 10);
-
-      link.href = url;
-      link.download = exportFileName(format, today);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      exportEntriesInBrowser(selectedEntries, format);
       setNotice(exportNotice(format));
       setExportDialogOpen(false);
     } catch (exportError) {

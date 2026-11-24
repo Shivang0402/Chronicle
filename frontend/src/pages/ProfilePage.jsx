@@ -30,27 +30,14 @@ import useDocumentTitle from "../hooks/useDocumentTitle";
 import { authApi, chronicleApi } from "../lib/api";
 import { getAccountId } from "../lib/cryptoSession.js";
 import { clearDrafts, getDraftOwner } from "../lib/drafts";
-import { exportFileName, exportNotice } from "../lib/exportFormats";
+import { exportNotice } from "../lib/exportFormats";
+import { exportEntriesInBrowser } from "../lib/clientExport.js";
 import { formatEntryDate } from "../lib/journal";
 
 const EMPTY_PASSWORD_FORM = {
   currentPassword: "",
   newPassword: "",
   confirmPassword: "",
-};
-
-const todayStamp = () => new Date().toISOString().slice(0, 10);
-
-const triggerDownload = (blob, filename) => {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 
 function SectionHeading({ icon: Icon, title, description }) {
@@ -213,20 +200,14 @@ export default function ProfilePage() {
     setExportDialogOpen(true);
   };
 
-  const runExport = async (format, filters = {}) => {
+  const runExport = async (format, entries) => {
     if (!token || exporting) return false;
 
     setExportError("");
     setExporting(format);
 
     try {
-      const blob = await chronicleApi.exportEntries(token, {
-        ...filters,
-        format,
-      });
-      const date = todayStamp();
-
-      triggerDownload(blob, exportFileName(format, date));
+      exportEntriesInBrowser(entries, format);
       setNotice(exportNotice(format));
       return true;
     } catch (error) {
@@ -237,8 +218,8 @@ export default function ProfilePage() {
     }
   };
 
-  const handleDialogExport = async (filters) => {
-    const success = await runExport(filters.format || exportFormat, filters);
+  const handleDialogExport = async (filters, entries) => {
+    const success = await runExport(filters.format || exportFormat, entries);
 
     if (success) {
       setExportDialogOpen(false);
