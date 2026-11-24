@@ -14,7 +14,7 @@ import {
   Smile,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
@@ -31,6 +31,7 @@ import { getAccountId } from "../lib/cryptoSession.js";
 import { exportFileName, exportNotice } from "../lib/exportFormats";
 import {
   countWords,
+  dayKey,
   formatEntryDate,
   formatTime,
   readingTime,
@@ -38,6 +39,35 @@ import {
 import { stripMarkdown } from "../lib/markdown";
 
 const PAGE_SIZE = 8;
+
+const fetchAllJournalEntries = async (token, ownerId) => {
+  const firstPage = await chronicleApi.getChronicles(
+    token,
+    { page: 1, limit: 20, sort: "oldest" },
+    ownerId,
+  );
+  const totalPages = Math.max(Number(firstPage?.totalPages) || 1, 1);
+  const entries = [...(firstPage?.chronicles || [])];
+
+  for (let startPage = 2; startPage <= totalPages; startPage += 4) {
+    const pageNumbers = Array.from(
+      { length: Math.min(4, totalPages - startPage + 1) },
+      (_, index) => startPage + index,
+    );
+    const pages = await Promise.all(
+      pageNumbers.map((page) =>
+        chronicleApi.getChronicles(
+          token,
+          { page, limit: 20, sort: "oldest" },
+          ownerId,
+        ),
+      ),
+    );
+    pages.forEach((result) => entries.push(...(result?.chronicles || [])));
+  }
+
+  return entries;
+};
 
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest first" },
@@ -161,12 +191,11 @@ function ArchiveEntryCard({ entry, view, onOpen }) {
 
 export default function JournalPage() {
   const { user, token, logout } = useAuth();
+  const ownerId = getAccountId(user);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [entries, setEntries] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [archiveEntries, setArchiveEntries] = useState([]);
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
@@ -181,8 +210,6 @@ export default function JournalPage() {
   );
   const [sort, setSort] = useState("newest");
   const [view, setView] = useState("grid");
-  const [tags, setTags] = useState([]);
-  const [moods, setMoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState(
@@ -202,52 +229,22 @@ export default function JournalPage() {
     const timer = window.setTimeout(() => {
       setQuery(searchInput.trim());
       setPage(1);
-      setLoading(true);
     }, 300);
 
     return () => window.clearTimeout(timer);
   }, [searchInput]);
 
   useEffect(() => {
-    if (!token) return undefined;
+    if (!token || !ownerId) return undefined;
 
     let active = true;
+    setLoading(true);
+    setArchiveEntries([]);
 
-    Promise.all([chronicleApi.getTags(token), chronicleApi.getMoods(token)])
-      .then(([tagsData, moodsData]) => {
+    fetchAllJournalEntries(token, ownerId)
+      .then((allEntries) => {
         if (!active) return;
-        setTags(Array.isArray(tagsData) ? tagsData : []);
-        setMoods(Array.isArray(moodsData) ? moodsData : []);
-      })
-      .catch(() => {
-        // Collections are supplementary; the archive still works without them.
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [token, reloadKey]);
-
-  useEffect(() => {
-    if (!token) return undefined;
-
-    let active = true;
-
-    chronicleApi
-      .getChronicles(token, {
-        page,
-        limit: PAGE_SIZE,
-        sort,
-        ...(query ? { q: query } : {}),
-        ...(mood ? { mood } : {}),
-        ...(tag ? { tag } : {}),
-        ...(date ? { date } : {}),
-      }, getAccountId(user))
-      .then((data) => {
-        if (!active) return;
-        setEntries(data?.chronicles || []);
-        setTotal(data?.totalChronicles || 0);
-        setTotalPages(data?.totalPages || 0);
+        setArchiveEntries(allEntries);
         setError("");
       })
       .catch((loadError) => {
@@ -263,7 +260,7 @@ export default function JournalPage() {
     return () => {
       active = false;
     };
-  }, [token, user?.id, page, query, mood, tag, date, sort, reloadKey]);
+  }, [token, ownerId, reloadKey]);
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -321,6 +318,61 @@ export default function JournalPage() {
     );
   }, [tag, mood, date, location.pathname, location.search, navigate]);
 
+  const { entries, total, totalPages, tags, moods } = useMemo(() => {
+    const normalizedQuery = query.toLocaleLowerCase();
+    const tagCounts = new Map();
+    const moodCounts = new Map();
+
+    archiveEntries.forEach((entry) => {
+      const entryMood = typeof entry.mood === "string" ? entry.mood.trim() : "";
+      if (entryMood) moodCounts.set(entryMood, (moodCounts.get(entryMood) || 0) + 1);
+      (Array.isArray(entry.tags) ? entry.tags : []).forEach((rawTag) => {
+        const entryTag = typeof rawTag === "string" ? rawTag.trim() : "";
+        if (entryTag) tagCounts.set(entryTag, (tagCounts.get(entryTag) || 0) + 1);
+      });
+    });
+
+    const filtered = archiveEntries.filter((entry) => {
+      if (mood && entry.mood !== mood) return false;
+      if (tag && !(Array.isArray(entry.tags) && entry.tags.includes(tag))) return false;
+      if (date && dayKey(entry.date) !== date) return false;
+      if (!normalizedQuery) return true;
+
+      const searchable = [
+        entry.title,
+        entry.content,
+        entry.mood,
+        ...(Array.isArray(entry.tags) ? entry.tags : []),
+      ].filter(Boolean).join(" ").toLocaleLowerCase();
+      return searchable.includes(normalizedQuery);
+    });
+
+    filtered.sort((a, b) => {
+      const dateDifference = new Date(a.date).getTime() - new Date(b.date).getTime();
+      if (dateDifference) return sort === "oldest" ? dateDifference : -dateDifference;
+      const createdDifference = new Date(a.createdAt || a.date).getTime() - new Date(b.createdAt || b.date).getTime();
+      if (createdDifference) return sort === "oldest" ? createdDifference : -createdDifference;
+      return sort === "oldest"
+        ? String(a._id).localeCompare(String(b._id))
+        : String(b._id).localeCompare(String(a._id));
+    });
+
+    const resultTotal = filtered.length;
+    const resultTotalPages = Math.ceil(resultTotal / PAGE_SIZE);
+    const currentPage = Math.min(page, Math.max(resultTotalPages, 1));
+    return {
+      entries: filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+      total: resultTotal,
+      totalPages: resultTotalPages,
+      tags: [...tagCounts].map(([value, count]) => ({ tag: value, count })).sort((a, b) => b.count - a.count),
+      moods: [...moodCounts].map(([value, count]) => ({ mood: value, count })).sort((a, b) => b.count - a.count),
+    };
+  }, [archiveEntries, date, mood, page, query, sort, tag]);
+
+  useEffect(() => {
+    if (totalPages > 0 && page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
   const hasFilters = Boolean(query || mood || tag || date);
   const groups = groupEntries(entries);
   const pageNumbers = getPageNumbers(page, totalPages);
@@ -348,13 +400,11 @@ export default function JournalPage() {
     setTag("");
     setDate("");
     setPage(1);
-    setLoading(true);
   };
 
   const changeFilter = (setter) => (value) => {
     setter(value);
     setPage(1);
-    setLoading(true);
   };
 
   const openEditor = () => {
@@ -435,12 +485,10 @@ export default function JournalPage() {
           onSelectTag={(nextTag) => {
             setTag(nextTag);
             setPage(1);
-            setLoading(true);
           }}
           onClearTag={() => {
             setTag("");
             setPage(1);
-            setLoading(true);
           }}
           onNewEntry={openEditor}
           onExport={handleExport}
@@ -725,7 +773,6 @@ export default function JournalPage() {
                       disabled={page <= 1}
                       onClick={() => {
                         setPage((value) => Math.max(1, value - 1));
-                        setLoading(true);
                       }}
                       className="grid h-8 w-8 place-items-center rounded-full border border-hairline bg-paper text-charcoal-muted transition-colors hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label="Previous page"
@@ -743,7 +790,6 @@ export default function JournalPage() {
                           type="button"
                           onClick={() => {
                             setPage(number);
-                            setLoading(true);
                           }}
                           className={`grid h-8 min-w-8 place-items-center rounded-full px-2 text-[11px] transition-colors ${
                             number === page
@@ -762,7 +808,6 @@ export default function JournalPage() {
                       disabled={page >= totalPages}
                       onClick={() => {
                         setPage((value) => Math.min(totalPages, value + 1));
-                        setLoading(true);
                       }}
                       className="grid h-8 w-8 place-items-center rounded-full border border-hairline bg-paper text-charcoal-muted transition-colors hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label="Next page"
