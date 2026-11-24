@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DailyDesk from "../components/dashboard/DailyDesk";
 import DailyPrompt from "../components/dashboard/DailyPrompt";
@@ -15,43 +15,104 @@ import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
 import { getAccountId } from "../lib/cryptoSession.js";
 import { exportFileName, exportNotice } from "../lib/exportFormats";
-import { greetingForNow } from "../lib/journal";
+import { countWords, dayKey, greetingForNow } from "../lib/journal";
 
-const emptyStats = {
-  totalChronicles: 0,
-  totalWords: 0,
-  averageWords: 0,
-  entriesThisMonth: 0,
-  entriesThisYear: 0,
-  mostCommonMood: "",
-  currentStreak: 0,
-  longestStreak: 0,
-  activity: [],
-  moodBreakdown: [],
-  trend: [],
+const fetchAllEntries = async (token, ownerId) => {
+  const firstPage = await chronicleApi.getChronicles(
+    token,
+    { page: 1, limit: 20, sort: "oldest" },
+    ownerId,
+  );
+  const totalPages = Math.max(Number(firstPage?.totalPages) || 1, 1);
+  const entries = [...(firstPage?.chronicles || [])];
+
+  for (let startPage = 2; startPage <= totalPages; startPage += 4) {
+    const pageNumbers = Array.from(
+      { length: Math.min(4, totalPages - startPage + 1) },
+      (_, index) => startPage + index,
+    );
+    const pages = await Promise.all(
+      pageNumbers.map((page) =>
+        chronicleApi.getChronicles(
+          token,
+          { page, limit: 20, sort: "oldest" },
+          ownerId,
+        ),
+      ),
+    );
+    pages.forEach((result) => entries.push(...(result?.chronicles || [])));
+  }
+
+  return entries;
 };
 
-const fetchDashboard = async (token, activeTag, ownerId) => {
-  const [statsData, entriesData, tagsData] = await Promise.all([
-    chronicleApi.getStats(token, { range: "all" }),
-    chronicleApi.getChronicles(token, {
-      limit: 20,
-      ...(activeTag ? { tag: activeTag } : {}),
-    }, ownerId),
-    chronicleApi.getTags(token),
-  ]);
+const buildDashboardData = (archiveEntries, activeTag) => {
+  const newestFirst = [...archiveEntries].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+  const tagCounts = new Map();
+  const moodCounts = new Map();
+  const activityByDay = new Map();
 
-  return { statsData, entriesData, tagsData };
+  for (const entry of archiveEntries) {
+    const mood = typeof entry.mood === "string" ? entry.mood.trim() : "";
+    if (mood) moodCounts.set(mood, (moodCounts.get(mood) || 0) + 1);
+    const day = dayKey(entry.date);
+    const activity = activityByDay.get(day) || { date: day, entries: 0, words: 0 };
+    activity.entries += 1;
+    activity.words += countWords(entry.content || "");
+    activityByDay.set(day, activity);
+
+    for (const rawTag of Array.isArray(entry.tags) ? entry.tags : []) {
+      const tag = typeof rawTag === "string" ? rawTag.trim() : "";
+      if (tag) tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+    }
+  }
+
+  const dateKeys = [...activityByDay.keys()].sort();
+  const lastDate = dateKeys.at(-1);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  let currentStreak = 0;
+  if (lastDate === dayKey(new Date()) || lastDate === dayKey(yesterday)) {
+    currentStreak = 1;
+    for (let index = dateKeys.length - 1; index > 0; index -= 1) {
+      const current = new Date(`${dateKeys[index]}T00:00:00`);
+      const previous = new Date(`${dateKeys[index - 1]}T00:00:00`);
+      if (Math.round((current - previous) / 86400000) !== 1) break;
+      currentStreak += 1;
+    }
+  }
+
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const filteredEntries = activeTag
+    ? newestFirst.filter((entry) =>
+        Array.isArray(entry.tags) && entry.tags.some((tag) => String(tag).trim() === activeTag),
+      )
+    : newestFirst;
+
+  return {
+    stats: {
+      currentStreak,
+      entriesThisMonth: archiveEntries.filter((entry) => new Date(entry.date) >= monthStart).length,
+      mostCommonMood: [...moodCounts].sort((a, b) => b[1] - a[1])[0]?.[0] || "",
+      activity: [...activityByDay.values()].sort((a, b) => a.date.localeCompare(b.date)),
+    },
+    tags: [...tagCounts]
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count),
+    entries: filteredEntries.slice(0, 20),
+    total: filteredEntries.length,
+  };
 };
 
 export default function VaultPage() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [stats, setStats] = useState(emptyStats);
-  const [entries, setEntries] = useState([]);
-  const [entriesTotal, setEntriesTotal] = useState(0);
-  const [tags, setTags] = useState([]);
+  const ownerId = getAccountId(user);
+  const [archiveEntries, setArchiveEntries] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
   const [entriesLoading, setEntriesLoading] = useState(true);
   const [error, setError] = useState("");
@@ -67,18 +128,19 @@ export default function VaultPage() {
   useDocumentTitle("Dashboard");
 
   useEffect(() => {
-    if (!token) return undefined;
+    if (!token || !ownerId) return undefined;
 
     let active = true;
+    setStatsLoading(true);
+    setEntriesLoading(true);
+    setArchiveEntries([]);
+    setError("");
 
-    fetchDashboard(token, activeTag, getAccountId(user))
-      .then(({ statsData, entriesData, tagsData }) => {
+    fetchAllEntries(token, ownerId)
+      .then((allEntries) => {
         if (!active) return;
 
-        setStats({ ...emptyStats, ...(statsData || {}) });
-        setEntries(entriesData?.chronicles || []);
-        setEntriesTotal(entriesData?.totalChronicles || 0);
-        setTags(Array.isArray(tagsData) ? tagsData : []);
+        setArchiveEntries(allEntries);
         setError("");
       })
       .catch((loadError) => {
@@ -97,7 +159,7 @@ export default function VaultPage() {
     return () => {
       active = false;
     };
-  }, [token, user?.id, activeTag, reloadKey]);
+  }, [token, ownerId, reloadKey]);
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -105,6 +167,11 @@ export default function VaultPage() {
     const timeout = window.setTimeout(() => setNotice(""), 4000);
     return () => window.clearTimeout(timeout);
   }, [notice]);
+
+  const { stats, tags, entries, total: entriesTotal } = useMemo(
+    () => buildDashboardData(archiveEntries, activeTag),
+    [archiveEntries, activeTag],
+  );
 
   const firstName = user?.name?.split(" ")[0] || "wanderer";
   const greeting = greetingForNow();
@@ -114,7 +181,6 @@ export default function VaultPage() {
   };
 
   const handleSelectTag = (tag) => {
-    setEntriesLoading(true);
     setActiveTag(tag);
   };
 
