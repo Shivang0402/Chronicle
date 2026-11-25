@@ -20,6 +20,7 @@ import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
 import { getAccountId } from "../lib/cryptoSession.js";
+import { getEncryptedImageAssetIds } from "../lib/imageCrypto.js";
 import { exportNotice } from "../lib/exportFormats";
 import { exportEntriesInBrowser } from "../lib/clientExport.js";
 import {
@@ -183,9 +184,12 @@ export default function DraftsPage() {
     setPendingDiscard(draft);
   };
 
-  const confirmDiscard = () => {
+  const confirmDiscard = async () => {
     if (!pendingDiscard) return;
 
+    await Promise.all(getEncryptedImageAssetIds(pendingDiscard.content).map((assetId) =>
+      chronicleApi.discardPendingEncryptedImage(assetId, token).catch(() => null),
+    ));
     clearDraft(draftOwner, pendingDiscard.entryId);
     setDrafts((current) =>
       current.filter((item) => item.key !== pendingDiscard.key),
@@ -304,8 +308,8 @@ export default function DraftsPage() {
                 </span>
                 <p>
                   Drafts are saved in this browser until you preserve them in
-                  your journal or discard them. They are not included in your
-                  archive yet.
+                  your journal or discard them. Unattached encrypted images
+                  that remain unused for 30 days are automatically removed.
                 </p>
               </Reveal>
 

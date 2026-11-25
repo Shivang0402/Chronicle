@@ -24,7 +24,7 @@ import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
 import { getAccountId, getEncryptionKey } from "../lib/cryptoSession.js";
-import { createEncryptedImageReference, decryptImageReference, encryptImageFile } from "../lib/imageCrypto.js";
+import { createEncryptedImageReference, decryptImageReference, encryptImageFile, getEncryptedImageAssetIds } from "../lib/imageCrypto.js";
 import {
   clearDraft,
   getDraftOwner,
@@ -88,6 +88,7 @@ export default function EditorPage() {
 
   const draftSnapshotRef = useRef(null);
   const dirtyRef = useRef(Boolean(initialDraft));
+  const uploadedImageIdsRef = useRef(new Set());
 
   useEffect(() => {
     if (isEditing || !token) return undefined;
@@ -257,6 +258,7 @@ export default function EditorPage() {
         if (masterKey) {
           const encrypted = await encryptImageFile(file, masterKey, ownerId);
           const uploaded = await chronicleApi.uploadEncryptedImage(encrypted.ciphertext, token);
+          uploadedImageIdsRef.current.add(uploaded.assetId);
           return createEncryptedImageReference({ ...encrypted, assetId: uploaded.assetId });
         }
         const data = await chronicleApi.uploadImage(file, token);
@@ -273,7 +275,10 @@ export default function EditorPage() {
     setDiscardDialogOpen(true);
   };
 
-  const confirmDiscardDraft = () => {
+  const confirmDiscardDraft = async () => {
+    await Promise.all([...new Set([...uploadedImageIdsRef.current, ...getEncryptedImageAssetIds(content)])]
+      .map((assetId) => chronicleApi.discardPendingEncryptedImage(assetId, token).catch(() => null)));
+    uploadedImageIdsRef.current.clear();
     clearDraft(draftOwner, id || null);
     dirtyRef.current = false;
     setDirty(false);
@@ -365,13 +370,17 @@ export default function EditorPage() {
     navigate("/journal");
   };
 
-  const handleSaveDraftAndLeave = () => {
-    void writeDraft(
+  const handleSaveDraftAndLeave = async () => {
+    const stored = await writeDraft(
       draftOwner,
       id || null,
       draftSnapshotRef.current || { title, content, mood, tags },
       getAccountId(user),
     );
+    if (!stored) {
+      setError("Could not save this draft in the browser. Check available storage and try again.");
+      return;
+    }
     dirtyRef.current = false;
     setDirty(false);
     setLeaveDialogOpen(false);
@@ -382,7 +391,15 @@ export default function EditorPage() {
     });
   };
 
-  const handleAbandonWriting = () => {
+  const handleAbandonWriting = async () => {
+    const pendingIds = new Set([
+      ...uploadedImageIdsRef.current,
+      ...getEncryptedImageAssetIds(content),
+    ]);
+    await Promise.all([...pendingIds].map((assetId) =>
+      chronicleApi.discardPendingEncryptedImage(assetId, token).catch(() => null),
+    ));
+    uploadedImageIdsRef.current.clear();
     clearDraft(draftOwner, id || null);
     dirtyRef.current = false;
     setDirty(false);
@@ -436,7 +453,21 @@ export default function EditorPage() {
           entry?.date,
           Boolean(entry?.encrypted),
         );
-        setEntry(data?.chronicle || entry);
+        const savedEntry = data?.chronicle || entry;
+        if (getEncryptionKey(getAccountId(user)) || entry?.encrypted) {
+          try {
+            await chronicleApi.syncEncryptedImageAssets(
+              id,
+              getEncryptedImageAssetIds(trimmed),
+              [...uploadedImageIdsRef.current],
+              token,
+            );
+            uploadedImageIdsRef.current.clear();
+          } catch {
+            setError("Entry saved, but image cleanup could not finish. Save again to retry.");
+          }
+        }
+        setEntry(savedEntry);
         clearDraft(draftOwner, id);
         dirtyRef.current = false;
         setDirty(false);
@@ -444,7 +475,21 @@ export default function EditorPage() {
         setDraftRestoredAt(null);
         setDraftSavedAt(null);
       } else {
-        await chronicleApi.createEntry(payload, token, getAccountId(user));
+        const data = await chronicleApi.createEntry(payload, token, getAccountId(user));
+        const savedEntry = data?.chronicle;
+        if (savedEntry?._id && (getEncryptionKey(getAccountId(user)) || uploadedImageIdsRef.current.size)) {
+          try {
+            await chronicleApi.syncEncryptedImageAssets(
+              String(savedEntry._id),
+              getEncryptedImageAssetIds(trimmed),
+              [...uploadedImageIdsRef.current],
+              token,
+            );
+            uploadedImageIdsRef.current.clear();
+          } catch {
+            setError("Entry saved, but image cleanup could not finish. Save again to retry.");
+          }
+        }
         clearDraft(draftOwner, null);
         dirtyRef.current = false;
         setDirty(false);

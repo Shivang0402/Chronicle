@@ -3,6 +3,7 @@ const Chronicle = require("../models/chronicleModel");
 const User = require("../models/userModel");
 const { renderJournalHtml } = require("../templates/journalExport");
 const { renderPrintHtml } = require("../templates/printExport");
+const { detachEncryptedImagesFromEntry } = require("./uploadController");
 
 const MIN_CONTENT_LENGTH = 10;
 const MAX_CONTENT_LENGTH = 100000;
@@ -488,6 +489,7 @@ const deleteChronicleById = async (req, res) => {
     } else {
       if (chronicle.user.toString() === req.user.id) {
         await Chronicle.findByIdAndDelete(chronicleId);
+        await detachEncryptedImagesFromEntry(req.user.id, chronicleId);
         return res.status(200).json({
           message: "Chronicle deleted successfully",
         });

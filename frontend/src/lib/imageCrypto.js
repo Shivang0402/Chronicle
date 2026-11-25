@@ -111,6 +111,19 @@ export function parseEncryptedImageReference(reference) {
   }
 }
 
+export function getEncryptedImageAssetIds(content) {
+  const references =
+    String(content || "").match(/chronicle-e2ee:[A-Za-z0-9_-]+/g) || [];
+  return [
+    ...new Set(
+      references
+        .map(parseEncryptedImageReference)
+        .filter(Boolean)
+        .map((value) => value.assetId),
+    ),
+  ];
+}
+
 export async function decryptImageReference(
   reference,
   masterKey,

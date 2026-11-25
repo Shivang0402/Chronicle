@@ -296,6 +296,14 @@ export const chronicleApi = {
     if (!data?.assetId) throw new ApiError("Encrypted image upload returned an invalid reference.", 502, data);
     return { ...data, url: buildUrl(`/upload/encrypted/${data.assetId}`) };
   },
+  syncEncryptedImageAssets: (entryId, assetIds, uploadedAssetIds, token) =>
+    request("/upload/encrypted/sync", {
+      method: "POST",
+      body: { entryId, assetIds, uploadedAssetIds },
+      token,
+    }),
+  discardPendingEncryptedImage: (assetId, token) =>
+    request(`/upload/encrypted/pending/${assetId}`, { method: "DELETE", token }),
   exportEntries: async (token, params = {}) => {
     const response = await fetch(
       buildUrl(`/chronicle/export${buildQuery(params)}`),
