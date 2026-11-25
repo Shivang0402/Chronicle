@@ -43,22 +43,7 @@ export default function EntryComposer({
     ? entry.tags.join(", ")
     : "";
 
-  const [initialDraft] = useState(() => {
-    if (!open) return null;
-
-    const draft = readDraft(draftOwner, draftEntryId);
-
-    if (!draft) return null;
-
-    const draftTagsInput = draft.tags.join(", ");
-    const differs =
-      draft.title !== baselineTitle ||
-      draft.content !== baselineContent ||
-      draft.mood !== baselineMood ||
-      draftTagsInput !== baselineTagsInput;
-
-    return differs ? draft : null;
-  });
+  const [initialDraft, setInitialDraft] = useState(null);
 
   const [title, setTitle] = useState(initialDraft?.title ?? baselineTitle);
   const [content, setContent] = useState(
@@ -81,6 +66,27 @@ export default function EntryComposer({
 
   const draftSnapshotRef = useRef(null);
   const dirtyRef = useRef(Boolean(initialDraft));
+
+  useEffect(() => {
+    if (!open) return undefined;
+    let active = true;
+    readDraft(draftOwner, draftEntryId, getAccountId(user)).then((draft) => {
+      if (!active || !draft) return;
+      const differs = draft.title !== baselineTitle || draft.content !== baselineContent ||
+        draft.mood !== baselineMood || draft.tags.join(", ") !== baselineTagsInput;
+      if (!differs) return;
+      setInitialDraft(draft);
+      setTitle(draft.title);
+      setContent(draft.content);
+      setMood(draft.mood);
+      setTagsInput(draft.tags.join(", "));
+      setDraftRestoredAt(new Date(draft.updatedAt));
+      setDraftSavedAt(new Date(draft.updatedAt));
+      dirtyRef.current = true;
+      setDirty(true);
+    });
+    return () => { active = false; };
+  }, [baselineContent, baselineMood, baselineTagsInput, baselineTitle, draftEntryId, draftOwner, open, user]);
 
   const words = countWords(content);
   const canSave = content.trim().length >= 10 && !saving;
@@ -123,36 +129,36 @@ export default function EntryComposer({
 
     const handleBeforeUnload = () => {
       if (draftSnapshotRef.current) {
-        writeDraft(draftOwner, draftEntryId, draftSnapshotRef.current);
+        void writeDraft(draftOwner, draftEntryId, draftSnapshotRef.current, getAccountId(user));
       }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () =>
       window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [dirty, draftEntryId, draftOwner, open]);
+  }, [dirty, draftEntryId, draftOwner, open, user]);
 
   useEffect(
     () => () => {
       if (!dirtyRef.current || !draftSnapshotRef.current) return;
 
-      writeDraft(draftOwner, draftEntryId, draftSnapshotRef.current);
+      void writeDraft(draftOwner, draftEntryId, draftSnapshotRef.current, getAccountId(user));
     },
-    [draftEntryId, draftOwner],
+    [draftEntryId, draftOwner, user],
   );
 
   useEffect(() => {
     if (!open || !dirty) return undefined;
 
-    const timeout = window.setTimeout(() => {
+    const timeout = window.setTimeout(async () => {
       if (!dirtyRef.current) return;
 
-      const stored = writeDraft(draftOwner, draftEntryId, {
+      const stored = await writeDraft(draftOwner, draftEntryId, {
         title,
         content,
         mood,
         tags: tagsInput,
-      });
+      }, getAccountId(user));
 
       setDraftSavedAt(stored ? new Date(stored.updatedAt) : null);
     }, 700);
@@ -167,6 +173,7 @@ export default function EntryComposer({
     open,
     tagsInput,
     title,
+    user,
   ]);
 
   const markDirty = () => {
@@ -227,9 +234,7 @@ export default function EntryComposer({
     try {
       if (isEditing) {
         const data = await chronicleApi.updateEntry(
-          entry._id,
-          payload,
-          token,
+          entry._id, payload, token, getAccountId(user), entry.date, Boolean(entry.encrypted),
         );
         onUpdated?.(data?.chronicle);
         clearDraft(draftOwner, draftEntryId);

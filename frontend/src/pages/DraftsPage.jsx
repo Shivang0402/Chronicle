@@ -116,7 +116,7 @@ export default function DraftsPage() {
   const navigate = useNavigate();
   const draftOwner = getDraftOwner(user);
 
-  const [drafts, setDrafts] = useState(() => listDrafts(draftOwner));
+  const [drafts, setDrafts] = useState([]);
   const [tags, setTags] = useState([]);
   const [notice, setNotice] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -128,11 +128,19 @@ export default function DraftsPage() {
   useDocumentTitle("Drafts");
 
   useEffect(() => {
-    const refreshDrafts = () => setDrafts(listDrafts(draftOwner));
+    let active = true;
+    const refreshDrafts = async () => {
+      const next = await listDrafts(draftOwner, getAccountId(user));
+      if (active) setDrafts(next);
+    };
+    void refreshDrafts();
 
     window.addEventListener("storage", refreshDrafts);
-    return () => window.removeEventListener("storage", refreshDrafts);
-  }, [draftOwner]);
+    return () => {
+      active = false;
+      window.removeEventListener("storage", refreshDrafts);
+    };
+  }, [draftOwner, user]);
 
   useEffect(() => {
     if (!token) return undefined;

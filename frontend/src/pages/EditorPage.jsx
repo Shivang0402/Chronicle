@@ -56,9 +56,7 @@ export default function EditorPage() {
   const draftOwner = getDraftOwner(user);
   const prompt = isEditing ? "" : location.state?.prompt || "";
 
-  const [initialDraft] = useState(() =>
-    !isEditing && token ? readDraft(draftOwner, null) : null,
-  );
+  const [initialDraft, setInitialDraft] = useState(null);
 
   const [entry, setEntry] = useState(null);
   const [title, setTitle] = useState(initialDraft?.title || "");
@@ -90,6 +88,24 @@ export default function EditorPage() {
   const draftSnapshotRef = useRef(null);
   const dirtyRef = useRef(Boolean(initialDraft));
 
+  useEffect(() => {
+    if (isEditing || !token) return undefined;
+    let active = true;
+    readDraft(draftOwner, null, getAccountId(user)).then((draft) => {
+      if (!active || !draft) return;
+      setInitialDraft(draft);
+      setTitle(draft.title);
+      setContent(draft.content || (prompt ? `${prompt}\n\n` : ""));
+      setMood(draft.mood);
+      setTags(draft.tags);
+      setDraftRestoredAt(new Date(draft.updatedAt));
+      setDraftSavedAt(new Date(draft.updatedAt));
+      dirtyRef.current = true;
+      setDirty(true);
+    });
+    return () => { active = false; };
+  }, [draftOwner, isEditing, prompt, token, user]);
+
   useDocumentTitle(
     isEditing ? entry?.title || "Edit Entry" : "New Entry",
   );
@@ -101,7 +117,7 @@ export default function EditorPage() {
 
     chronicleApi
       .getEntry(id, token, getAccountId(user))
-      .then((data) => {
+      .then(async (data) => {
         if (!active) return;
 
         const next = data?.chronicle;
@@ -114,8 +130,7 @@ export default function EditorPage() {
         const baseContent = next.content || "";
         const baseMood = next.mood || "";
         const baseTags = Array.isArray(next.tags) ? next.tags : [];
-        const draft = next.encrypted ? null : readDraft(draftOwner, id);
-        if (next.encrypted) clearDraft(draftOwner, id);
+        const draft = await readDraft(draftOwner, id, getAccountId(user));
         const hasRestorableDraft =
           draft &&
           (draft.title !== baseTitle ||
@@ -165,8 +180,8 @@ export default function EditorPage() {
     if (!dirty) return undefined;
 
     const handleBeforeUnload = (event) => {
-      if (draftSnapshotRef.current && !entry?.encrypted) {
-        writeDraft(draftOwner, id || null, draftSnapshotRef.current);
+      if (draftSnapshotRef.current) {
+        void writeDraft(draftOwner, id || null, draftSnapshotRef.current, getAccountId(user));
       }
 
       event.preventDefault();
@@ -176,7 +191,7 @@ export default function EditorPage() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () =>
       window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [dirty, draftOwner, entry?.encrypted, id]);
+  }, [dirty, draftOwner, id, user]);
 
   useEffect(() => {
     draftSnapshotRef.current = { title, content, mood, tags };
@@ -188,31 +203,31 @@ export default function EditorPage() {
 
   useEffect(
     () => () => {
-      if (!dirtyRef.current || !draftSnapshotRef.current || entry?.encrypted) return;
+      if (!dirtyRef.current || !draftSnapshotRef.current) return;
 
-      writeDraft(draftOwner, id || null, draftSnapshotRef.current);
+      void writeDraft(draftOwner, id || null, draftSnapshotRef.current, getAccountId(user));
     },
-    [draftOwner, entry?.encrypted, id],
+    [draftOwner, id, user],
   );
 
   useEffect(() => {
-    if (!token || !dirty || entry?.encrypted) return undefined;
+    if (!token || !dirty) return undefined;
 
-    const timeout = window.setTimeout(() => {
+    const timeout = window.setTimeout(async () => {
       if (!dirtyRef.current) return;
 
-      const stored = writeDraft(draftOwner, id || null, {
+      const stored = await writeDraft(draftOwner, id || null, {
         title,
         content,
         mood,
         tags,
-      });
+      }, getAccountId(user));
 
       setDraftSavedAt(stored ? new Date(stored.updatedAt) : null);
     }, 700);
 
     return () => window.clearTimeout(timeout);
-  }, [content, dirty, draftOwner, entry?.encrypted, id, mood, tags, title, token]);
+  }, [content, dirty, draftOwner, id, mood, tags, title, token, user]);
 
   const words = countWords(content);
   const reading = readingTime(words);
@@ -342,21 +357,18 @@ export default function EditorPage() {
   };
 
   const handleSaveDraftAndLeave = () => {
-    if (!entry?.encrypted) {
-      writeDraft(
-        draftOwner,
-        id || null,
-        draftSnapshotRef.current || { title, content, mood, tags },
-      );
-    }
+    void writeDraft(
+      draftOwner,
+      id || null,
+      draftSnapshotRef.current || { title, content, mood, tags },
+      getAccountId(user),
+    );
     dirtyRef.current = false;
     setDirty(false);
     setLeaveDialogOpen(false);
     navigate("/journal", {
       state: {
-        notice: entry?.encrypted
-          ? "Unsaved changes discarded."
-          : "Draft saved. Continue whenever you're ready.",
+        notice: "Draft saved in this browser. Continue whenever you're ready.",
       },
     });
   };
@@ -926,7 +938,7 @@ export default function EditorPage() {
         <LeaveDraftDialog
           open={leaveDialogOpen}
           isEditing={isEditing}
-          canSaveDraft={!entry?.encrypted}
+          canSaveDraft
           onClose={closeLeaveDialog}
           onSaveDraft={handleSaveDraftAndLeave}
           onAbandon={handleAbandonWriting}

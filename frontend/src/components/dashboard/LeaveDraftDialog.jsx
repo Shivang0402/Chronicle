@@ -90,7 +90,7 @@ export default function LeaveDraftDialog({
                 className="relative mt-2 text-[12px] leading-relaxed text-charcoal-muted"
               >
                 {!canSaveDraft
-                  ? "Unsaved changes for encrypted entries are not stored as browser drafts. Leaving will discard them."
+                  ? "Your changes could not be saved as a browser draft. Leaving will discard them."
                   : isEditing
                   ? "Your unsaved changes will be saved as a draft, so you can pick them up whenever you return."
                   : "Your writing will be saved as a draft, so you can return whenever you are ready."}
