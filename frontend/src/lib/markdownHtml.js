@@ -47,7 +47,7 @@ export const safeHref = (value) => {
 export const safeImageSrc = (value) => {
   const src = String(value || "").trim();
 
-  return /^https?:/i.test(src) ? src : "";
+  return /^https?:/i.test(src) || /^chronicle-e2ee:[A-Za-z0-9_-]+$/i.test(src) ? src : "";
 };
 
 const renderInline = (value) =>
@@ -170,7 +170,7 @@ const serializeInline = (node) => {
   }
 
   if (tag === "IMG") {
-    const src = safeImageSrc(node.getAttribute("src"));
+    const src = safeImageSrc(node.getAttribute("data-e2ee-ref") || node.getAttribute("src"));
 
     if (!src) return "";
 

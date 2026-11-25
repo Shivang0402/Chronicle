@@ -23,7 +23,8 @@ import ThemeToggle from "../components/ui/ThemeToggle";
 import { useAuth } from "../hooks/useAuth";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { chronicleApi } from "../lib/api";
-import { getAccountId } from "../lib/cryptoSession.js";
+import { getAccountId, getEncryptionKey } from "../lib/cryptoSession.js";
+import { createEncryptedImageReference, decryptImageReference, encryptImageFile } from "../lib/imageCrypto.js";
 import {
   clearDraft,
   getDraftOwner,
@@ -250,6 +251,14 @@ export default function EditorPage() {
       if (!token) return null;
 
       try {
+        const ownerId = getAccountId(user);
+        const masterKey = getEncryptionKey(ownerId);
+        if (entry?.encrypted && !masterKey) throw new Error("Unlock encryption before adding an image.");
+        if (masterKey) {
+          const encrypted = await encryptImageFile(file, masterKey, ownerId);
+          const uploaded = await chronicleApi.uploadEncryptedImage(encrypted.ciphertext, token);
+          return createEncryptedImageReference({ ...encrypted, assetId: uploaded.assetId });
+        }
         const data = await chronicleApi.uploadImage(file, token);
         return data?.url || null;
       } catch (uploadError) {
@@ -257,7 +266,7 @@ export default function EditorPage() {
         return null;
       }
     },
-    [token],
+    [entry?.encrypted, token, user],
   );
 
   const handleDiscardDraft = () => {
@@ -867,6 +876,11 @@ export default function EditorPage() {
                   markDirty();
                 }}
                 onUploadImage={handleImageUpload}
+                onResolveImage={async (reference) => {
+                  const masterKey = getEncryptionKey(getAccountId(user));
+                  if (!masterKey) throw new Error("Unlock encryption to view this image.");
+                  return decryptImageReference(reference, masterKey, getAccountId(user), token);
+                }}
                 placeholder="Let the thought unfold, exactly as it came to you..."
                 spellCheck
                 editorClassName="ruled-paper -mx-6 mt-4 min-h-[468px] w-[calc(100%_+_3rem)] px-6 font-reading font-light text-charcoal caret-sage sm:-mx-10 sm:w-[calc(100%_+_5rem)] sm:px-10"

@@ -207,7 +207,7 @@ export default function EncryptionGate({ children }) {
               <p className="mb-2 flex items-center gap-2 font-medium text-charcoal"><AlertCircle className="h-4 w-4 text-sage-deep" />Before you enable encryption</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li>Entry title, text, mood, tags, and word count will be encrypted in your browser. Entry dates remain visible.</li>
-                <li>Existing entries are not migrated. Uploaded images are not encrypted.</li>
+                <li>Existing entries and previously uploaded images are not migrated. New images in encrypted entries are encrypted before upload.</li>
                 <li>Server search, insights, and exports do not yet process encrypted entries.</li>
                 <li>If you lose both your passphrase and Recovery Key, encrypted entries cannot be recovered.</li>
               </ul>

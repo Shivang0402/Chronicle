@@ -114,6 +114,7 @@ export default function RichTextEditor({
   editorClassName = "",
   ariaLabel = "Entry content",
   onUploadImage,
+  onResolveImage,
 }) {
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -126,8 +127,40 @@ export default function RichTextEditor({
   const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
-    latestRef.current = { value, onChange };
-  }, [onChange, value]);
+    latestRef.current = { value, onChange, onResolveImage };
+  }, [onChange, onResolveImage, value]);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor || !onResolveImage) return undefined;
+    const resolvePending = async () => {
+      const images = [...editor.querySelectorAll('img[src^="chronicle-e2ee:"]')];
+      await Promise.all(images.map(async (image) => {
+        const reference = image.dataset.e2eeRef || image.getAttribute("src");
+        if (image.dataset.resolving || !reference) return;
+        image.dataset.e2eeRef = reference;
+        image.dataset.resolving = "true";
+        try {
+          const objectUrl = await onResolveImage(reference);
+          if (!image.isConnected) {
+            URL.revokeObjectURL(objectUrl);
+            return;
+          }
+          image.dataset.objectUrl = objectUrl;
+          image.src = objectUrl;
+        } catch {
+          image.alt = image.alt || "Encrypted image unavailable";
+        } finally {
+          delete image.dataset.resolving;
+        }
+      }));
+    };
+    void resolvePending();
+  }, [onResolveImage, value]);
+
+  useEffect(() => () => {
+    editorRef.current?.querySelectorAll("img[data-object-url]").forEach((image) => URL.revokeObjectURL(image.dataset.objectUrl));
+  }, []);
 
   useLayoutEffect(() => {
     const editor = editorRef.current;
@@ -291,8 +324,24 @@ export default function RichTextEditor({
       document.execCommand(
         "insertHTML",
         false,
-        `<img src="${escapeHtml(url)}" alt="${escapeHtml(file.name)}">`,
+        `<img src="${escapeHtml(url)}"${url.startsWith("chronicle-e2ee:") ? ` data-e2ee-ref="${escapeHtml(url)}"` : ""} alt="${escapeHtml(file.name)}">`,
       );
+
+      if (url.startsWith("chronicle-e2ee:") && latestRef.current.onResolveImage) {
+        const image = [...editor.querySelectorAll("img[data-e2ee-ref]")].find((item) => item.dataset.e2eeRef === url);
+        if (image) {
+          image.dataset.resolving = "true";
+          try {
+            const objectUrl = await latestRef.current.onResolveImage(url);
+            if (image.isConnected) {
+              image.dataset.objectUrl = objectUrl;
+              image.src = objectUrl;
+            } else URL.revokeObjectURL(objectUrl);
+          } finally {
+            delete image.dataset.resolving;
+          }
+        }
+      }
 
       savedRangeRef.current = null;
       window.requestAnimationFrame(emitChange);

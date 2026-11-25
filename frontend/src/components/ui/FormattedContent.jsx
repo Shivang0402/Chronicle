@@ -1,5 +1,25 @@
 import { Fragment } from "react";
+import { useEffect, useState } from "react";
 import { parseMarkdownBlocks } from "../../lib/markdown";
+
+function EncryptedImage({ reference, alt, resolveImage, className }) {
+  const [src, setSrc] = useState("");
+  useEffect(() => {
+    let active = true;
+    let objectUrl = "";
+    if (!resolveImage) return undefined;
+    resolveImage(reference).then((url) => {
+      objectUrl = url;
+      if (active) setSrc(url);
+      else URL.revokeObjectURL(url);
+    }).catch(() => {});
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [reference, resolveImage]);
+  return src ? <img src={src} alt={alt} loading="lazy" className={className} /> : <span className="my-4 block rounded-xl border border-hairline bg-warm-beige/60 p-4 text-xs text-charcoal-muted">{alt || "Encrypted image"} is loading or unavailable.</span>;
+}
 
 const INLINE_TOKEN =
   /(!\[[^\]\n]*\]\([^)\s]+\)|\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|`[^`\n]+`)/g;
@@ -18,7 +38,7 @@ const safeImageSrc = (value) => {
   return /^https?:/i.test(src) ? src : "";
 };
 
-const renderInline = (text, keyPrefix) =>
+const renderInline = (text, keyPrefix, resolveImage) =>
   String(text)
     .split(INLINE_TOKEN)
     .filter((part) => part !== "")
@@ -30,6 +50,10 @@ const renderInline = (text, keyPrefix) =>
         const src = safeImageSrc(image[2]);
 
         if (!src) return null;
+
+        if (src.startsWith("chronicle-e2ee:")) {
+          return <EncryptedImage key={key} reference={src} alt={image[1]} resolveImage={resolveImage} className="my-4 max-h-[28rem] w-full rounded-xl border border-hairline object-cover" />;
+        }
 
         return (
           <img
@@ -119,15 +143,15 @@ const HEADING_CLASSES = {
   6: "mb-2 font-sans text-[11px] font-medium uppercase tracking-wider text-muted-gray",
 };
 
-const renderLines = (lines, keyPrefix) =>
+const renderLines = (lines, keyPrefix, resolveImage) =>
   lines.map((line, index) => (
     <Fragment key={`${keyPrefix}-${index}`}>
       {index > 0 && <br />}
-      {renderInline(line, `${keyPrefix}-${index}`)}
+      {renderInline(line, `${keyPrefix}-${index}`, resolveImage)}
     </Fragment>
   ));
 
-export default function FormattedContent({ content, className = "" }) {
+export default function FormattedContent({ content, className = "", resolveImage }) {
   const blocks = parseMarkdownBlocks(content);
 
   return (
@@ -144,7 +168,7 @@ export default function FormattedContent({ content, className = "" }) {
 
           return (
             <Tag key={key} className={HEADING_CLASSES[block.level]}>
-              {renderInline(block.text, key)}
+              {renderInline(block.text, key, resolveImage)}
             </Tag>
           );
         }
@@ -155,7 +179,7 @@ export default function FormattedContent({ content, className = "" }) {
               key={key}
               className="my-5 border-l-2 border-sage/50 pl-4 italic text-charcoal-muted"
             >
-              {renderLines(block.lines, key)}
+              {renderLines(block.lines, key, resolveImage)}
             </blockquote>
           );
         }
@@ -165,7 +189,7 @@ export default function FormattedContent({ content, className = "" }) {
             <ul key={key} className="mb-4 list-disc space-y-1.5 pl-5">
               {block.items.map((item, itemIndex) => (
                 <li key={`${key}-${itemIndex}`}>
-                  {renderInline(item, `${key}-${itemIndex}`)}
+                  {renderInline(item, `${key}-${itemIndex}`, resolveImage)}
                 </li>
               ))}
             </ul>
@@ -177,7 +201,7 @@ export default function FormattedContent({ content, className = "" }) {
             <ol key={key} className="mb-4 list-decimal space-y-1.5 pl-5">
               {block.items.map((item, itemIndex) => (
                 <li key={`${key}-${itemIndex}`}>
-                  {renderInline(item, `${key}-${itemIndex}`)}
+                  {renderInline(item, `${key}-${itemIndex}`, resolveImage)}
                 </li>
               ))}
             </ol>
@@ -186,7 +210,7 @@ export default function FormattedContent({ content, className = "" }) {
 
         return (
           <p key={key} className="mb-4 last:mb-0">
-            {renderLines(block.lines, key)}
+            {renderLines(block.lines, key, resolveImage)}
           </p>
         );
       })}

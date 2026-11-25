@@ -280,6 +280,22 @@ export const chronicleApi = {
 
     return data;
   },
+  uploadEncryptedImage: async (ciphertext, token) => {
+    const body = new FormData();
+    body.append("image", ciphertext, "encrypted.bin");
+    const response = await fetch(buildUrl("/upload"), {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body,
+    });
+    let data = null;
+    try { data = await response.json(); } catch { data = null; }
+    if (!response.ok) {
+      throw new ApiError(data?.message || "Could not upload encrypted image.", response.status, data);
+    }
+    if (!data?.assetId) throw new ApiError("Encrypted image upload returned an invalid reference.", 502, data);
+    return { ...data, url: buildUrl(`/upload/encrypted/${data.assetId}`) };
+  },
   exportEntries: async (token, params = {}) => {
     const response = await fetch(
       buildUrl(`/chronicle/export${buildQuery(params)}`),

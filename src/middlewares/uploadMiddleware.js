@@ -1,11 +1,12 @@
 const multer = require("multer");
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// AES-GCM adds a 16-byte authentication tag to encrypted image uploads.
+const MAX_FILE_SIZE = 5 * 1024 * 1024 + 16;
 
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
+  if (file.mimetype.startsWith("image/") || file.mimetype === "application/octet-stream") {
     return cb(null, true);
   }
 

@@ -8,7 +8,10 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { getAccountId, getEncryptionKey } from "../../lib/cryptoSession.js";
+import { decryptImageReference } from "../../lib/imageCrypto.js";
 import {
   countWords,
   formatLongDate,
@@ -23,6 +26,13 @@ export default function EntryReader({
   onDelete,
   deleting = false,
 }) {
+  const { user, token } = useAuth();
+  const ownerId = getAccountId(user);
+  const resolveImage = useCallback((reference) => {
+    const masterKey = getEncryptionKey(ownerId);
+    if (!masterKey) return Promise.reject(new Error("Unlock encryption to view this image."));
+    return decryptImageReference(reference, masterKey, ownerId, token);
+  }, [ownerId, token]);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const words = entry ? countWords(entry.content) : 0;
 
@@ -104,6 +114,7 @@ export default function EntryReader({
 
               <FormattedContent
                 content={entry.content}
+                resolveImage={resolveImage}
                 className="mt-7 font-reading text-lg font-light leading-[1.85] text-charcoal"
               />
             </div>
