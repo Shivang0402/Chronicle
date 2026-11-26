@@ -1,6 +1,6 @@
 process.env.JWT = "test-secret";
 process.env.APP_URL = "http://localhost:4444";
-delete process.env.SMTP_HOST;
+delete process.env.RESEND_API_KEY;
 
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");

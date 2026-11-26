@@ -1,19 +1,9 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const { renderActionEmail } = require("../templates/emailTemplate");
 
-const port = Number(process.env.SMTP_PORT) || 587;
-const transport = nodemailer.createTransport(
-  process.env.SMTP_HOST
-    ? {
-        host: process.env.SMTP_HOST,
-        port,
-        secure: port === 465,
-        auth: process.env.SMTP_USER
-          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-          : undefined,
-      }
-    : { jsonTransport: true },
-);
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 const productionUrl = "https://chronicle-jet-ten.vercel.app";
 
@@ -70,17 +60,23 @@ const sendMail = async (user, token, path) => {
     note: action.note,
   });
 
-  await transport.sendMail({
-    from: process.env.SMTP_FROM || "Chronicle <no-reply@chronicle.local>",
-    to: user.email,
+  if (!resend) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("RESEND_API_KEY is required to send email in production.");
+    }
+    console.log(`${action.subject} link for ${user.email}: ${link}`);
+    return;
+  }
+
+  const { error } = await resend.emails.send({
+    from: process.env.RESEND_FROM || "Chronicle <onboarding@resend.dev>",
+    to: [user.email],
     subject: action.subject,
     text: `Hi ${user.name},\n\n${action.intro.charAt(0).toUpperCase()}${action.intro.slice(1)}\n\n${action.cta}: ${link}\n\n${action.note}\n\nIf you did not request this, ignore this email.`,
     html,
   });
 
-  if (!process.env.SMTP_HOST) {
-    console.log(`${action.subject} link for ${user.email}: ${link}`);
-  }
+  if (error) throw new Error(error.message);
 };
 
 module.exports = {
