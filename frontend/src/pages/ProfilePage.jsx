@@ -32,7 +32,7 @@ import { getAccountId } from "../lib/cryptoSession.js";
 import { clearDrafts, getDraftOwner } from "../lib/drafts";
 import { exportNotice } from "../lib/exportFormats";
 import { exportEntriesInBrowser } from "../lib/clientExport.js";
-import { formatEntryDate } from "../lib/journal";
+import { countWords, dayKey, formatEntryDate } from "../lib/journal";
 
 const EMPTY_PASSWORD_FORM = {
   currentPassword: "",
@@ -100,28 +100,92 @@ export default function ProfilePage() {
 
     let active = true;
 
-    chronicleApi
-      .getTags(token)
-      .then((data) => {
-        if (active) setTags(Array.isArray(data) ? data : []);
-      })
-      .catch(() => {
-        // Collections are supplementary to the profile page.
-      });
+    const loadArchiveSummary = async () => {
+      const firstPage = await chronicleApi.getChronicles(
+        token,
+        { page: 1, limit: 20, sort: "oldest" },
+        getAccountId(user),
+      );
+      const entries = [...(firstPage?.chronicles || [])];
+      const totalPages = Math.max(Number(firstPage?.totalPages) || 1, 1);
 
-    chronicleApi
-      .getStats(token)
-      .then((data) => {
-        if (active) setStats(data || null);
-      })
-      .catch(() => {
-        // Stats are supplementary to the profile page.
-      });
+      for (let startPage = 2; startPage <= totalPages; startPage += 4) {
+        const pages = Array.from(
+          { length: Math.min(4, totalPages - startPage + 1) },
+          (_, index) => startPage + index,
+        );
+        const results = await Promise.all(
+          pages.map((page) => chronicleApi.getChronicles(
+            token,
+            { page, limit: 20, sort: "oldest" },
+            getAccountId(user),
+          )),
+        );
+        results.forEach((result) => entries.push(...(result?.chronicles || [])));
+      }
+
+      const tagCounts = new Map();
+      const dateKeys = new Set();
+      let totalWords = 0;
+      for (const entry of entries) {
+        totalWords += countWords(entry.content || "");
+        dateKeys.add(dayKey(entry.date));
+        for (const rawTag of Array.isArray(entry.tags) ? entry.tags : []) {
+          const tag = typeof rawTag === "string" ? rawTag.trim() : "";
+          if (tag) tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+        }
+      }
+
+      const orderedDays = [...dateKeys].sort();
+      let longestStreak = 0;
+      let streak = 0;
+      let previousDay = null;
+      for (const key of orderedDays) {
+        const [year, month, day] = key.split("-").map(Number);
+        const currentDay = Date.UTC(year, month - 1, day);
+        streak = previousDay !== null && currentDay - previousDay === 86400000 ? streak + 1 : 1;
+        longestStreak = Math.max(longestStreak, streak);
+        previousDay = currentDay;
+      }
+      const today = dayKey(new Date());
+      const yesterdayDate = new Date();
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+      const lastDay = orderedDays.at(-1);
+      const currentStreak = lastDay === today || lastDay === dayKey(yesterdayDate)
+        ? orderedDays.slice().reverse().reduce((length, key, index, days) => {
+            if (index === 0) return 1;
+            const [year, month, day] = key.split("-").map(Number);
+            const [prevYear, prevMonth, prevDate] = days[index - 1].split("-").map(Number);
+            return length && Date.UTC(year, month - 1, day) - Date.UTC(prevYear, prevMonth - 1, prevDate) === 86400000
+              ? length + 1
+              : 0;
+          }, 0)
+        : 0;
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      if (active) {
+        setTags([...tagCounts]
+          .map(([tag, count]) => ({ tag, count }))
+          .sort((a, b) => b.count - a.count));
+        setStats({
+          totalChronicles: entries.length,
+          totalWords,
+          currentStreak,
+          longestStreak,
+          entriesThisMonth: entries.filter((entry) => new Date(entry.date) >= monthStart).length,
+        });
+      }
+    };
+
+    loadArchiveSummary().catch(() => {
+      // Profile metrics are supplementary to account and security settings.
+    });
 
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [token, user]);
 
   useEffect(() => {
     if (!notice) return undefined;
