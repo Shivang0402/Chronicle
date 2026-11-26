@@ -69,7 +69,10 @@ export default function EncryptionGate({ children }) {
     );
   }
 
-  const configured = Boolean(metadata?.configured && metadata?.metadata);
+  const configured = metadata?.configured === true;
+  const metadataUsable = Boolean(
+    metadata?.metadata?.passphraseWrap && metadata?.metadata?.recoveryWrap,
+  );
   const working = busy;
 
   const beginSetup = async (event) => {
@@ -114,6 +117,13 @@ export default function EncryptionGate({ children }) {
       setDraft(null);
       setUnlocked(true);
     } catch (failure) {
+      if (failure?.status === 409) {
+        setDraft(null);
+        setMetadata(undefined);
+        setReloadKey((value) => value + 1);
+        setError("Encryption is already set up for this account. Enter its passphrase to unlock this device.");
+        return;
+      }
       setError(failure?.message || "Could not save encryption settings.");
     } finally {
       setBusy(false);
@@ -185,6 +195,11 @@ export default function EncryptionGate({ children }) {
             <button type="button" className={`${buttonClass} w-full`} disabled={!savedAcknowledged || working} onClick={finishSetup}>
               {working ? <Loader2 className="h-4 w-4 animate-spin" /> : null}Save key and continue
             </button>
+          </div>
+        ) : configured && !metadataUsable ? (
+          <div role="alert" className="rounded-xl border border-danger/20 bg-danger/5 p-4 text-sm text-danger">
+            Encryption is configured for this account, but its settings could not be read. Chronicle will not create a new encryption key. Reload the settings and try again.
+            <button className="ml-2 underline" onClick={() => setReloadKey((value) => value + 1)}>Reload settings</button>
           </div>
         ) : configured ? (
           <form onSubmit={unlock} className="space-y-4">
