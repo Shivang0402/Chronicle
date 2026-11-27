@@ -27,8 +27,8 @@ const pdfBenefits = [
 
 export default function Preservation() {
   return (
-    <section id="export" className="overflow-hidden bg-warm-beige/40 py-20 md:py-28">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 sm:px-10 lg:grid-cols-12 lg:gap-16 lg:px-16">
+    <section id="export" className="overflow-hidden bg-warm-beige/40 py-14 sm:py-20 md:py-28">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-7 px-6 sm:gap-12 sm:px-10 lg:grid-cols-12 lg:gap-16 lg:px-16">
         <div className="lg:col-span-5">
           <Reveal variant="right" y={18} blur={false}>
             <span className="eyebrow mb-3 block">Keep what you write</span>
@@ -54,7 +54,7 @@ export default function Preservation() {
             </p>
           </Reveal>
           <Reveal variant="fade" delay={0.32} y={10} blur={false}>
-            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-charcoal/15 pt-5 text-[10px] uppercase tracking-wider text-muted-gray">
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-charcoal/15 pt-4 text-[9px] uppercase tracking-wider text-muted-gray sm:mt-7 sm:pt-5 sm:text-[10px]">
               <span className="flex items-center gap-1.5">
                 <Lock className="h-3.5 w-3.5 text-sage-deep" />
                 Private by design
@@ -73,7 +73,7 @@ export default function Preservation() {
 
             <RevealImage
               variant="clip-right"
-              className="relative z-10"
+              className="relative z-10 hidden sm:block"
               y={14}
               delay={0.18}
               amount={0.15}
@@ -124,18 +124,18 @@ export default function Preservation() {
               </article>
             </RevealImage>
 
-            <div className="relative grid gap-3 pl-2 sm:pl-0">
-              <p className="mb-0.5 text-[9px] font-medium uppercase tracking-[0.17em] text-sage-deep">
+            <div className="relative grid grid-cols-2 gap-2 pl-0 sm:grid-cols-1 sm:gap-3 sm:pl-0">
+              <p className="col-span-2 mb-0.5 text-[9px] font-medium uppercase tracking-[0.17em] text-sage-deep sm:col-span-1">
                 One journal, your way
               </p>
               {pdfBenefits.map(({ title, description, icon: Icon }, index) => (
-                <article key={title} className="flex items-start gap-3 border border-hairline bg-paper/90 p-3.5 shadow-paper sm:p-4">
-                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sage-subtle text-sage-deep">
-                    <Icon className="h-4 w-4" />
+                <article key={title} className="flex items-start gap-2 border border-hairline bg-paper/90 p-2.5 shadow-paper sm:gap-3 sm:p-4">
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sage-subtle text-sage-deep sm:h-8 sm:w-8">
+                    <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </span>
                   <div className="min-w-0">
-                    <h3 className="font-serif text-sm leading-snug text-charcoal sm:text-base">{title}</h3>
-                    <p className="mt-1 text-[10px] leading-relaxed text-charcoal-muted sm:text-xs">{description}</p>
+                    <h3 className="font-serif text-xs leading-snug text-charcoal sm:text-base">{title}</h3>
+                    <p className="mt-1 line-clamp-2 text-[9px] leading-relaxed text-charcoal-muted sm:line-clamp-none sm:text-xs">{description}</p>
                   </div>
                   <span className="ml-auto hidden font-serif text-[10px] italic text-sage sm:block">0{index + 1}</span>
                 </article>

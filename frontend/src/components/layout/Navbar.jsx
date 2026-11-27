@@ -7,10 +7,11 @@ import ThemeToggle from "../ui/ThemeToggle";
 import Wordmark from "../ui/Wordmark";
 
 const links = [
-  { label: "The Experience", href: "#experience" },
+  { label: "Encryption", href: "#privacy" },
+  { label: "Writing", href: "#editor" },
   { label: "Archive", href: "#features" },
   { label: "Insights", href: "#insights" },
-  { label: "Preservation", href: "#export" },
+  { label: "Export", href: "#export" },
 ];
 
 export default function Navbar() {

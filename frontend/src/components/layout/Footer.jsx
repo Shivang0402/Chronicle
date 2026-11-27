@@ -3,7 +3,8 @@ import Reveal from "../ui/Reveal";
 import Wordmark from "../ui/Wordmark";
 
 const exploreLinks = [
-  { label: "The Experience", href: "#experience" },
+  { label: "Encryption", href: "#privacy" },
+  { label: "Writing Canvas", href: "#editor" },
   { label: "Archive & Ledger", href: "#features" },
   { label: "Insights", href: "#insights" },
   { label: "Preservation", href: "#export" },

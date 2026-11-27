@@ -36,7 +36,7 @@ export default function ArchiveLedger() {
   );
 
   return (
-    <section id="features" className="scroll-mt-24 bg-warm-beige/40 py-16 md:py-20">
+    <section id="features" className="scroll-mt-24 bg-warm-beige/40 py-12 sm:py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="mb-8 grid gap-5 md:mb-9 md:grid-cols-12 md:items-end">
           <div className="md:col-span-8">
@@ -62,20 +62,20 @@ export default function ArchiveLedger() {
         <RevealGroup className="border-t border-charcoal/15" stagger={0.1} delay={0.2} amount={0.1}>
           {entries.map((entry) => (
             <RevealItem key={entry.title} variant="right" x={26} y={12}>
-              <article key={entry.title} className="group grid gap-3 border-b border-charcoal/10 py-4 sm:py-5 md:grid-cols-12 md:gap-8">
-                <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-gray md:col-span-3 md:block">
+              <article key={entry.title} className={`group grid gap-2 border-b border-charcoal/10 py-3 sm:py-5 md:grid-cols-12 md:gap-8 ${entry === entries[2] ? "hidden sm:grid" : ""}`}>
+                <div className="flex items-center gap-3 text-[9px] uppercase tracking-wider text-muted-gray sm:text-[10px] md:col-span-3 md:block">
                   <time>{entry.date}</time>
                   <span className="h-1 w-1 rounded-full bg-sage md:my-3 md:block" />
                   <span className="text-charcoal-muted">{entry.mood}</span>
                 </div>
                 <div className="md:col-span-7">
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="font-serif text-xl leading-snug text-charcoal transition-colors group-hover:text-sage-deep sm:text-2xl">
+                    <h3 className="font-serif text-lg leading-snug text-charcoal transition-colors group-hover:text-sage-deep sm:text-2xl">
                       {entry.title}
                     </h3>
                     <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-sage opacity-0 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
                   </div>
-                  <p className="mt-1.5 max-w-2xl text-sm font-light leading-relaxed text-charcoal-muted">
+                  <p className="mt-1 line-clamp-1 max-w-2xl text-xs font-light leading-relaxed text-charcoal-muted sm:mt-1.5 sm:line-clamp-none sm:text-sm">
                     {entry.excerpt}
                   </p>
                 </div>

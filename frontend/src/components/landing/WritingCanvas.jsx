@@ -4,9 +4,9 @@ import Reveal from "../ui/Reveal";
 
 export default function WritingCanvas() {
   return (
-    <section id="editor" className="scroll-mt-24 bg-warm-beige/35 py-24 md:py-32">
+    <section id="editor" className="scroll-mt-24 bg-warm-beige/35 py-14 sm:py-20 md:py-32">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
-        <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
+        <div className="mx-auto mb-7 max-w-3xl text-center sm:mb-10 md:mb-16">
           <Reveal variant="down" y={12} blur={false}>
             <span className="eyebrow mb-3 block">The Writing Canvas</span>
           </Reveal>
@@ -26,9 +26,9 @@ export default function WritingCanvas() {
         </div>
 
         <Reveal variant="up" y={16} amount={0.12} delay={0.28} duration={0.8}>
-          <article className="mx-auto max-w-4xl border border-hairline bg-paper px-7 py-9 shadow-paper-lg sm:px-14 sm:py-12 lg:px-20 lg:py-16">
+            <article className="mx-auto max-w-4xl border border-hairline bg-paper px-5 py-6 shadow-paper-lg sm:px-14 sm:py-12 lg:px-20 lg:py-16">
             <div className="mx-auto max-w-2xl">
-              <div className="mb-7 text-center text-[9px] font-medium uppercase tracking-[0.2em] text-muted-gray sm:mb-9">
+              <div className="mb-4 text-center text-[9px] font-medium uppercase tracking-[0.2em] text-muted-gray sm:mb-9">
                 A Friday morning, remembered
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3 border-y border-hairline py-4 text-[10px] uppercase tracking-wider text-muted-gray">
@@ -41,8 +41,8 @@ export default function WritingCanvas() {
                 </span>
               </div>
 
-              <div className="pb-2 pt-7 sm:pt-9">
-              <h3 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl">
+              <div className="pb-2 pt-5 sm:pt-9">
+              <h3 className="font-serif text-2xl leading-tight tracking-tight text-charcoal sm:text-5xl">
                 The quiet architecture of morning
               </h3>
               <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-gray">
@@ -53,7 +53,7 @@ export default function WritingCanvas() {
                 <span>#Home</span>
               </div>
 
-              <div className="mt-8 space-y-5 font-serif text-base font-light leading-[1.9] text-charcoal sm:mt-10 sm:space-y-6 sm:text-lg">
+              <div className="mt-5 space-y-4 font-serif text-sm font-light leading-[1.8] text-charcoal sm:mt-10 sm:space-y-6 sm:text-lg sm:leading-[1.9]">
                 <p>
                   I woke before the alarm today. For a few minutes I stayed
                   under the blanket and listened to the rain working its way
@@ -61,14 +61,14 @@ export default function WritingCanvas() {
                   kind that makes familiar things look as if they are waiting
                   to be noticed again.
                 </p>
-                <p>
+                <p className="hidden sm:block">
                   I put the kettle on and opened the kitchen window. The air
                   smelled like wet pavement and the jasmine on the balcony.
                   While the tea steeped, I finally watered the little basil
                   plant I keep forgetting about. It has put out two new leaves.
                   I felt oddly proud of both of us.
                 </p>
-                <p>
+                <p className="hidden sm:block">
                   The day filled up after that: messages, errands, the usual
                   small negotiations with the clock. But I kept returning to
                   that first quiet stretch. Maybe a slower morning does not
@@ -77,11 +77,11 @@ export default function WritingCanvas() {
                 </p>
               </div>
 
-              <blockquote className="mt-8 border-y border-hairline py-5 font-serif text-lg italic leading-relaxed text-charcoal-muted sm:mt-10 sm:py-6 sm:text-xl">
+              <blockquote className="mt-8 hidden border-y border-hairline py-5 font-serif text-lg italic leading-relaxed text-charcoal-muted sm:mt-10 sm:block sm:py-6 sm:text-xl">
                 “A slower beginning gives the day somewhere steady to start.”
               </blockquote>
 
-              <div className="mt-9 flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-5 text-[10px] uppercase tracking-wider text-muted-gray sm:mt-11">
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4 text-[9px] uppercase tracking-wider text-muted-gray sm:mt-11 sm:pt-5 sm:text-[10px]">
                 <span className="inline-flex items-center gap-2">
                   <Feather className="h-3 w-3 text-sage" />
                   Written slowly, kept here

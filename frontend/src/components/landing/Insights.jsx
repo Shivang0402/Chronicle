@@ -12,7 +12,7 @@ export default function Insights() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="insights" className="scroll-mt-24 py-20 md:py-28">
+    <section id="insights" className="scroll-mt-24 py-12 sm:py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
         <div className="grid gap-8 md:grid-cols-12 md:items-end">
           <div className="md:col-span-8">

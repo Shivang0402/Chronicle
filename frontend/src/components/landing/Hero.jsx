@@ -67,7 +67,7 @@ export default function Hero() {
               className="mb-6 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-mega text-sage-deep"
             >
               <span className="h-px w-8 origin-left animate-draw-line bg-sage" />
-              A journal for the life you’re living
+              A private, end-to-end encrypted journal
             </motion.span>
 
             <AnimatedText
@@ -114,7 +114,7 @@ export default function Hero() {
                 <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               <a
-                href="#experience"
+                href="#privacy"
                 className="group inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-charcoal-muted transition-colors hover:text-charcoal"
               >
                 <span>Explore Chronicle</span>
@@ -168,7 +168,7 @@ export default function Hero() {
             delay={0.95}
             y={24}
             duration={1.05}
-            className="relative z-10 flex items-center lg:col-span-5"
+            className="relative z-10 hidden items-center sm:flex lg:col-span-5"
           >
             <div className="relative w-full p-7 sm:p-9 lg:p-10">
               <div className="mb-7 flex items-center gap-2 text-[10px] uppercase tracking-wider text-sage-deep">
@@ -217,7 +217,7 @@ export default function Hero() {
           className="mt-12 hidden justify-center md:flex"
         >
           <a
-            href="#experience"
+            href="#editor"
             className="group flex flex-col items-center gap-2 text-[10px] uppercase tracking-wide2 text-muted-gray transition-colors hover:text-charcoal"
           >
             Scroll to wander
