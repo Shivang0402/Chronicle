@@ -32,9 +32,6 @@ export default function EncryptionGate({ children }) {
   const [busy, setBusy] = useState(false);
   const [unlocked, setUnlocked] = useState(() => Boolean(ownerId && getEncryptionKey(ownerId)));
   const [copied, setCopied] = useState(false);
-  const [skippedOwnerId, setSkippedOwnerId] = useState(() => {
-    try { return window.sessionStorage.getItem("chronicle.e2ee.skipOwnerId") || ""; } catch { return ""; }
-  });
 
   useEffect(() => {
     if (!token || !ownerId || getEncryptionKey(ownerId)) {
@@ -55,7 +52,6 @@ export default function EncryptionGate({ children }) {
   }, [token, ownerId, unlocked, reloadKey]);
 
   if (unlocked && ownerId && getEncryptionKey(ownerId)) return children;
-  if (skippedOwnerId === ownerId && metadata !== undefined && metadata?.configured !== true) return children;
 
   if (!ownerId) {
     return (
@@ -234,10 +230,6 @@ export default function EncryptionGate({ children }) {
                 {working ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}Create Recovery Key
               </button>
             </form>
-            <button type="button" onClick={() => {
-              try { window.sessionStorage.setItem("chronicle.e2ee.skipOwnerId", ownerId); } catch { /* Optional convenience only. */ }
-              setSkippedOwnerId(ownerId);
-            }} className="mt-4 w-full py-2 text-xs text-muted-gray underline underline-offset-4">Continue without encryption for now</button>
           </>
         )}
 

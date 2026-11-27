@@ -35,6 +35,23 @@ import {
 } from "../lib/journal";
 import { stripMarkdown } from "../lib/markdown";
 
+async function loadArchiveTags(token, ownerId) {
+  const firstPage = await chronicleApi.getChronicles(token, { page: 1, limit: 20, sort: "oldest" }, ownerId);
+  const entries = [...(firstPage?.chronicles || [])];
+  const totalPages = Math.max(Number(firstPage?.totalPages) || 1, 1);
+  for (let page = 2; page <= totalPages; page += 1) {
+    const result = await chronicleApi.getChronicles(token, { page, limit: 20, sort: "oldest" }, ownerId);
+    entries.push(...(result?.chronicles || []));
+  }
+  const counts = new Map();
+  entries.forEach((entry) => {
+    (Array.isArray(entry.tags) ? entry.tags : []).forEach((tag) => {
+      if (typeof tag === "string" && tag.trim()) counts.set(tag.trim(), (counts.get(tag.trim()) || 0) + 1);
+    });
+  });
+  return [...counts].map(([tag, count]) => ({ tag, count })).sort((a, b) => b.count - a.count);
+}
+
 function DraftCard({ draft, onResume, onDiscard }) {
   const words = countWords(draft.content);
 
@@ -148,8 +165,7 @@ export default function DraftsPage() {
 
     let active = true;
 
-    chronicleApi
-      .getTags(token)
+    loadArchiveTags(token, getAccountId(user))
       .then((data) => {
         if (active) setTags(Array.isArray(data) ? data : []);
       })

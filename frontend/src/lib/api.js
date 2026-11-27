@@ -153,13 +153,14 @@ export const e2eeApi = {
 };
 
 export const chronicleApi = {
-  getStats: (token, params) =>
-    request(`/chronicle/stats${buildQuery(params)}`, { token }),
   getChronicles: async (token, params, ownerId) =>
     decryptChronicle(await request(`/chronicle/getchronicles${buildQuery(params)}`, { token }), ownerId),
   getEntry: async (id, token, ownerId) => {
     const data = await request(`/chronicle/${id}`, { token });
     const entry = data?.chronicle;
+    if (entry && !entry.encrypted && !entry.encryptedPayload) {
+      throw new ApiError("This legacy unencrypted entry is read-only. New entries are protected with encryption.", 409);
+    }
     if (entry?.encrypted || entry?.encryptedPayload) {
       const masterKey = getEncryptionKey(ownerId);
       if (!masterKey) throw new ApiError("Unlock encryption to edit this entry.", 423);
@@ -177,13 +178,7 @@ export const chronicleApi = {
   },
   createEntry: async (payload, token, ownerId) => {
     const masterKey = getEncryptionKey(ownerId);
-    if (!masterKey) {
-      const metadata = await e2eeApi.getMetadata(token);
-      if (metadata.configured) {
-        throw new ApiError("Unlock encryption before creating an entry.", 423);
-      }
-      return request("/chronicle", { method: "POST", body: payload, token });
-    }
+    if (!masterKey) throw new ApiError("Unlock encryption before creating an entry.", 423);
 
     const entryId = Array.from(randomBytes(12), (byte) => byte.toString(16).padStart(2, "0")).join("");
     const date = payload.date ? new Date(payload.date).toISOString() : new Date().toISOString();
@@ -214,9 +209,7 @@ export const chronicleApi = {
     return { ...data, chronicle: { ...chronicle, ...decryptedPayload } };
   },
   updateEntry: async (id, payload, token, ownerId, entryDate, encrypted = false) => {
-    if (!encrypted) {
-      return request(`/chronicle/${id}`, { method: "PATCH", body: payload, token });
-    }
+    if (!encrypted) throw new ApiError("Legacy unencrypted entries are read-only.", 409);
 
     const masterKey = getEncryptionKey(ownerId);
     if (!masterKey) throw new ApiError("Unlock encryption to update this entry.", 423);
@@ -248,42 +241,10 @@ export const chronicleApi = {
   },
   deleteEntry: (id, token) =>
     request(`/chronicle/${id}`, { method: "DELETE", token }),
-  search: (query, token) =>
-    request(`/chronicle/search${buildQuery({ query })}`, { token }),
-  getMoods: (token) => request("/chronicle/moods", { token }),
-  getTags: (token) => request("/chronicle/tags", { token }),
-  uploadImage: async (file, token) => {
-    const body = new FormData();
-    body.append("image", file);
-
-    const response = await fetch(buildUrl("/upload"), {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body,
-    });
-
-    let data = null;
-
-    try {
-      data = await response.json();
-    } catch {
-      data = null;
-    }
-
-    if (!response.ok) {
-      throw new ApiError(
-        data?.message || "Could not upload this image.",
-        response.status,
-        data,
-      );
-    }
-
-    return data;
-  },
   uploadEncryptedImage: async (ciphertext, token) => {
     const body = new FormData();
     body.append("image", ciphertext, "encrypted.bin");
-    const response = await fetch(buildUrl("/upload"), {
+    const response = await fetch(buildUrl("/upload/encrypted"), {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body,
@@ -304,28 +265,4 @@ export const chronicleApi = {
     }),
   discardPendingEncryptedImage: (assetId, token) =>
     request(`/upload/encrypted/pending/${assetId}`, { method: "DELETE", token }),
-  exportEntries: async (token, params = {}) => {
-    const response = await fetch(
-      buildUrl(`/chronicle/export${buildQuery(params)}`),
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-
-    if (!response.ok) {
-      let data = null;
-
-      try {
-        data = await response.json();
-      } catch {
-        data = null;
-      }
-
-      throw new ApiError(
-        data?.message || "Could not export your chronicles.",
-        response.status,
-        data,
-      );
-    }
-
-    return response.blob();
-  },
 };

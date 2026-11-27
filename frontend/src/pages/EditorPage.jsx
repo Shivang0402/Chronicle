@@ -254,15 +254,11 @@ export default function EditorPage() {
       try {
         const ownerId = getAccountId(user);
         const masterKey = getEncryptionKey(ownerId);
-        if (entry?.encrypted && !masterKey) throw new Error("Unlock encryption before adding an image.");
-        if (masterKey) {
-          const encrypted = await encryptImageFile(file, masterKey, ownerId);
-          const uploaded = await chronicleApi.uploadEncryptedImage(encrypted.ciphertext, token);
-          uploadedImageIdsRef.current.add(uploaded.assetId);
-          return createEncryptedImageReference({ ...encrypted, assetId: uploaded.assetId });
-        }
-        const data = await chronicleApi.uploadImage(file, token);
-        return data?.url || null;
+        if (!masterKey) throw new Error("Unlock encryption before adding an image.");
+        const encrypted = await encryptImageFile(file, masterKey, ownerId);
+        const uploaded = await chronicleApi.uploadEncryptedImage(encrypted.ciphertext, token);
+        uploadedImageIdsRef.current.add(uploaded.assetId);
+        return createEncryptedImageReference({ ...encrypted, assetId: uploaded.assetId });
       } catch (uploadError) {
         setError(uploadError?.message || "Could not upload this image.");
         return null;

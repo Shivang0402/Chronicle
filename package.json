@@ -22,7 +22,6 @@
     "mongodb": "^7.4.0",
     "mongoose": "^9.7.3",
     "multer": "^2.5.0",
-    "puppeteer": "^25.16.0",
     "resend": "^6.40.1"
   },
   "devDependencies": {

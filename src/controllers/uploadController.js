@@ -5,51 +5,44 @@ const Chronicle = require("../models/chronicleModel");
 
 const FOLDER = "chronicle/journal";
 
-const uploadImage = async (req, res) => {
+const uploadEncryptedImage = async (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ message: "Image file is required" });
+    return res.status(400).json({ message: "Encrypted image file is required" });
   }
 
   try {
-    const encrypted = req.file.mimetype === "application/octet-stream";
-    if (!encrypted && !req.file.mimetype.startsWith("image/")) {
-      return res.status(400).json({ message: "Image file is required" });
+    if (req.file.mimetype !== "application/octet-stream") {
+      return res.status(400).json({ message: "Only encrypted image uploads are supported" });
     }
 
-    const assetId = encrypted ? crypto.randomBytes(18).toString("hex") : null;
+    const assetId = crypto.randomBytes(18).toString("hex");
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        encrypted
-          ? {
-              folder: FOLDER,
-              resource_type: "raw",
-              public_id: `encrypted-${assetId}.bin`,
-            }
-          : { folder: FOLDER, resource_type: "image" },
+        {
+          folder: FOLDER,
+          resource_type: "raw",
+          public_id: `encrypted-${assetId}.bin`,
+        },
         (error, uploaded) => (error ? reject(error) : resolve(uploaded)),
       );
 
       stream.end(req.file.buffer);
     });
 
-    if (encrypted) {
-      try {
-        await EncryptedImageAsset.create({ assetId, owner: req.user.id });
-      } catch (error) {
-        await cloudinary.uploader
-          .destroy(result.public_id, { resource_type: "raw" })
-          .catch(() => {});
-        throw error;
-      }
+    try {
+      await EncryptedImageAsset.create({ assetId, owner: req.user.id });
+    } catch (error) {
+      await cloudinary.uploader
+        .destroy(result.public_id, { resource_type: "raw" })
+        .catch(() => {});
+      throw error;
     }
 
     return res.status(201).json({
-      message: encrypted
-        ? "Encrypted image uploaded successfully"
-        : "Image uploaded successfully",
+      message: "Encrypted image uploaded successfully",
       url: result.secure_url,
       publicId: result.public_id,
-      ...(encrypted ? { assetId } : {}),
+      assetId,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -246,7 +239,7 @@ const getEncryptedImage = async (req, res) => {
 };
 
 module.exports = {
-  uploadImage,
+  uploadEncryptedImage,
   getEncryptedImage,
   syncEncryptedImageAssets,
   discardPendingEncryptedImage,

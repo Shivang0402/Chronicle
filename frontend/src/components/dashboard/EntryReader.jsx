@@ -117,6 +117,11 @@ export default function EntryReader({
                 resolveImage={resolveImage}
                 className="mt-7 font-reading text-lg font-light leading-[1.85] text-charcoal"
               />
+              {!entry.encrypted && (
+                <p className="mt-6 rounded-xl border border-hairline bg-warm-beige/50 px-4 py-3 text-[11px] leading-relaxed text-muted-gray">
+                  This older entry was stored without encryption and is read-only. New entries are encrypted before they leave your device.
+                </p>
+              )}
             </div>
 
             <div className="border-t border-hairline bg-warm-beige/30 px-6 py-4 sm:px-9">
@@ -165,7 +170,7 @@ export default function EntryReader({
                     </div>
                   ) : (
                     <div className="flex items-center justify-end gap-2">
-                      {onEdit && (
+                      {onEdit && entry.encrypted && (
                         <button
                           type="button"
                           onClick={() => onEdit(entry)}
