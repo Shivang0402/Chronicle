@@ -22,6 +22,7 @@ import { Link, useNavigate } from "react-router-dom";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
 import DeleteAccountDialog from "../components/dashboard/DeleteAccountDialog";
+import EncryptionSettings from "../components/dashboard/EncryptionSettings";
 import ExportDialog from "../components/dashboard/ExportDialog";
 import PageTransition from "../components/ui/PageTransition";
 import Reveal from "../components/ui/Reveal";
@@ -717,6 +718,11 @@ export default function ProfilePage() {
                       )}
                     </AnimatePresence>
                   </Reveal>
+                  <EncryptionSettings
+                    token={token}
+                    ownerId={getAccountId(user)}
+                    onNotice={setNotice}
+                  />
                 </div>
 
                 <aside className="flex flex-col gap-6 lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
