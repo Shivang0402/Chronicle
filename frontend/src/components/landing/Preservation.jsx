@@ -35,7 +35,8 @@ export default function Preservation() {
           </Reveal>
           <AnimatedText
             as="h2"
-            mode="blur"
+            mode="fade"
+            duration={0.6}
             once={false}
             delay={0.1}
             lineStagger={0.14}

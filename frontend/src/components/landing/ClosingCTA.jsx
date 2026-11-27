@@ -13,7 +13,8 @@ export default function ClosingCTA() {
         </Reveal>
         <AnimatedText
           as="h2"
-          mode="tilt"
+          mode="scale"
+          duration={0.6}
           once={false}
           delay={0.1}
           lineStagger={0.16}

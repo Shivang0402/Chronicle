@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <>
-      {location.pathname !== "/" && <ScrollProgress />}
+      <ScrollProgress />
       <ScrollToTop />
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>

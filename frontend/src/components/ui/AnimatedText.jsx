@@ -8,23 +8,23 @@ const wordHidden = (mode, reduce) => {
 
   switch (mode) {
     case "fade":
-      return { opacity: 0, filter: "blur(8px)" };
+      return { opacity: 0, filter: "blur(4px)" };
     case "scale":
-      return { opacity: 0, scale: 0.82 };
+      return { opacity: 0, scale: 0.94 };
     case "slide":
-      return { opacity: 0, x: -18 };
+      return { opacity: 0, x: -12 };
     case "blur":
-      return { opacity: 0, filter: "blur(12px)" };
+      return { opacity: 0, filter: "blur(5px)" };
     case "tilt":
-      return { opacity: 0, y: "70%", rotate: 3 };
+      return { opacity: 0, y: "45%", rotate: 1 };
     case "drop":
-      return { opacity: 0, y: "-90%", rotate: -1.5 };
+      return { opacity: 0, y: "-45%", rotate: -0.7 };
     default:
-      return { y: "112%", opacity: 0, rotate: 1.5 };
+      return { y: "60%", opacity: 0, rotate: 0.7 };
   }
 };
 
-const wordVisible = (mode, reduce) => {
+const wordVisible = (mode, reduce, duration) => {
   if (reduce) {
     return { opacity: 1, transition: { duration: 0.01, ease: "easeOut" } };
   }
@@ -36,7 +36,7 @@ const wordVisible = (mode, reduce) => {
     scale: 1,
     rotate: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.9, ease: easing },
+    transition: { duration, ease: easing },
   };
 };
 
@@ -71,6 +71,7 @@ export default function AnimatedText({
   stagger = 0.04,
   lineStagger = 0.14,
   mode = "rise",
+  duration = 0.65,
   once = true,
   onMount = false,
   amount = 0.15,
@@ -130,7 +131,7 @@ export default function AnimatedText({
                 <motion.span
                   variants={{
                     hidden: wordHidden(mode, reduce),
-                    visible: wordVisible(mode, reduce),
+                    visible: wordVisible(mode, reduce, duration),
                   }}
                   className={[
                     "inline-block",

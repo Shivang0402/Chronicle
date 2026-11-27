@@ -39,7 +39,7 @@ export default function EncryptionFeature() {
             </Reveal>
             <AnimatedText
               as="h2"
-              mode="drop"
+              mode="slide"
               once={false}
               delay={0.08}
               className="max-w-xl font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl"

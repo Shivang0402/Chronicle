@@ -1,8 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CalendarDays, ChevronDown, ChevronUp, Feather } from "lucide-react";
 import { useState } from "react";
-import AnimatedText from "../ui/AnimatedText";
-import Reveal from "../ui/Reveal";
 
 const pages = [
   {
@@ -67,27 +65,16 @@ export default function WritingCanvas() {
     <section id="editor" className="scroll-mt-24 bg-ivory py-10 sm:py-14 lg:py-16">
       <div className="mx-auto grid max-w-7xl items-center gap-8 px-6 sm:px-10 lg:grid-cols-12 lg:gap-12 lg:px-16">
         <div className="lg:col-span-4">
-          <Reveal variant="down" y={12} blur={false}>
-            <span className="eyebrow mb-3 block">The Writing Canvas</span>
-          </Reveal>
-          <AnimatedText
-            as="h2"
-            mode="slide"
-            once={false}
-            delay={0.1}
-            className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl"
-            parts={[{ text: "Give your thoughts room to unfold." }]}
-          />
-          <Reveal variant="down" delay={0.24} y={14} blur={false}>
-            <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-charcoal-muted sm:text-base">
-              A quiet place to catch the detail you almost missed, then return to it when the day has softened around the edges.
-            </p>
-          </Reveal>
-          <Reveal variant="fade" delay={0.3} y={8} blur={false}>
-            <p className="mt-6 border-l border-sage/50 pl-4 font-serif text-sm italic leading-relaxed text-charcoal-muted">
-              One page at a time. One ordinary day, made worth remembering.
-            </p>
-          </Reveal>
+          <span className="eyebrow mb-3 block">The Writing Canvas</span>
+          <h2 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl">
+            Give your thoughts room to unfold.
+          </h2>
+          <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-charcoal-muted sm:text-base">
+            A quiet place to catch the detail you almost missed, then return to it when the day has softened around the edges.
+          </p>
+          <p className="mt-6 border-l border-sage/50 pl-4 font-serif text-sm italic leading-relaxed text-charcoal-muted">
+            One page at a time. One ordinary day, made worth remembering.
+          </p>
         </div>
 
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_2.5rem] items-stretch gap-5 sm:grid-cols-[minmax(0,1fr)_3rem] sm:gap-7 lg:col-span-8">

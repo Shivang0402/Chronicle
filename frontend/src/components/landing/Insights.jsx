@@ -21,7 +21,7 @@ export default function Insights() {
             </Reveal>
             <AnimatedText
               as="h2"
-              mode="drop"
+              mode="blur"
               once={false}
               delay={0.1}
               className="font-serif text-3xl tracking-tight text-charcoal sm:text-5xl"

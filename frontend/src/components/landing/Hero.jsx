@@ -1,11 +1,5 @@
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
-import { ArrowDown, ArrowRight, BookOpen } from "lucide-react";
-import { useRef } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowDown, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
 import Reveal, { RevealImage } from "../ui/Reveal";
@@ -13,23 +7,7 @@ import Reveal, { RevealImage } from "../ui/Reveal";
 const WORDMARK = "Chronicle";
 
 export default function Hero() {
-  const imageRef = useRef(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: imageRef,
-    offset: ["start end", "end start"],
-  });
-  const imageY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    reduce ? ["0%", "0%"] : ["-4%", "5%"],
-  );
-  const imageScale = useTransform(
-    scrollYProgress,
-    [0, 1],
-    reduce ? [1, 1] : [1.06, 1.01],
-  );
-
   return (
     <section className="relative overflow-hidden pb-20 pt-8 md:pb-32 md:pt-12">
       <div className="pointer-events-none absolute inset-0 paper-texture opacity-80" />
@@ -76,6 +54,7 @@ export default function Hero() {
               delay={0.22}
               stagger={0.045}
               lineStagger={0.16}
+              mode="fade"
               as="h1"
               className="max-w-4xl text-center font-serif text-[42px] leading-[1.08] tracking-tight text-charcoal sm:text-6xl lg:text-[74px]"
               lines={[
@@ -128,25 +107,20 @@ export default function Hero() {
           </motion.p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 items-stretch overflow-hidden border border-hairline bg-paper shadow-paper md:mt-16 lg:grid-cols-12">
-          <div
-            className="group relative flex flex-col lg:col-span-7"
-            ref={imageRef}
-          >
+        <div className="mt-12 overflow-hidden border border-hairline bg-paper shadow-paper md:mt-16">
+          <div className="relative flex flex-col">
             <RevealImage
               variant="fade"
               onMount
               delay={0.75}
               y={0}
               duration={1}
-              className="lg:min-h-0 lg:flex-1"
             >
-              <div className="aspect-[16/10] overflow-hidden bg-hairline lg:aspect-auto lg:h-full">
-                <motion.img
+              <div className="aspect-[16/10] overflow-hidden bg-hairline md:aspect-[2.15/1]">
+                <img
                   src="/images/hero-journal.jpg"
                   alt="Open linen journal on a sunlit wooden writing desk"
-                  style={{ y: imageY, scale: imageScale }}
-                  className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.035]"
+                  className="h-full w-full object-cover"
                 />
               </div>
             </RevealImage>
@@ -163,49 +137,6 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          <RevealImage
-            onMount
-            delay={0.95}
-            y={24}
-            duration={1.05}
-            className="relative z-10 hidden items-center sm:flex lg:col-span-5"
-          >
-            <div className="relative w-full p-7 sm:p-9 lg:p-10">
-              <div className="mb-7 flex items-center gap-2 text-[10px] uppercase tracking-wider text-sage-deep">
-                <span className="h-1.5 w-1.5 animate-soft-pulse rounded-full bg-sage" />
-                A page from the journal
-              </div>
-
-              <div className="flex items-center justify-between border-b border-hairline pb-6 text-[11px]">
-                <span className="uppercase tracking-widest text-muted-gray">
-                  October 14 • 8:15 PM
-                </span>
-                <span className="font-medium tracking-wide text-sage-deep">
-                  #Peaceful
-                </span>
-              </div>
-
-              <h2 className="mt-8 font-serif text-2xl leading-snug text-charcoal sm:text-3xl">
-                October evening by the window
-              </h2>
-              <p className="mt-5 text-sm font-light leading-relaxed text-charcoal-muted sm:text-base">
-                The evening light softened the room. I made tea and let the day grow quiet.
-              </p>
-
-              <div className="mt-8 flex items-center justify-between border-t border-hairline pt-5 text-[11px] text-muted-gray">
-                <div className="flex items-center gap-3">
-                  <span>412 words</span>
-                  <span className="h-0.5 w-0.5 rounded-full bg-muted-gray" />
-                  <span>3 min read</span>
-                </div>
-                <span className="flex items-center gap-1.5 text-sage-deep">
-                  <BookOpen className="h-3 w-3" />
-                  Entry
-                </span>
-              </div>
-            </div>
-
-          </RevealImage>
         </div>
 
         <motion.div
@@ -222,7 +153,7 @@ export default function Hero() {
             <span className="relative h-10 w-px overflow-hidden bg-hairline">
               <motion.span
                 className="absolute inset-x-0 top-0 h-4 bg-sage"
-                animate={{ y: [-16, 40] }}
+                animate={reduce ? undefined : { y: [-16, 40] }}
                 transition={{
                   duration: 1.8,
                   repeat: Infinity,

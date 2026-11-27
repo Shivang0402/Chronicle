@@ -61,7 +61,7 @@ export default function ArchiveLedger() {
 
         <RevealGroup className="border-t border-charcoal/15" stagger={0.1} delay={0.2} amount={0.1}>
           {entries.map((entry) => (
-            <RevealItem key={entry.title} variant="right" x={26} y={12}>
+            <RevealItem key={entry.title} variant="up" y={8}>
               <article key={entry.title} className={`group grid gap-2 border-b border-charcoal/10 py-3 sm:py-5 md:grid-cols-12 md:gap-8 ${entry === entries[2] ? "hidden sm:grid" : ""}`}>
                 <div className="flex items-center gap-3 text-[9px] uppercase tracking-wider text-muted-gray sm:text-[10px] md:col-span-3 md:block">
                   <time>{entry.date}</time>
