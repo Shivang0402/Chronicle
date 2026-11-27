@@ -189,9 +189,7 @@ export default function Hero() {
                 October evening by the window
               </h2>
               <p className="mt-5 text-sm font-light leading-relaxed text-charcoal-muted sm:text-base">
-                The morning light was a soft reminder to slow down. The tea
-                steeped quietly as thoughts began to settle. There is a deep,
-                quiet gratitude found in this unhurried space.
+                The evening light softened the room. I made tea and let the day grow quiet.
               </p>
 
               <div className="mt-8 flex items-center justify-between border-t border-hairline pt-5 text-[11px] text-muted-gray">

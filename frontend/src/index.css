@@ -563,6 +563,50 @@
   animation: hero-wordmark-dot-reveal 260ms ease-out both;
 }
 
+.landing-static,
+.landing-static * {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+.landing-static .hero-wordmark-dot {
+  opacity: 1 !important;
+}
+
+.landing-static [style*="opacity"]:not(.page-turn-card),
+.landing-static [style*="transform"]:not(.page-turn-card),
+.landing-static [style*="filter"]:not(.page-turn-card),
+.landing-static [style*="clip-path"]:not(.page-turn-card) {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  clip-path: none !important;
+}
+
+.squircle {
+  border-radius: 2.25rem;
+  corner-shape: squircle;
+}
+
+.journal-sheet {
+  border-radius: 1.35rem;
+  corner-shape: squircle;
+  transform-origin: 4% 96%;
+}
+
+.journal-stack-back {
+  transform: translate(16px, -12px) rotate(2.4deg);
+}
+
+.journal-stack-middle {
+  transform: translate(10px, -7px) rotate(1.6deg);
+}
+
+.journal-stack-front {
+  transform: translate(4px, -3px) rotate(0.7deg);
+}
+
 @keyframes hero-wordmark-letter-reveal {
   from {
     opacity: 0;
