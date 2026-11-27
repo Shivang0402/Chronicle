@@ -54,9 +54,10 @@ export default function ExportDialog({
   exportError = "",
   formats = EXPORT_FORMATS,
   initialFormat = "pdf",
+  initialScope = "all",
 }) {
   const [format, setFormat] = useState(initialFormat);
-  const [scope, setScope] = useState("all");
+  const [scope, setScope] = useState(initialScope);
   const [year, setYear] = useState(String(CURRENT_YEAR));
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -68,7 +69,7 @@ export default function ExportDialog({
   const [loadKey, setLoadKey] = useState(0);
 
   const closeDialog = useCallback(() => {
-    setScope("all");
+    setScope(initialScope);
     setFormat(initialFormat);
     setPage(1);
     setSelectedIds([]);
@@ -76,7 +77,7 @@ export default function ExportDialog({
     setArchiveEntries([]);
     setLoadError("");
     onClose();
-  }, [onClose, initialFormat]);
+  }, [onClose, initialFormat, initialScope]);
 
   const showFormatPicker = formats.length > 1;
   const selectedFormat =
@@ -177,7 +178,7 @@ export default function ExportDialog({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.99 }}
             transition={{ duration: 0.22 }}
-            className="my-auto w-full max-w-xl border border-hairline bg-ivory p-5 shadow-paper-lg sm:p-7"
+            className="my-auto w-full max-w-3xl border border-hairline bg-ivory p-5 shadow-paper-lg sm:p-7"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -188,9 +189,9 @@ export default function ExportDialog({
                     : `Export as ${selectedFormat.label}`}
                 </h2>
                 <p className="mt-2 text-sm leading-relaxed text-charcoal-muted">
-                  {format === "json"
-                    ? "Choose which journal entries to include. The structured backup downloads directly."
-                    : "Choose which entries to include. A browser print view will open; choose Save as PDF there."}
+                  {format === "json" || format === "markdown"
+                    ? "Downloads directly to this device."
+                    : "Opens a print view to save as PDF."}
                 </p>
               </div>
               <button
@@ -207,13 +208,13 @@ export default function ExportDialog({
             {showFormatPicker && (
               <div className="mt-5">
                 <span className="field-label">Format</span>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
                   {formats.map((item) => (
                     <button
                       key={item.id}
                       type="button"
                       onClick={() => setFormat(item.id)}
-                      className={`rounded-xl border px-3 py-3 text-left transition-colors ${
+                      className={`rounded-lg border px-3 py-3 text-left transition-colors duration-300 ${
                         format === item.id
                           ? "border-sage/50 bg-sage-subtle/60"
                           : "border-hairline bg-paper/70 hover:border-sage/30"
@@ -244,7 +245,7 @@ export default function ExportDialog({
               {scopes.map((item) => (
                 <label
                   key={item.id}
-                  className={`flex cursor-pointer items-start gap-3 border px-3.5 py-3 transition-colors ${
+                  className={`flex cursor-pointer items-start gap-3 rounded-lg border px-3.5 py-3 transition-colors duration-300 ${
                     scope === item.id
                       ? "border-sage/50 bg-sage-subtle/50"
                       : "border-hairline bg-paper/70 hover:border-sage/30"

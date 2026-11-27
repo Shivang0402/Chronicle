@@ -17,6 +17,12 @@ export const EXPORT_FORMATS = [
     description: "A structured data backup of your entries",
     extension: "json",
   },
+  {
+    id: "markdown",
+    label: "Markdown",
+    description: "Plain text entries with their original formatting",
+    extension: "md",
+  },
 ];
 
 export const getExportFormat = (id) =>

@@ -1,23 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  AlertCircle,
-  ArrowRight,
-  CalendarDays,
-  CheckCircle2,
-  Download,
-  Hash,
-  KeyRound,
-  Loader2,
-  Lock,
-  LogOut,
-  Mail,
-  ShieldCheck,
-  Sparkles,
-  Trash2,
-  User,
-  X,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ArrowRight, CheckCircle2, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
@@ -41,47 +24,267 @@ const EMPTY_PASSWORD_FORM = {
   confirmPassword: "",
 };
 
-function SectionHeading({ icon: Icon, title, description }) {
+const SECTIONS = [
+  {
+    id: "account",
+    label: "Account",
+    title: "Account",
+    description: "Identity and sign-in details.",
+  },
+  {
+    id: "security",
+    label: "Security & encryption",
+    title: "Security & encryption",
+    description: "Password, encryption and recovery.",
+  },
+  {
+    id: "data",
+    label: "Your data & exports",
+    title: "Your data & exports",
+    description: "Download all or part of your journal.",
+  },
+  {
+    id: "collections",
+    label: "Collections",
+    title: "Collections",
+    description: "Tags and the entries they hold.",
+  },
+  {
+    id: "sessions",
+    label: "Sessions",
+    title: "Sessions",
+    description: "Access on this device.",
+  },
+  {
+    id: "danger",
+    label: "Danger zone",
+    title: "Danger zone",
+    description: "Permanent account actions.",
+  },
+];
+
+function getSessionDetails() {
+  if (typeof navigator === "undefined") {
+    return { browser: "Browser", platform: "This device" };
+  }
+
+  const agent = navigator.userAgent || "";
+  const browser = /Edg\//.test(agent)
+    ? "Microsoft Edge"
+    : /Firefox\//.test(agent)
+      ? "Firefox"
+      : /Chrome\//.test(agent)
+        ? "Chrome"
+        : /Safari\//.test(agent)
+          ? "Safari"
+          : "Browser";
+  const platform = /Windows NT/.test(agent)
+    ? "Windows"
+    : /Mac OS X/.test(agent)
+      ? "macOS"
+      : /Android/.test(agent)
+        ? "Android"
+        : /iPhone|iPad/.test(agent)
+          ? "iOS"
+          : "Desktop";
+
+  return { browser, platform };
+}
+
+function SettingRow({ label, value, detail, action }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sage-subtle text-sage-deep">
-        <Icon className="h-4 w-4" />
-      </span>
+    <div className="grid gap-2 py-5 sm:grid-cols-[minmax(150px,0.32fr)_minmax(0,1fr)] sm:gap-8">
       <div>
-        <h2 className="font-serif text-xl tracking-tight text-charcoal">
-          {title}
-        </h2>
-        <p className="mt-1 text-[12px] leading-relaxed text-charcoal-muted">
-          {description}
-        </p>
+        <p className="text-[13px] font-medium text-charcoal">{label}</p>
+        {detail ? (
+          <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-gray">
+            {detail}
+          </p>
+        ) : null}
+      </div>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
+        <span className="break-words text-[14px] text-charcoal-muted">
+          {value}
+        </span>
+        {action}
       </div>
     </div>
   );
 }
 
-function StatBlock({ label, value }) {
+function TextAction({ children, onClick, disabled = false, danger = false }) {
   return (
-    <div className="bg-paper px-4 py-4 sm:px-5">
-      <p className="text-[9px] uppercase tracking-wide2 text-muted-gray">
-        {label}
-      </p>
-      <p className="mt-1 stat-number font-serif text-xl text-charcoal">
-        {value}
-      </p>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`border-b pb-0.5 text-[13px] font-medium transition-colors disabled:cursor-wait disabled:opacity-50 ${
+        danger
+          ? "border-danger/60 text-danger hover:border-danger hover:text-charcoal"
+          : "border-sage/50 text-sage-dark hover:border-sage hover:text-charcoal"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SettingsNav({ activeSection, onChange }) {
+  return (
+    <nav
+      aria-label="Profile settings sections"
+      className="lg:sticky lg:top-24 lg:self-start"
+    >
+      <span className="eyebrow mb-3 hidden lg:block">Sections</span>
+      <div className="no-scrollbar -mx-5 flex gap-1 overflow-x-auto px-5 pb-1 lg:mx-0 lg:flex-col lg:px-0 lg:pb-0">
+        {SECTIONS.map((section) => {
+          const active = activeSection === section.id;
+
+          return (
+            <button
+              key={section.id}
+              type="button"
+              onClick={() => onChange(section.id)}
+              aria-current={active ? "page" : undefined}
+              className={`shrink-0 rounded-lg px-3 py-2.5 text-left text-[13px] transition-all duration-300 lg:w-full ${
+                section.id === "danger" ? "text-danger" : ""
+              } ${
+                active
+                  ? `bg-warm-beige/70 font-medium ${
+                      section.id === "danger" ? "text-danger" : "text-charcoal"
+                    }`
+                  : section.id === "danger"
+                    ? "hover:bg-danger/5"
+                    : "text-muted-gray hover:bg-warm-beige/40 hover:text-charcoal"
+              }`}
+            >
+              {section.label}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+function PasswordForm({
+  form,
+  error,
+  notice,
+  busy,
+  onChange,
+  onSubmit,
+  onCancel,
+}) {
+  return (
+    <motion.form
+      onSubmit={onSubmit}
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+      className="overflow-hidden"
+    >
+      <div className="space-y-5 border-y border-hairline py-6">
+        <div className="flex items-start justify-between gap-6">
+          <div>
+            <h4 className="font-serif text-xl tracking-tight text-charcoal">
+              Update your password
+            </h4>
+            <p className="mt-2 text-[13px] leading-relaxed text-charcoal-muted">
+              At least 8 characters.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="shrink-0 text-[13px] text-muted-gray transition-colors hover:text-charcoal"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <label className="block">
+          <span className="field-label">Current password</span>
+          <input
+            type="password"
+            name="currentPassword"
+            value={form.currentPassword}
+            onChange={onChange}
+            autoComplete="current-password"
+            placeholder="Enter your current password"
+            className="field-input !rounded-lg"
+          />
+        </label>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="block">
+            <span className="field-label">
+              New password
+              <span className="text-[11px] font-normal text-muted-gray">
+                At least 8 characters
+              </span>
+            </span>
+            <input
+              type="password"
+              name="newPassword"
+              value={form.newPassword}
+              onChange={onChange}
+              autoComplete="new-password"
+              placeholder="Choose a new password"
+              className="field-input !rounded-lg"
+            />
+          </label>
+          <label className="block">
+            <span className="field-label">Confirm new password</span>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={onChange}
+              autoComplete="new-password"
+              placeholder="Repeat your new password"
+              className="field-input !rounded-lg"
+            />
+          </label>
+        </div>
+
+        {error ? (
+          <p className="text-[13px] leading-relaxed text-danger" role="alert">
+            {error}
+          </p>
+        ) : null}
+        {notice ? (
+          <p className="text-[13px] leading-relaxed text-sage-dark" role="status">
+            {notice}
+          </p>
+        ) : null}
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={busy}
+            className="border-b border-sage/60 pb-0.5 text-[13px] font-medium text-sage-dark transition-colors hover:border-sage hover:text-charcoal disabled:cursor-wait disabled:opacity-50"
+          >
+            {busy ? "Updating password…" : "Update password"}
+          </button>
+        </div>
+      </div>
+    </motion.form>
   );
 }
 
 export default function ProfilePage() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
-  const securityRef = useRef(null);
 
   const [tags, setTags] = useState([]);
   const [stats, setStats] = useState(null);
+  const [activeSection, setActiveSection] = useState("account");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState("pdf");
+  const [exportScope, setExportScope] = useState("all");
   const [exporting, setExporting] = useState("");
   const [exportError, setExportError] = useState("");
   const [notice, setNotice] = useState("");
@@ -90,9 +293,13 @@ export default function ProfilePage() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordNotice, setPasswordNotice] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
+  const [verificationNotice, setVerificationNotice] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [session] = useState(getSessionDetails);
 
   useDocumentTitle("Profile");
 
@@ -116,11 +323,13 @@ export default function ProfilePage() {
           (_, index) => startPage + index,
         );
         const results = await Promise.all(
-          pages.map((page) => chronicleApi.getChronicles(
-            token,
-            { page, limit: 20, sort: "oldest" },
-            getAccountId(user),
-          )),
+          pages.map((page) =>
+            chronicleApi.getChronicles(
+              token,
+              { page, limit: 20, sort: "oldest" },
+              getAccountId(user),
+            ),
+          ),
         );
         results.forEach((result) => entries.push(...(result?.chronicles || [])));
       }
@@ -144,7 +353,10 @@ export default function ProfilePage() {
       for (const key of orderedDays) {
         const [year, month, day] = key.split("-").map(Number);
         const currentDay = Date.UTC(year, month - 1, day);
-        streak = previousDay !== null && currentDay - previousDay === 86400000 ? streak + 1 : 1;
+        streak =
+          previousDay !== null && currentDay - previousDay === 86400000
+            ? streak + 1
+            : 1;
         longestStreak = Math.max(longestStreak, streak);
         previousDay = currentDay;
       }
@@ -152,36 +364,47 @@ export default function ProfilePage() {
       const yesterdayDate = new Date();
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
       const lastDay = orderedDays.at(-1);
-      const currentStreak = lastDay === today || lastDay === dayKey(yesterdayDate)
-        ? orderedDays.slice().reverse().reduce((length, key, index, days) => {
-            if (index === 0) return 1;
-            const [year, month, day] = key.split("-").map(Number);
-            const [prevYear, prevMonth, prevDate] = days[index - 1].split("-").map(Number);
-            return length && Date.UTC(year, month - 1, day) - Date.UTC(prevYear, prevMonth - 1, prevDate) === 86400000
-              ? length + 1
-              : 0;
-          }, 0)
-        : 0;
+      const currentStreak =
+        lastDay === today || lastDay === dayKey(yesterdayDate)
+          ? orderedDays
+              .slice()
+              .reverse()
+              .reduce((length, key, index, days) => {
+                if (index === 0) return 1;
+                const [year, month, day] = key.split("-").map(Number);
+                const [prevYear, prevMonth, prevDate] = days[index - 1]
+                  .split("-")
+                  .map(Number);
+                return length &&
+                  Date.UTC(year, month - 1, day) -
+                    Date.UTC(prevYear, prevMonth - 1, prevDate) ===
+                    86400000
+                  ? length + 1
+                  : 0;
+              }, 0)
+          : 0;
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
       if (active) {
-        setTags([...tagCounts]
-          .map(([tag, count]) => ({ tag, count }))
-          .sort((a, b) => b.count - a.count));
+        setTags(
+          [...tagCounts]
+            .map(([tag, count]) => ({ tag, count }))
+            .sort((a, b) => b.count - a.count),
+        );
         setStats({
           totalChronicles: entries.length,
           totalWords,
           currentStreak,
           longestStreak,
-          entriesThisMonth: entries.filter((entry) => new Date(entry.date) >= monthStart).length,
+          entriesThisMonth: entries.filter(
+            (entry) => new Date(entry.date) >= monthStart,
+          ).length,
         });
       }
     };
 
-    loadArchiveSummary().catch(() => {
-      // Profile metrics are supplementary to account and security settings.
-    });
+    loadArchiveSummary().catch(() => {});
 
     return () => {
       active = false;
@@ -198,10 +421,13 @@ export default function ProfilePage() {
   const initial = (user?.name || user?.email || "C").charAt(0).toUpperCase();
   const displayName =
     user?.name?.trim() || user?.email?.split("@")[0] || "Chronicle writer";
+  const email = user?.email || "Not available";
   const memberSince = user?.createdAt
     ? formatEntryDate(user.createdAt)
     : "Not available";
   const verified = Boolean(user?.isEmailVerified);
+  const activeMeta =
+    SECTIONS.find((section) => section.id === activeSection) || SECTIONS[0];
 
   const statItems = [
     {
@@ -213,12 +439,8 @@ export default function ProfilePage() {
       value: stats ? Number(stats.totalWords || 0).toLocaleString() : "—",
     },
     {
-      label: "Day streak",
+      label: "Current streak",
       value: stats ? Number(stats.currentStreak || 0).toLocaleString() : "—",
-    },
-    {
-      label: "This month",
-      value: stats ? Number(stats.entriesThisMonth || 0).toLocaleString() : "—",
     },
   ];
 
@@ -259,8 +481,9 @@ export default function ProfilePage() {
     }
   };
 
-  const handleOpenExport = (format = "pdf") => {
+  const handleOpenExport = (format = "pdf", scope = "all") => {
     setExportFormat(format);
+    setExportScope(scope);
     setExportError("");
     setExportDialogOpen(true);
   };
@@ -289,18 +512,6 @@ export default function ProfilePage() {
     if (success) {
       setExportDialogOpen(false);
     }
-  };
-
-  const openPasswordForm = () => {
-    setPasswordError("");
-    setPasswordNotice("");
-    setPasswordOpen(true);
-    window.requestAnimationFrame(() => {
-      securityRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    });
   };
 
   const closePasswordForm = () => {
@@ -364,9 +575,259 @@ export default function ProfilePage() {
     }
   };
 
+  const handleResendVerification = async () => {
+    if (!user?.email || resendingVerification) return;
+
+    setResendingVerification(true);
+    setVerificationError("");
+    setVerificationNotice("");
+
+    try {
+      await authApi.resendVerification(user.email);
+      setVerificationNotice(`Verification email sent to ${user.email}.`);
+    } catch (error) {
+      setVerificationError(
+        error?.message || "Could not send the verification email.",
+      );
+    } finally {
+      setResendingVerification(false);
+    }
+  };
+
+  const renderSection = () => {
+    if (activeSection === "security") {
+      return (
+        <div className="space-y-8">
+          <section>
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+              <h3 className="font-serif text-2xl tracking-tight text-charcoal">
+                Password
+              </h3>
+              {!passwordOpen ? (
+                <TextAction onClick={() => setPasswordOpen(true)}>
+                  Change password
+                </TextAction>
+              ) : null}
+            </div>
+
+            <div className="divide-y divide-hairline border-y border-hairline">
+              <SettingRow label="Account password" value="Configured" />
+            </div>
+
+            <AnimatePresence initial={false}>
+              {passwordOpen ? (
+                <PasswordForm
+                  form={passwordForm}
+                  error={passwordError}
+                  notice={passwordNotice}
+                  busy={changingPassword}
+                  onChange={handlePasswordChange}
+                  onSubmit={handlePasswordSubmit}
+                  onCancel={closePasswordForm}
+                />
+              ) : null}
+            </AnimatePresence>
+          </section>
+
+          <EncryptionSettings
+            token={token}
+            ownerId={getAccountId(user)}
+            onNotice={setNotice}
+          />
+        </div>
+      );
+    }
+
+    if (activeSection === "data") {
+      return (
+        <div className="space-y-6">
+          <div className="divide-y divide-hairline border-y border-hairline">
+            <SettingRow
+              label="Export entire journal"
+              value="Every entry"
+              action={
+                <TextAction onClick={() => handleOpenExport("pdf", "all")}>
+                  Choose format
+                </TextAction>
+              }
+            />
+            <SettingRow
+              label="Export selected entries"
+              value="Individual pages"
+              action={
+                <TextAction onClick={() => handleOpenExport("pdf", "selected")}>
+                  Choose entries
+                </TextAction>
+              }
+            />
+            <SettingRow
+              label="Export by date range"
+              value="Start and end date"
+              action={
+                <TextAction onClick={() => handleOpenExport("pdf", "range")}>
+                  Choose dates
+                </TextAction>
+              }
+            />
+            <SettingRow
+              label="Export by year"
+              value="One calendar year"
+              action={
+                <TextAction onClick={() => handleOpenExport("pdf", "year")}>
+                  Choose year
+                </TextAction>
+              }
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-gray">
+            <span className="text-charcoal">Formats</span>
+            <span>JSON</span>
+            <span>Markdown</span>
+            <span>Styled PDF</span>
+          </div>
+
+          <p className="border-l border-sage/50 pl-5 text-[13px] leading-relaxed text-charcoal-muted">
+            Exports are decrypted in this browser.
+          </p>
+
+          {exportError ? (
+            <p className="text-[13px] leading-relaxed text-danger" role="alert">
+              {exportError}
+            </p>
+          ) : null}
+        </div>
+      );
+    }
+
+    if (activeSection === "collections") {
+      return (
+        <div className="border-y border-hairline">
+          {tags.length === 0 ? (
+            <p className="py-8 text-[14px] leading-relaxed text-charcoal-muted">
+              No collections yet.
+            </p>
+          ) : (
+            tags.map((item) => (
+              <button
+                key={item.tag}
+                type="button"
+                onClick={() => handleSelectTag(item.tag)}
+                className="group grid w-full grid-cols-1 gap-2 border-b border-hairline py-5 text-left transition-colors hover:bg-[var(--interactive-hover)] sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:gap-8"
+              >
+                <span className="truncate font-serif text-lg text-charcoal">
+                  #{item.tag}
+                </span>
+                <span className="text-xs text-muted-gray">
+                  {item.count} {item.count === 1 ? "entry" : "entries"}
+                </span>
+                <span className="inline-flex items-center gap-2 text-[13px] font-medium text-sage-dark">
+                  Browse entries
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </button>
+            ))
+          )}
+          <div className="py-5">
+            <TextAction onClick={() => handleSelectTag("")}>
+              Browse all entries
+            </TextAction>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeSection === "sessions") {
+      return (
+        <div className="space-y-6">
+          <div className="divide-y divide-hairline border-y border-hairline">
+            <SettingRow
+              label="Current session"
+              value="This device"
+              detail={`${session.browser} · ${session.platform}`}
+            />
+            <SettingRow label="Signed in as" value={email} />
+          </div>
+
+          <div className="border-t border-hairline pt-6">
+            <TextAction onClick={handleLogout}>Sign out</TextAction>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeSection === "danger") {
+      return (
+        <section className="max-w-3xl rounded-lg border-l border-danger/40 pl-6">
+          <h3 className="font-serif text-2xl tracking-tight text-danger">
+            Delete account
+          </h3>
+          <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-charcoal">
+            This permanently removes your account and every journal entry. It
+            cannot be undone.
+          </p>
+          <p className="mt-2 text-[13px] leading-relaxed text-charcoal-muted">
+            Export anything you want to keep first.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setDeleteError("");
+              setDeleteDialogOpen(true);
+            }}
+            className="mt-6 inline-flex items-center gap-2 border-b border-danger/60 pb-1 text-[13px] font-medium text-danger transition-colors hover:border-danger hover:text-charcoal"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete account
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </section>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="divide-y divide-hairline border-y border-hairline">
+          <SettingRow label="Display name" value={displayName} />
+          <SettingRow label="Email address" value={email} />
+          <SettingRow
+            label="Email verification"
+            value={verified ? "Verified" : "Not verified"}
+            action={
+              verified ? null : (
+                <TextAction
+                  onClick={handleResendVerification}
+                  disabled={resendingVerification}
+                >
+                  {resendingVerification
+                    ? "Sending…"
+                    : "Resend verification email"}
+                </TextAction>
+              )
+            }
+          />
+          <SettingRow label="Account created" value={memberSince} />
+          <SettingRow label="Sign-in method" value="Email and password" />
+        </div>
+
+        {verificationError ? (
+          <p className="text-[13px] leading-relaxed text-danger" role="alert">
+            {verificationError}
+          </p>
+        ) : null}
+        {verificationNotice ? (
+          <p className="text-[13px] leading-relaxed text-sage-dark" role="status">
+            {verificationNotice}
+          </p>
+        ) : null}
+
+      </div>
+    );
+  };
+
   return (
     <PageTransition variant="fade">
-      <div className="min-h-screen bg-ivory">
+      <div className="profile-shell min-h-screen bg-ivory text-charcoal">
         <DashboardSidebar
           user={user}
           tags={tags}
@@ -374,7 +835,7 @@ export default function ProfilePage() {
           onSelectTag={handleSelectTag}
           onClearTag={() => handleSelectTag("")}
           onNewEntry={handleNewEntry}
-          onExport={() => handleOpenExport("pdf")}
+          onExport={() => handleOpenExport("pdf", "all")}
           onLogout={handleLogout}
           exporting={Boolean(exporting)}
           mobileOpen={mobileNavOpen}
@@ -390,504 +851,117 @@ export default function ProfilePage() {
 
         <div className="lg:pl-72">
           <main className="relative min-h-screen overflow-x-clip pt-16">
-            <div className="pointer-events-none absolute inset-0 paper-texture opacity-50" />
-            <div className="pointer-events-none absolute -right-24 top-24 h-80 w-80 rounded-full bg-sage-light/20 blur-3xl" />
-
-            <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+            <div className="relative mx-auto max-w-[1440px] px-5 py-10 sm:px-8 sm:py-12 lg:px-12 xl:px-14">
               <Reveal
                 as="header"
                 variant="right"
-                y={18}
+                y={16}
                 blur={false}
-                className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+                className="max-w-3xl"
               >
-                <div>
-                  <span className="eyebrow mb-3 block">Account & preferences</span>
-                  <h1 className="font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-4xl">
-                    Profile
-                  </h1>
-                  <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-charcoal-muted">
-                    Your details, exports, and security gathered in one calm
-                    place.
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-2 self-start rounded-full border border-hairline bg-paper px-4 py-2 text-[10px] font-medium uppercase tracking-wide2 text-muted-gray shadow-sm sm:self-auto">
-                  <span className="h-1.5 w-1.5 rounded-full bg-sage" />
-                  Private journal
-                </span>
+                <span className="eyebrow">Account & preferences</span>
+                <h1 className="mt-3 font-serif text-4xl leading-[1.08] tracking-tight text-charcoal sm:text-5xl">
+                  Profile
+                </h1>
+                <p className="mt-4 text-[14px] leading-relaxed text-charcoal-muted">
+                  Manage your identity, journal data and privacy.
+                </p>
               </Reveal>
 
-              <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
-                <div className="flex flex-col gap-6 lg:col-span-8">
-                  <Reveal
-                    as="section"
-                    variant="scale"
-                    y={20}
-                    delay={0.06}
-                    blur={false}
-                    className="overflow-hidden rounded-3xl border border-hairline bg-paper shadow-paper"
-                  >
-                    <div className="profile-hero relative overflow-hidden p-6 sm:p-8">
-                      <div className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full border border-white/15" />
-                      <div className="pointer-events-none absolute -bottom-20 right-16 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-
-                      <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-4 sm:gap-5">
-                          <span className="grid h-20 w-20 shrink-0 place-items-center rounded-full border border-white/30 bg-white/10 font-serif text-3xl text-white shadow-inner backdrop-blur">
-                            {initial}
-                          </span>
-                          <div className="min-w-0">
-                            <span className="text-[9px] uppercase tracking-mega text-white/80">
-                              Your private folio
-                            </span>
-                            <h2 className="mt-1 truncate font-serif text-2xl text-white sm:text-3xl">
-                              {displayName}
-                            </h2>
-                            <p className="mt-1 flex items-center gap-2 text-[12px] text-white/85">
-                              <Mail className="h-3.5 w-3.5 shrink-0" />
-                              <span className="truncate">
-                                {user?.email || "Not available"}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-medium ${
-                              verified
-                                ? "border-white/20 bg-white/10 text-white"
-                                : "border-white/20 bg-white/10 text-white/80"
-                            }`}
-                          >
-                            <ShieldCheck className="h-3 w-3" />
-                            {verified ? "Email verified" : "Email unverified"}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={openPasswordForm}
-                            className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-[10px] font-medium uppercase tracking-wide2 text-white transition-colors hover:bg-white/20"
-                          >
-                            <KeyRound className="h-3.5 w-3.5" />
-                            Change password
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-px border-b border-hairline bg-hairline sm:grid-cols-4">
-                      {statItems.map((item) => (
-                        <StatBlock
-                          key={item.label}
-                          label={item.label}
-                          value={item.value}
-                        />
-                      ))}
-                    </div>
-
-                    <div className="flex flex-col gap-2 p-5 text-[11px] text-muted-gray sm:flex-row sm:items-center">
-                      <span className="flex items-center gap-2">
-                        <CalendarDays className="h-3.5 w-3.5 text-sage" />
-                        Member since {memberSince}
-                      </span>
-                    </div>
-                  </Reveal>
-
-                  <Reveal
-                    as="section"
-                    variant="left"
-                    y={20}
-                    delay={0.12}
-                    blur={false}
-                    className="rounded-3xl border border-hairline bg-paper p-6 shadow-paper sm:p-7"
-                  >
-                    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                      <SectionHeading
-                        icon={Download}
-                        title="Exports"
-                        description="Take a copy of your journal whenever you need it."
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleOpenExport("pdf")}
-                        disabled={Boolean(exporting)}
-                        className="btn-sage shrink-0 self-start !px-5 !py-3 text-[10px] disabled:cursor-wait sm:self-auto"
-                      >
-                        {exporting ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Download className="h-3.5 w-3.5" />
-                        )}
-                        {exporting ? "Preparing..." : "Export journal"}
-                      </button>
-                    </div>
-
-                    <p className="mt-5 flex items-start gap-2 border-t border-hairline/70 pt-4 text-[10px] leading-relaxed text-muted-gray">
-                      <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sage" />
-                      Export a styled PDF, a print-friendly PDF, or a JSON
-                      backup, then choose which part of your journal to
-                      include.
-                    </p>
-
-                    {exportError && (
-                      <p
-                        role="alert"
-                        className="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-danger"
-                      >
-                        <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                        {exportError}
-                      </p>
-                    )}
-                  </Reveal>
-
-                  <Reveal
-                    as="section"
-                    nodeRef={securityRef}
-                    variant="down"
-                    y={18}
-                    delay={0.18}
-                    blur={false}
-                    className="scroll-mt-24 rounded-3xl border border-hairline bg-paper p-6 shadow-paper sm:p-7"
-                  >
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                      <SectionHeading
-                        icon={Lock}
-                        title="Password & security"
-                        description="Keep your journal protected with a strong, private password."
-                      />
-                      {!passwordOpen && (
-                        <button
-                          type="button"
-                          onClick={openPasswordForm}
-                          className="btn-ghost self-start border border-hairline !px-4 !py-2.5 text-[11px]"
-                        >
-                          <KeyRound className="h-3.5 w-3.5" />
-                          Change password
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-hairline bg-warm-beige/40 p-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex items-start gap-3">
-                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-paper text-sage-deep shadow-sm">
-                          <ShieldCheck className="h-4 w-4" />
-                        </span>
-                        <div>
-                          <p className="text-[13px] font-medium text-charcoal">
-                            Password protection
-                          </p>
-                          <p className="mt-0.5 text-[11px] leading-relaxed text-muted-gray">
-                            Your account is protected by a password only you
-                            know. Change it whenever you need to.
-                          </p>
-                        </div>
-                      </div>
-                      <span className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-full bg-sage-subtle px-3 py-1 text-[10px] font-medium text-sage-deep sm:self-auto">
-                        <span className="h-1.5 w-1.5 rounded-full bg-sage-deep" />
-                        Active
-                      </span>
-                    </div>
-
-                    <AnimatePresence initial={false}>
-                      {passwordOpen && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                          className="overflow-hidden"
-                        >
-                          <form
-                            onSubmit={handlePasswordSubmit}
-                            className="mt-5 rounded-2xl border border-hairline bg-ivory/60 p-5"
-                          >
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <h3 className="font-serif text-lg tracking-tight text-charcoal">
-                                  Update your password
-                                </h3>
-                                <p className="mt-1 text-[11px] leading-relaxed text-muted-gray">
-                                  Use at least 8 characters you do not use
-                                  anywhere else.
-                                </p>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={closePasswordForm}
-                                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted-gray transition-colors hover:bg-warm-beige hover:text-charcoal"
-                                aria-label="Close password form"
-                              >
-                                <X className="h-4 w-4" />
-                              </button>
-                            </div>
-
-                            <div className="mt-5 space-y-4">
-                              <label className="block">
-                                <span className="field-label">
-                                  Current password
-                                </span>
-                                <input
-                                  type="password"
-                                  name="currentPassword"
-                                  value={passwordForm.currentPassword}
-                                  onChange={handlePasswordChange}
-                                  autoComplete="current-password"
-                                  placeholder="Enter your current password"
-                                  className="field-input"
-                                />
-                              </label>
-
-                              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <label className="block">
-                                  <span className="field-label">
-                                    New password
-                                    <span className="text-[10px] font-normal text-muted-gray">
-                                      At least 8 characters
-                                    </span>
-                                  </span>
-                                  <input
-                                    type="password"
-                                    name="newPassword"
-                                    value={passwordForm.newPassword}
-                                    onChange={handlePasswordChange}
-                                    autoComplete="new-password"
-                                    placeholder="Choose a new password"
-                                    className="field-input"
-                                  />
-                                </label>
-
-                                <label className="block">
-                                  <span className="field-label">
-                                    Confirm new password
-                                  </span>
-                                  <input
-                                    type="password"
-                                    name="confirmPassword"
-                                    value={passwordForm.confirmPassword}
-                                    onChange={handlePasswordChange}
-                                    autoComplete="new-password"
-                                    placeholder="Repeat your new password"
-                                    className="field-input"
-                                  />
-                                </label>
-                              </div>
-                            </div>
-
-                            {passwordError && (
-                              <p
-                                role="alert"
-                                className="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-danger"
-                              >
-                                <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                                {passwordError}
-                              </p>
-                            )}
-
-                            {passwordNotice && (
-                              <p className="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-sage-deep">
-                                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                                {passwordNotice}
-                              </p>
-                            )}
-
-                            <div className="mt-5 flex flex-col-reverse gap-2 border-t border-hairline/70 pt-4 sm:flex-row sm:justify-end">
-                              <button
-                                type="button"
-                                onClick={closePasswordForm}
-                                className="btn-ghost justify-center border border-hairline !px-4 !py-2.5 text-[11px]"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                type="submit"
-                                disabled={changingPassword}
-                                className="btn-sage justify-center !px-5 !py-2.5 text-[10px] disabled:cursor-wait"
-                              >
-                                {changingPassword ? (
-                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                  <KeyRound className="h-3.5 w-3.5" />
-                                )}
-                                {changingPassword
-                                  ? "Updating..."
-                                  : "Update password"}
-                              </button>
-                            </div>
-                          </form>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </Reveal>
-                  <EncryptionSettings
-                    token={token}
-                    ownerId={getAccountId(user)}
-                    onNotice={setNotice}
-                  />
-                </div>
-
-                <aside className="flex flex-col gap-6 lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
-                  <Reveal
-                    as="section"
-                    variant="right"
-                    y={20}
-                    delay={0.1}
-                    blur={false}
-                    className="rounded-3xl border border-hairline bg-paper p-6 shadow-paper"
-                  >
-                    <SectionHeading
-                      icon={Hash}
-                      title="Collections"
-                      description="The tags that gather your pages."
-                    />
-
-                    <div className="mt-5 flex flex-col gap-1">
-                      {tags.length === 0 ? (
-                        <p className="rounded-xl border border-dashed border-hairline bg-ivory/60 px-4 py-5 text-[11px] leading-relaxed text-muted-gray">
-                          Tags you add to entries will gather here for quick
-                          access.
-                        </p>
-                      ) : (
-                        tags.slice(0, 6).map((item, index) => (
-                          <button
-                            key={item.tag}
-                            type="button"
-                            onClick={() => handleSelectTag(item.tag)}
-                            className="group flex items-center gap-3 rounded-xl px-3 py-2 text-left text-[12px] text-charcoal-muted transition-colors hover:bg-warm-beige/60 hover:text-charcoal"
-                          >
-                            <span
-                              className={`h-1.5 w-1.5 rounded-full ${
-                                index % 2 === 0 ? "bg-sage" : "bg-sage-deep"
-                              }`}
-                            />
-                            <span className="truncate">#{item.tag}</span>
-                            <span className="ml-auto text-[10px] text-muted-gray">
-                              {item.count}
-                            </span>
-                            <ArrowRight className="h-3 w-3 text-transparent transition-colors group-hover:text-sage-deep" />
-                          </button>
-                        ))
-                      )}
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleSelectTag("")}
-                      className="mt-4 inline-flex w-full items-center justify-between border-t border-hairline/70 pt-4 text-[11px] text-sage-deep transition-colors hover:text-charcoal"
-                    >
-                      Browse all entries
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </button>
-                  </Reveal>
-
-                  <Reveal
-                    as="section"
-                    variant="scale"
-                    y={20}
-                    delay={0.16}
-                    blur={false}
-                    className="relative overflow-hidden rounded-3xl border border-sage/20 bg-gradient-to-br from-sage-subtle via-paper to-warm-beige p-6 shadow-paper"
-                  >
-                    <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-sage/10 blur-2xl" />
-                    <span className="relative grid h-10 w-10 place-items-center rounded-full bg-paper text-sage-deep shadow-sm">
-                      <Sparkles className="h-4 w-4" />
+              <Reveal
+                as="section"
+                variant="down"
+                y={16}
+                delay={0.06}
+                blur={false}
+                className="mt-10 border-y border-hairline py-8 sm:py-10"
+              >
+                <div className="flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
+                  <div className="flex min-w-0 items-start gap-5 sm:gap-6">
+                    <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-sage/35 bg-sage-subtle/60 font-serif text-3xl text-sage-dark sm:h-20 sm:w-20 sm:text-4xl">
+                      {initial}
                     </span>
-                    <h2 className="relative mt-4 font-serif text-xl tracking-tight text-charcoal">
-                      Yours, always.
+                    <div className="min-w-0">
+                      <h2 className="truncate font-serif text-3xl tracking-tight text-charcoal sm:text-4xl">
+                        {displayName}
+                      </h2>
+                      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-charcoal-muted">
+                        <span className="truncate">{email}</span>
+                        <span className="hidden h-3 w-px bg-hairline sm:block" />
+                        <span className={verified ? "text-sage-dark" : ""}>
+                          {verified ? "Email verified" : "Email not verified"}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-muted-gray">
+                        Joined {memberSince}
+                      </p>
+                    </div>
+                  </div>
+
+                  <dl className="grid grid-cols-1 gap-5 border-t border-hairline pt-6 sm:grid-cols-3 sm:gap-8 xl:min-w-[460px] xl:border-l xl:border-t-0 xl:pl-10 xl:pt-0">
+                    {statItems.map((item) => (
+                      <div key={item.label}>
+                        <dt className="text-[10px] uppercase tracking-wide2 text-muted-gray">
+                          {item.label}
+                        </dt>
+                        <dd className="stat-number mt-1 font-serif text-2xl text-charcoal sm:text-[28px]">
+                          {item.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </Reveal>
+
+              <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(190px,220px)_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[240px_minmax(0,1fr)] xl:gap-16">
+                <SettingsNav
+                  activeSection={activeSection}
+                  onChange={setActiveSection}
+                />
+
+                <section className="min-w-0" aria-label={activeMeta.title}>
+                  <div className="mb-8 border-b border-hairline pb-6">
+                    <span className="eyebrow">{activeMeta.label}</span>
+                    <h2 className="mt-2 font-serif text-3xl tracking-tight text-charcoal sm:text-4xl">
+                      {activeMeta.title}
                     </h2>
-                    <p className="relative mt-2 text-[11px] leading-relaxed text-charcoal-muted">
-                      Your journal is private to this account. Keep it close,
-                      revisit it often, and take a copy whenever you like.
+                    <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-charcoal-muted">
+                      {activeMeta.description}
                     </p>
-                    <Link
-                      to="/insights"
-                      className="relative mt-4 inline-flex items-center gap-1.5 text-[11px] font-medium text-sage-deep transition-colors hover:text-charcoal"
-                    >
-                      See your insights
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </Reveal>
+                  </div>
 
-                  <Reveal
-                    as="section"
-                    variant="fade"
-                    y={14}
-                    delay={0.22}
-                    blur={false}
-                    className="rounded-3xl border border-hairline bg-paper p-6 shadow-paper"
-                  >
-                    <SectionHeading
-                      icon={User}
-                      title="Session"
-                      description="You are signed in on this device."
-                    />
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-hairline bg-ivory/60 px-4 py-3 text-[11px] font-medium uppercase tracking-wide2 text-danger transition-colors hover:border-danger/30 hover:bg-danger/5"
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeSection}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <LogOut className="h-3.5 w-3.5" />
-                      Sign out
-                    </button>
-                  </Reveal>
-
-                  <Reveal
-                    as="section"
-                    variant="fade"
-                    y={14}
-                    delay={0.26}
-                    blur={false}
-                    className="rounded-3xl border border-danger/20 bg-paper p-6 shadow-paper"
-                  >
-                    <SectionHeading
-                      icon={Trash2}
-                      title="Delete account"
-                      description="Permanently remove your account and journal."
-                    />
-                    <p className="mt-4 text-[11px] leading-relaxed text-muted-gray">
-                      This cannot be undone. Export any entries you want to keep
-                      before continuing.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setDeleteError("");
-                        setDeleteDialogOpen(true);
-                      }}
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-danger/20 bg-danger/[0.04] px-4 py-3 text-[11px] font-medium uppercase tracking-wide2 text-danger transition-colors hover:border-danger/40 hover:bg-danger/[0.08]"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      Delete account
-                    </button>
-                  </Reveal>
-                </aside>
+                      {renderSection()}
+                    </motion.div>
+                  </AnimatePresence>
+                </section>
               </div>
 
-              <Reveal
-                as="footer"
-                variant="fade"
-                y={10}
-                blur={false}
-                className="mt-10 flex flex-col gap-3 border-t border-hairline pb-4 pt-6 text-[10px] text-muted-gray sm:flex-row sm:items-center sm:justify-between"
-              >
+              <footer className="mt-14 flex flex-col gap-4 border-t border-hairline pt-6 text-xs text-muted-gray sm:flex-row sm:items-center sm:justify-between">
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-sage" />
-                  Account details and journal data stay private to you
+                  Account details and journal data stay private to you.
                 </span>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-5">
                   <Link
                     to="/dashboard"
                     className="transition-colors hover:text-charcoal"
                   >
                     Dashboard
                   </Link>
-                  <span>•</span>
                   <Link
                     to="/journal"
                     className="transition-colors hover:text-charcoal"
                   >
                     My Journal
                   </Link>
-                  <span>•</span>
                   <Link
                     to="/insights"
                     className="transition-colors hover:text-charcoal"
@@ -895,19 +969,24 @@ export default function ProfilePage() {
                     Insights
                   </Link>
                 </div>
-              </Reveal>
+              </footer>
             </div>
           </main>
         </div>
 
         <ExportDialog
-          key={exportDialogOpen ? `export-open-${exportFormat}` : "export-closed"}
+          key={
+            exportDialogOpen
+              ? `export-open-${exportFormat}-${exportScope}`
+              : "export-closed"
+          }
           open={exportDialogOpen}
           token={token}
           ownerId={getAccountId(user)}
           exporting={Boolean(exporting)}
           exportError={exportError}
           initialFormat={exportFormat}
+          initialScope={exportScope}
           onClose={() => setExportDialogOpen(false)}
           onExport={handleDialogExport}
         />
@@ -920,16 +999,20 @@ export default function ProfilePage() {
           error={deleteError}
         />
 
-        {notice && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            className="fixed bottom-5 right-5 z-[70] rounded-xl border border-hairline bg-paper px-4 py-3 text-[12px] text-charcoal shadow-paper-lg"
-          >
-            {notice}
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {notice ? (
+            <motion.div
+              role="status"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              className="fixed bottom-6 right-6 z-[70] flex items-center gap-3 border border-hairline border-l-sage bg-paper px-5 py-3 text-[13px] text-charcoal shadow-paper-lg"
+            >
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-sage-dark" />
+              {notice}
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
     </PageTransition>
   );

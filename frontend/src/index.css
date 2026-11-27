@@ -124,6 +124,125 @@
     --on-scrim: 248 247 243;
   }
 
+  .profile-shell {
+    color-scheme: light;
+    transition:
+      background-color 260ms ease,
+      color 260ms ease;
+
+    --color-ivory: 249 248 245;
+    --color-paper: 253 252 250;
+    --color-warm-beige: 242 240 234;
+    --color-charcoal: 37 38 34;
+    --color-charcoal-muted: 96 98 90;
+    --color-muted-gray: 107 109 100;
+    --color-sage: 130 148 124;
+    --color-sage-dark: 108 126 102;
+    --color-sage-deep: 82 102 79;
+    --color-sage-darker: 67 84 63;
+    --color-sage-light: 220 227 213;
+    --color-sage-subtle: 232 239 230;
+    --color-hairline: 226 224 217;
+    --color-danger: 161 72 63;
+    --on-danger: 255 255 255;
+
+    --color-scrollbar: 201 199 191;
+    --color-scrollbar-hover: 183 180 170;
+    --color-chart-sage: 125 145 119;
+    --color-chart-sage-soft: 169 191 161;
+    --color-chart-sage-pale: 201 214 194;
+    --color-chart-stone: 102 104 95;
+    --color-chart-stone-light: 168 168 160;
+    --color-chart-sand: 216 201 181;
+
+    --surface: 249 248 245;
+    --surface-dim: 242 240 234;
+    --surface-bright: 253 252 250;
+    --surface-container-lowest: 253 252 250;
+    --surface-container-low: 249 248 245;
+    --surface-container: 242 240 234;
+    --surface-container-high: 226 224 217;
+    --surface-container-highest: 220 227 213;
+    --writing-folio: 253 252 250;
+    --on-surface: 37 38 34;
+    --on-surface-variant: 96 98 90;
+    --secondary-text: 96 98 90;
+    --outline: 107 109 100;
+    --outline-variant: 226 224 217;
+    --primary: 82 102 79;
+    --on-primary: 255 255 255;
+    --primary-container: 220 227 213;
+    --on-primary-container: 67 84 63;
+    --secondary: 139 122 105;
+    --secondary-container: 242 240 234;
+    --on-secondary-container: 102 104 95;
+    --interactive-hover: rgba(37, 38, 34, 0.04);
+    --ruled-line: rgba(37, 38, 34, 0.075);
+    --focus-ring: 82 102 79;
+    --vault-badge: 130 148 124;
+    --shadow-color: 37 38 34;
+    --scrim: 37 38 34;
+    --on-scrim: 249 248 245;
+  }
+
+  .dark .profile-shell {
+    color-scheme: dark;
+
+    --color-ivory: 18 19 18;
+    --color-paper: 24 25 23;
+    --color-warm-beige: 21 22 20;
+    --color-charcoal: 235 233 225;
+    --color-charcoal-muted: 174 176 166;
+    --color-muted-gray: 145 148 139;
+    --color-sage: 146 164 139;
+    --color-sage-dark: 166 182 156;
+    --color-sage-deep: 146 164 139;
+    --color-sage-darker: 166 182 156;
+    --color-sage-light: 36 43 34;
+    --color-sage-subtle: 30 36 28;
+    --color-hairline: 48 50 46;
+    --color-danger: 205 128 119;
+    --on-danger: 31 18 16;
+
+    --color-scrollbar: 54 57 52;
+    --color-scrollbar-hover: 74 78 71;
+    --color-chart-sage: 146 164 139;
+    --color-chart-sage-soft: 166 182 156;
+    --color-chart-sage-pale: 196 208 189;
+    --color-chart-stone: 174 176 166;
+    --color-chart-stone-light: 122 124 117;
+    --color-chart-sand: 178 151 124;
+
+    --surface: 18 19 18;
+    --surface-dim: 14 15 14;
+    --surface-bright: 24 25 23;
+    --surface-container-lowest: 16 17 16;
+    --surface-container-low: 21 22 20;
+    --surface-container: 24 25 23;
+    --surface-container-high: 31 32 29;
+    --surface-container-highest: 38 40 36;
+    --writing-folio: 24 25 23;
+    --on-surface: 235 233 225;
+    --on-surface-variant: 174 176 166;
+    --secondary-text: 200 199 190;
+    --outline: 56 59 54;
+    --outline-variant: 48 50 46;
+    --primary: 146 164 139;
+    --on-primary: 18 21 16;
+    --primary-container: 36 43 34;
+    --on-primary-container: 196 208 189;
+    --secondary: 178 151 124;
+    --secondary-container: 43 37 30;
+    --on-secondary-container: 216 200 185;
+    --interactive-hover: rgba(235, 233, 225, 0.055);
+    --ruled-line: rgba(235, 233, 225, 0.075);
+    --focus-ring: 166 182 156;
+    --vault-badge: 146 164 139;
+    --shadow-color: 0 0 0;
+    --scrim: 9 10 9;
+    --on-scrim: 235 233 225;
+  }
+
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

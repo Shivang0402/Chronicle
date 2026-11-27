@@ -1,4 +1,4 @@
-import { countWords } from "./journal.js";
+import { countWords, formatEntryDate } from "./journal.js";
 import { exportFileName } from "./exportFormats.js";
 import { renderJournalHtml, renderPrintHtml } from "./exportTemplates.js";
 
@@ -49,6 +49,31 @@ export function exportEntriesInBrowser(entries, format) {
     const data = JSON.stringify(safeEntries.map(toExportRecord), null, 2);
     downloadBlob(
       new Blob([data], { type: "application/json;charset=utf-8" }),
+      exportFileName(format, date),
+    );
+    return "downloaded";
+  }
+
+  if (format === "markdown") {
+    const entries = safeEntries.map((entry) => {
+      const record = toExportRecord(entry);
+      return [
+        `# ${record.title || "Untitled entry"}`,
+        `Date: ${formatEntryDate(record.date)}`,
+        record.mood ? `Mood: ${record.mood}` : "",
+        record.tags.length
+          ? `Collections: ${record.tags.map((tag) => `#${tag}`).join(", ")}`
+          : "",
+        "",
+        record.content || "",
+      ]
+        .filter((line) => line !== "")
+        .join("\n");
+    });
+    const header = `# Chronicle journal\n\nExported ${formatEntryDate(date)} · ${safeEntries.length} ${safeEntries.length === 1 ? "entry" : "entries"}\n\n`;
+    const document = `${header}${entries.join("\n\n---\n\n")}\n`;
+    downloadBlob(
+      new Blob([document], { type: "text/markdown;charset=utf-8" }),
       exportFileName(format, date),
     );
     return "downloaded";

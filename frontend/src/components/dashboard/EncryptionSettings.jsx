@@ -1,5 +1,5 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AlertCircle, CheckCircle2, Copy, KeyRound, Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { e2eeApi } from "../../lib/api";
 import { getEncryptionKey } from "../../lib/cryptoSession.js";
 import {
@@ -10,6 +10,40 @@ import {
 } from "../../lib/keyManager.js";
 
 const emptyPassphraseForm = { current: "", next: "", confirm: "" };
+
+function SettingsRow({ label, value, detail, action }) {
+  return (
+    <div className="grid gap-2 py-5 sm:grid-cols-[minmax(150px,0.32fr)_minmax(0,1fr)] sm:gap-8">
+      <div>
+        <p className="text-[13px] font-medium text-charcoal">{label}</p>
+        {detail ? (
+          <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-gray">
+            {detail}
+          </p>
+        ) : null}
+      </div>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
+        <span className="break-words text-[14px] text-charcoal-muted">
+          {value}
+        </span>
+        {action}
+      </div>
+    </div>
+  );
+}
+
+function TextAction({ children, onClick, disabled = false }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="border-b border-sage/50 pb-0.5 text-[13px] font-medium text-sage-dark transition-colors hover:border-sage hover:text-charcoal disabled:cursor-wait disabled:opacity-50"
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function EncryptionSettings({ token, ownerId, onNotice }) {
   const [metadata, setMetadata] = useState(null);
@@ -27,21 +61,35 @@ export default function EncryptionSettings({ token, ownerId, onNotice }) {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    e2eeApi.getMetadata(token)
-      .then((result) => { if (active) setMetadata(result); })
-      .catch((failure) => { if (active) setLoadError(failure?.message || "Could not load encryption settings."); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
+    e2eeApi
+      .getMetadata(token)
+      .then((result) => {
+        if (active) setMetadata(result);
+      })
+      .catch((failure) => {
+        if (active)
+          setLoadError(failure?.message || "Could not load encryption settings.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [token]);
 
-  const updateForm = (event) => setForm((value) => ({ ...value, [event.target.name]: event.target.value }));
+  const updateForm = (event) =>
+    setForm((value) => ({ ...value, [event.target.name]: event.target.value }));
 
   const saveMetadata = async (nextMetadata) => {
-    const result = await e2eeApi.updateMetadata({
-      passphraseWrap: nextMetadata.passphraseWrap,
-      recoveryWrap: nextMetadata.recoveryWrap,
-    }, nextMetadata.revision, token);
+    const result = await e2eeApi.updateMetadata(
+      {
+        passphraseWrap: nextMetadata.passphraseWrap,
+        recoveryWrap: nextMetadata.recoveryWrap,
+      },
+      nextMetadata.revision,
+      token,
+    );
     setMetadata(result);
     return result;
   };
@@ -50,13 +98,22 @@ export default function EncryptionSettings({ token, ownerId, onNotice }) {
     event.preventDefault();
     setError("");
     setNotice("");
-    if (form.next.length < 12) return setError("Choose an encryption passphrase with at least 12 characters.");
-    if (form.next !== form.confirm) return setError("The new passphrases do not match.");
-    if (form.current === form.next) return setError("Choose a different passphrase.");
-    if (!metadata?.metadata || !getEncryptionKey(ownerId)) return setError("Unlock your Chronicle before changing its encryption settings.");
+    if (form.next.length < 12)
+      return setError("Choose an encryption passphrase with at least 12 characters.");
+    if (form.next !== form.confirm)
+      return setError("The new passphrases do not match.");
+    if (form.current === form.next)
+      return setError("Choose a different passphrase.");
+    if (!metadata?.metadata || !getEncryptionKey(ownerId))
+      return setError("Unlock your Chronicle before changing its encryption settings.");
     setBusy(true);
     try {
-      const updatedMetadata = await rewrapPassphrase(form.current, form.next, ownerId, metadata.metadata);
+      const updatedMetadata = await rewrapPassphrase(
+        form.current,
+        form.next,
+        ownerId,
+        metadata.metadata,
+      );
       await saveMetadata({ ...updatedMetadata, revision: metadata.metadata.revision });
       setForm(emptyPassphraseForm);
       setPassphraseOpen(false);
@@ -64,20 +121,32 @@ export default function EncryptionSettings({ token, ownerId, onNotice }) {
       setNotice(message);
       onNotice?.(message);
     } catch (failure) {
-      setError(failure?.status === 409 ? "Encryption settings changed in another session. Reload the page and try again." : failure?.message || "Could not change the encryption passphrase.");
+      setError(
+        failure?.status === 409
+          ? "Encryption settings changed in another session. Reload the page and try again."
+          : failure?.message || "Could not change the encryption passphrase.",
+      );
     } finally {
       setBusy(false);
     }
   };
 
-  const prepareRecoveryRotation = async () => {
+  const prepareRecoveryRotation = async (event) => {
+    event.preventDefault();
     setError("");
     setNotice("");
-    if (!form.current) return setError("Enter your current encryption passphrase to create a new Recovery Key.");
-    if (!metadata?.metadata || !getEncryptionKey(ownerId)) return setError("Unlock your Chronicle before changing its encryption settings.");
+    if (!form.current)
+      return setError("Enter your current encryption passphrase to create a new Recovery Key.");
+    if (!metadata?.metadata || !getEncryptionKey(ownerId))
+      return setError("Unlock your Chronicle before changing its encryption settings.");
     setBusy(true);
     try {
-      const masterKey = await unlockWithPassphrase(form.current, ownerId, metadata.metadata.passphraseWrap, { extractable: true });
+      const masterKey = await unlockWithPassphrase(
+        form.current,
+        ownerId,
+        metadata.metadata.passphraseWrap,
+        { extractable: true },
+      );
       const recoveryKey = createRecoveryKey();
       const recoveryWrap = await createRecoveryWrap(masterKey, recoveryKey, ownerId);
       setRecoveryDraft({ recoveryKey, recoveryWrap });
@@ -95,7 +164,11 @@ export default function EncryptionSettings({ token, ownerId, onNotice }) {
     setBusy(true);
     setError("");
     try {
-      await saveMetadata({ ...metadata.metadata, revision: metadata.metadata.revision, recoveryWrap: recoveryDraft.recoveryWrap });
+      await saveMetadata({
+        ...metadata.metadata,
+        revision: metadata.metadata.revision,
+        recoveryWrap: recoveryDraft.recoveryWrap,
+      });
       setRecoveryDraft(null);
       setRotating(false);
       setForm(emptyPassphraseForm);
@@ -103,7 +176,11 @@ export default function EncryptionSettings({ token, ownerId, onNotice }) {
       setNotice(message);
       onNotice?.(message);
     } catch (failure) {
-      setError(failure?.status === 409 ? "Encryption settings changed in another session. Reload the page and try again." : failure?.message || "Could not save the new Recovery Key.");
+      setError(
+        failure?.status === 409
+          ? "Encryption settings changed in another session. Reload the page and try again."
+          : failure?.message || "Could not save the new Recovery Key.",
+      );
     } finally {
       setBusy(false);
     }
@@ -119,9 +196,10 @@ export default function EncryptionSettings({ token, ownerId, onNotice }) {
     }
   };
 
-  const cancelRecoveryRotation = () => {
-    setRecoveryDraft(null);
+  const cancelForms = () => {
+    setPassphraseOpen(false);
     setRotating(false);
+    setRecoveryDraft(null);
     setForm(emptyPassphraseForm);
     setError("");
   };
@@ -130,74 +208,257 @@ export default function EncryptionSettings({ token, ownerId, onNotice }) {
   const encryptionMetadata = metadata?.metadata;
 
   return (
-    <section className="rounded-3xl border border-hairline bg-paper p-6 shadow-paper sm:p-7">
-      <div className="flex items-start gap-3">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sage-subtle text-sage-deep"><LockKeyhole className="h-4 w-4" /></span>
-        <div>
-          <h2 className="font-serif text-xl tracking-tight text-charcoal">Encryption & recovery</h2>
-          <p className="mt-1 text-[12px] leading-relaxed text-charcoal-muted">Manage the keys that protect your journal on this account.</p>
-        </div>
+    <section className="scroll-mt-24 space-y-8" id="encryption-settings">
+      <div className="border-b border-hairline pb-6">
+        <h3 className="font-serif text-2xl tracking-tight text-charcoal sm:text-[28px]">
+          Encryption & recovery
+        </h3>
+        <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-charcoal-muted">
+          New entries are encrypted before they leave this device. Chronicle
+          cannot read them or recover your keys.
+        </p>
       </div>
 
       {loading ? (
-        <p className="mt-5 flex items-center gap-2 text-xs text-muted-gray"><Loader2 className="h-4 w-4 animate-spin" />Loading encryption details…</p>
+        <p className="text-[13px] text-muted-gray" role="status">
+          Loading encryption details…
+        </p>
       ) : loadError ? (
-        <p role="alert" className="mt-5 text-xs text-danger">{loadError}</p>
+        <p className="text-[13px] leading-relaxed text-danger" role="alert">
+          {loadError}
+        </p>
       ) : configured ? (
         <>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-hairline bg-warm-beige/40 p-4">
-              <p className="flex items-center gap-2 text-[12px] font-medium text-charcoal"><ShieldCheck className="h-4 w-4 text-sage-deep" />End-to-end encryption</p>
-              <p className="mt-2 text-[11px] leading-relaxed text-charcoal-muted">New entry content is encrypted in your browser with AES-256-GCM before storage. Dates remain visible, existing entries are not migrated, and Chronicle does not store your passphrase.</p>
-              <span className="mt-3 inline-flex rounded-full bg-sage-subtle px-2.5 py-1 text-[9px] font-medium uppercase tracking-wide2 text-sage-deep">{getEncryptionKey(ownerId) ? "Unlocked on this device" : "Set up"}</span>
-            </div>
-            <div className="rounded-2xl border border-hairline bg-warm-beige/40 p-4">
-              <p className="flex items-center gap-2 text-[12px] font-medium text-charcoal"><KeyRound className="h-4 w-4 text-sage-deep" />Recovery Key</p>
-              <p className="mt-2 text-[11px] leading-relaxed text-charcoal-muted">A separate key can unlock your journal if you forget the passphrase. It is only shown when first created or rotated, and cannot be recovered by Chronicle.</p>
-              <span className="mt-3 inline-flex rounded-full bg-sage-subtle px-2.5 py-1 text-[9px] font-medium uppercase tracking-wide2 text-sage-deep">{encryptionMetadata?.recoveryWrap ? "Configured · value hidden" : "Not available"}</span>
-            </div>
+          <div className="divide-y divide-hairline border-y border-hairline">
+            <SettingsRow
+              label="End-to-end encryption"
+              value="Active · AES-256-GCM"
+            />
+            <SettingsRow
+              label="This device"
+              value={getEncryptionKey(ownerId) ? "Unlocked" : "Locked"}
+            />
+            <SettingsRow
+              label="Encryption passphrase"
+              value="Configured · value hidden"
+              action={
+                !passphraseOpen && !rotating ? (
+                  <TextAction
+                    onClick={() => {
+                      setPassphraseOpen(true);
+                      setRotating(false);
+                      setRecoveryDraft(null);
+                      setError("");
+                    }}
+                  >
+                    Change passphrase
+                  </TextAction>
+                ) : null
+              }
+            />
+            <SettingsRow
+              label="Recovery key"
+              value={
+                encryptionMetadata?.recoveryWrap
+                  ? "Configured · value hidden"
+                  : "Not available"
+              }
+              action={
+                !passphraseOpen && !rotating ? (
+                  <TextAction
+                    onClick={() => {
+                      setRotating(true);
+                      setPassphraseOpen(false);
+                      setRecoveryDraft(null);
+                      setError("");
+                    }}
+                  >
+                    Replace Recovery Key
+                  </TextAction>
+                ) : null
+              }
+            />
           </div>
 
-          <div className="mt-4 rounded-xl border border-hairline px-4 py-3 text-[10px] leading-relaxed text-muted-gray">
-            Encryption uses AES-256-GCM with a 256-bit master key. Your passphrase is processed with Argon2id (64 MiB, 3 passes). Changing the passphrase rewraps the same master key, so encrypted entries remain readable. Encrypted entries are not yet included in server search, insights, or exports.
-          </div>
+          <p className="rounded-lg border-l border-sage/50 pl-5 text-[13px] leading-relaxed text-charcoal-muted">
+            Keep your Recovery Key offline. Chronicle cannot recover it for you.
+          </p>
 
-          {recoveryDraft ? (
-            <div className="mt-5 rounded-2xl border border-sage/30 bg-sage-subtle/40 p-4">
-              <p className="text-[12px] font-medium text-charcoal">Save your new Recovery Key</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-charcoal-muted">The old Recovery Key will stop working after you save this one. This value will not be shown again.</p>
-              <div className="mt-3 flex gap-2">
-                <input aria-label="New Recovery Key" readOnly value={recoveryDraft.recoveryKey} onFocus={(event) => event.target.select()} className="field-input min-w-0 flex-1 font-mono text-[10px]" />
-                <button type="button" onClick={copyRecoveryKey} aria-label="Copy new Recovery Key" className="rounded-xl border border-hairline px-3 text-charcoal">{copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}</button>
-              </div>
-              <label className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-charcoal-muted"><input type="checkbox" checked={savedAcknowledged} onChange={(event) => setSavedAcknowledged(event.target.checked)} className="mt-0.5 accent-sage-deep" />I saved the new Recovery Key somewhere safe.</label>
-              <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                <button type="button" onClick={cancelRecoveryRotation} className="btn-ghost border border-hairline !px-4 !py-2 text-[10px]">Cancel</button>
-                <button type="button" disabled={!savedAcknowledged || busy} onClick={saveRecoveryRotation} className="btn-sage !px-4 !py-2 text-[10px] disabled:opacity-50">{busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}Save new key</button>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-              <button type="button" onClick={() => { setPassphraseOpen((value) => !value); setRotating(false); setRecoveryDraft(null); setError(""); }} className="btn-ghost justify-center border border-hairline !px-4 !py-2.5 text-[10px]">Change encryption passphrase</button>
-              <button type="button" onClick={() => { setRotating((value) => !value); setPassphraseOpen(false); setError(""); }} className="btn-ghost justify-center border border-hairline !px-4 !py-2.5 text-[10px]">Replace Recovery Key</button>
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {recoveryDraft ? (
+              <motion.div
+                key="recovery-draft"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="border-y border-hairline py-6">
+                  <h4 className="font-serif text-xl tracking-tight text-charcoal">
+                    Save your new Recovery Key
+                  </h4>
+                  <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-charcoal-muted">
+                    This will not be shown again.
+                  </p>
+                  <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                    <input
+                      aria-label="New Recovery Key"
+                      readOnly
+                      value={recoveryDraft.recoveryKey}
+                      onFocus={(event) => event.target.select()}
+                      className="field-input !rounded-lg min-w-0 flex-1 font-mono text-xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={copyRecoveryKey}
+                      className="shrink-0 border border-hairline px-5 py-3 text-[13px] font-medium text-charcoal transition-colors hover:border-sage/60 hover:text-sage-dark"
+                    >
+                      {copied ? "Copied" : "Copy key"}
+                    </button>
+                  </div>
+                  <label className="mt-4 flex items-start gap-3 text-[13px] leading-relaxed text-charcoal-muted">
+                    <input
+                      type="checkbox"
+                      checked={savedAcknowledged}
+                      onChange={(event) => setSavedAcknowledged(event.target.checked)}
+                      className="mt-0.5 accent-sage-deep"
+                    />
+                    I saved the new Recovery Key somewhere safe.
+                  </label>
+                  <div className="mt-5 flex flex-wrap justify-end gap-5">
+                    <button
+                      type="button"
+                      onClick={cancelForms}
+                      className="text-[13px] text-muted-gray transition-colors hover:text-charcoal"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!savedAcknowledged || busy}
+                      onClick={saveRecoveryRotation}
+                      className="border-b border-sage/60 pb-0.5 text-[13px] font-medium text-sage-dark transition-colors hover:border-sage hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {busy ? "Saving key…" : "Save new key"}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
 
-          {(passphraseOpen || rotating) && !recoveryDraft && (
-            <form onSubmit={rotating ? (event) => { event.preventDefault(); prepareRecoveryRotation(); } : changePassphrase} className="mt-4 space-y-3 rounded-2xl border border-hairline bg-ivory/60 p-4">
-              <p className="text-[11px] leading-relaxed text-charcoal-muted">{rotating ? "Confirm your encryption passphrase to create a replacement Recovery Key." : "Confirm your current passphrase, then choose a new one (at least 12 characters)."}</p>
-              <label className="block"><span className="field-label">Current encryption passphrase</span><input required type="password" autoComplete="current-password" name="current" value={form.current} onChange={updateForm} className="field-input" /></label>
-              {!rotating && <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="field-label">New passphrase (12+ characters)</span><input required minLength={12} type="password" autoComplete="new-password" name="next" value={form.next} onChange={updateForm} className="field-input" /></label><label className="block"><span className="field-label">Confirm new passphrase</span><input required minLength={12} type="password" autoComplete="new-password" name="confirm" value={form.confirm} onChange={updateForm} className="field-input" /></label></div>}
-              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><button type="button" onClick={() => { setPassphraseOpen(false); setRotating(false); setForm(emptyPassphraseForm); setError(""); }} className="btn-ghost border border-hairline !px-4 !py-2 text-[10px]">Cancel</button><button type="submit" disabled={busy} className="btn-sage !px-4 !py-2 text-[10px]">{busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}{rotating ? "Create new Recovery Key" : "Update passphrase"}</button></div>
-            </form>
-          )}
-          {error && <p role="alert" className="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-danger"><AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />{error}</p>}
-          {notice && <p role="status" className="mt-4 flex items-start gap-2 text-[11px] text-sage-deep"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" />{notice}</p>}
+          <AnimatePresence initial={false}>
+            {(passphraseOpen || rotating) && !recoveryDraft ? (
+              <motion.form
+                key="encryption-form"
+                onSubmit={rotating ? prepareRecoveryRotation : changePassphrase}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-5 border-y border-hairline py-6">
+                  <div className="flex items-start justify-between gap-6">
+                    <div>
+                      <h4 className="font-serif text-xl tracking-tight text-charcoal">
+                        {rotating ? "Create a replacement Recovery Key" : "Change encryption passphrase"}
+                      </h4>
+                      <p className="mt-2 text-[13px] leading-relaxed text-charcoal-muted">
+                        {rotating
+                          ? "Confirm your passphrase to create a new key."
+                          : "Choose a new passphrase with at least 12 characters."}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={cancelForms}
+                      className="shrink-0 text-[13px] text-muted-gray transition-colors hover:text-charcoal"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+
+                  <label className="block">
+                    <span className="field-label">Current encryption passphrase</span>
+                    <input
+                      required
+                      type="password"
+                      autoComplete="current-password"
+                      name="current"
+                      value={form.current}
+                      onChange={updateForm}
+                      className="field-input !rounded-lg"
+                    />
+                  </label>
+
+                  {!rotating ? (
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <label className="block">
+                        <span className="field-label">New passphrase</span>
+                        <input
+                          required
+                          minLength={12}
+                          type="password"
+                          autoComplete="new-password"
+                          name="next"
+                          value={form.next}
+                          onChange={updateForm}
+                          className="field-input !rounded-lg"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="field-label">Confirm new passphrase</span>
+                        <input
+                          required
+                          minLength={12}
+                          type="password"
+                          autoComplete="new-password"
+                          name="confirm"
+                          value={form.confirm}
+                          onChange={updateForm}
+                          className="field-input !rounded-lg"
+                        />
+                      </label>
+                    </div>
+                  ) : null}
+
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={busy}
+                      className="border-b border-sage/60 pb-0.5 text-[13px] font-medium text-sage-dark transition-colors hover:border-sage hover:text-charcoal disabled:cursor-wait disabled:opacity-50"
+                    >
+                      {busy
+                        ? "Working…"
+                        : rotating
+                          ? "Create new Recovery Key"
+                          : "Update passphrase"}
+                    </button>
+                  </div>
+                </div>
+              </motion.form>
+            ) : null}
+          </AnimatePresence>
+
+          {error ? (
+            <p className="text-[13px] leading-relaxed text-danger" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {notice ? (
+            <p className="text-[13px] leading-relaxed text-sage-dark" role="status">
+              {notice}
+            </p>
+          ) : null}
         </>
       ) : (
-        <div className="mt-5 rounded-2xl border border-hairline bg-warm-beige/40 p-4">
-          <p className="text-[12px] font-medium text-charcoal">Encryption is not configured</p>
-          <p className="mt-1 text-[11px] leading-relaxed text-charcoal-muted">Your account does not currently have a passphrase or Recovery Key set up.</p>
+        <div className="border-y border-hairline py-6">
+          <p className="text-[14px] text-charcoal">Encryption is not configured.</p>
+          <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-charcoal-muted">
+            Complete setup when you unlock Chronicle.
+          </p>
         </div>
       )}
     </section>
