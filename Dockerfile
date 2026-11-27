@@ -1,7 +1,6 @@
 FROM node:22-bookworm-slim AS deps
 
 WORKDIR /app
-ENV PUPPETEER_CACHE_DIR=/app/.cache/puppeteer
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
@@ -9,8 +8,7 @@ RUN npm ci --omit=dev
 FROM node:22-bookworm-slim AS runtime
 
 ENV NODE_ENV=production \
-    PORT=4444 \
-    PUPPETEER_CACHE_DIR=/app/.cache/puppeteer
+    PORT=4444
 
 WORKDIR /app
 
@@ -48,7 +46,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --chown=node:node --from=deps /app/node_modules ./node_modules
-COPY --chown=node:node --from=deps /app/.cache/puppeteer ./.cache/puppeteer
 COPY --chown=node:node package.json package-lock.json ./
 COPY --chown=node:node src ./src
 
