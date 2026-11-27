@@ -35,7 +35,7 @@ const safeHref = (value) => {
 const safeImageSrc = (value) => {
   const src = String(value || "").trim();
 
-  return /^https?:/i.test(src) ? src : "";
+  return /^https?:/i.test(src) || /^chronicle-e2ee:[A-Za-z0-9_-]+$/i.test(src) ? src : "";
 };
 
 const renderInline = (text, keyPrefix, resolveImage) =>
