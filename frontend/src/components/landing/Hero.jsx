@@ -2,14 +2,14 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedText from "../ui/AnimatedText";
-import Reveal, { RevealImage } from "../ui/Reveal";
+import Reveal from "../ui/Reveal";
 
 const WORDMARK = "Chronicle";
 
 export default function Hero() {
   const reduce = useReducedMotion();
   return (
-    <section className="relative overflow-hidden pb-20 pt-8 md:pb-32 md:pt-12">
+    <section className="relative overflow-hidden pb-16 pt-8 md:pb-24 md:pt-12">
       <div className="pointer-events-none absolute inset-0 paper-texture opacity-80" />
       <div className="pointer-events-none absolute -left-40 top-32 h-96 w-96 rounded-full bg-sage-light/25 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 top-0 h-80 w-80 rounded-full bg-warm-beige/70 blur-3xl" />
@@ -105,38 +105,6 @@ export default function Hero() {
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1 }} className="mt-8 max-w-sm text-sm font-light leading-relaxed text-charcoal-muted">
             A few quiet minutes can change how you remember an ordinary day.
           </motion.p>
-        </div>
-
-        <div className="mt-12 overflow-hidden border border-hairline bg-paper shadow-paper md:mt-16">
-          <div className="relative flex flex-col">
-            <RevealImage
-              variant="fade"
-              onMount
-              delay={0.75}
-              y={0}
-              duration={1}
-            >
-              <div className="aspect-[16/10] overflow-hidden bg-hairline md:aspect-[2.15/1]">
-                <img
-                  src="/images/hero-journal.jpg"
-                  alt="Open linen journal on a sunlit wooden writing desk"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            </RevealImage>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.15 }}
-              className="flex items-center justify-between gap-4 px-4 py-3 text-[11px] text-muted-gray sm:px-6"
-            >
-              <span className="font-serif italic text-charcoal">
-                Study of morning light and desk journal
-              </span>
-              <span className="uppercase tracking-wider">Morning study</span>
-            </motion.div>
-          </div>
-
         </div>
 
         <motion.div
