@@ -26,7 +26,7 @@ export default function ClosingCTA() {
         />
         <Reveal variant="scale" delay={0.24} y={14} blur={false}>
           <p className="mx-auto mt-6 max-w-xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-            A few honest lines are enough to begin.
+            A few honest lines are enough to begin. Only you can read them.
           </p>
         </Reveal>
         <Reveal variant="scale" delay={0.36} y={12} blur={false}>

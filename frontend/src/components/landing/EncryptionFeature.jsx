@@ -1,140 +1,123 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, EyeOff, KeyRound, LockKeyhole, ShieldCheck } from "lucide-react";
+import { ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
-import AnimatedText from "../ui/AnimatedText";
-import Reveal, { RevealGroup, RevealItem } from "../ui/Reveal";
 
-const protections = [
-  {
-    icon: LockKeyhole,
-    title: "Encrypted before it leaves",
-    body: "Your entry text, title, mood, and tags are encrypted in your browser before they are saved.",
-  },
-  {
-    icon: EyeOff,
-    title: "Your keys stay with you",
-    body: "Your encryption passphrase is never sent to Chronicle. Only you can unlock your journal on a device.",
-  },
-  {
-    icon: KeyRound,
-    title: "A recovery key you control",
-    body: "Keep a separate Recovery Key somewhere safe in case you forget your passphrase. It is shown only when created.",
-  },
-];
+const easing = [0.16, 1, 0.3, 1];
 
 export default function EncryptionFeature() {
-  const reduce = useReducedMotion();
+  const reduce = Boolean(useReducedMotion());
+
+  const rise = {
+    hidden: { opacity: 0, y: reduce ? 0 : 22, filter: reduce ? "blur(0px)" : "blur(4px)" },
+    visible: (delay = 0) => ({
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration: reduce ? 0.01 : 0.7, delay: reduce ? 0 : delay, ease: easing },
+    }),
+  };
+
+  const seal = {
+    hidden: { opacity: 0, scale: reduce ? 1 : 0.86, y: reduce ? 0 : 14 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: reduce
+        ? { duration: 0.01 }
+        : { type: "spring", stiffness: 180, damping: 18, delay: 1.15 },
+    },
+  };
+
+  const ring = {
+    hidden: { opacity: 0, scale: reduce ? 1 : 0.78 },
+    visible: {
+      opacity: 0.65,
+      scale: 1,
+      transition: { duration: reduce ? 0.01 : 1.1, delay: reduce ? 0 : 1.25, ease: easing },
+    },
+  };
+
+  const sealLabel = {
+    hidden: { opacity: 0, y: reduce ? 0 : 8 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: reduce ? 0.01 : 0.65, delay: reduce ? 0 : 1.4, ease: easing },
+    },
+  };
 
   return (
-    <section id="privacy" className="relative overflow-hidden bg-warm-beige/40 py-14 sm:py-20 md:py-28">
-      <div aria-hidden="true" className="pointer-events-none absolute -right-24 top-10 h-80 w-80 rounded-full bg-sage-light/25 blur-3xl" />
-      <div className="relative mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
-        <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
-          <div className="lg:col-span-6">
-            <Reveal variant="left" y={18} blur={false}>
-              <span className="eyebrow mb-4 inline-flex items-center gap-2">
-                <ShieldCheck className="h-3.5 w-3.5 text-sage-deep" />
-                Private from the first line
-              </span>
-            </Reveal>
-            <AnimatedText
-              as="h2"
-              mode="slide"
-              once={false}
-              delay={0.08}
-              className="max-w-xl font-serif text-3xl leading-tight tracking-tight text-charcoal sm:text-5xl"
-              lines={[
-                [{ text: "Your thoughts" }],
-                [{ text: "are yours to keep.", italic: true, className: "text-sage-deep" }],
-              ]}
-            />
-            <Reveal variant="left" delay={0.18} y={16} blur={false}>
-              <p className="mt-5 max-w-xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-                Chronicle uses end-to-end encryption to protect new journal entries. They are encrypted on your device before saving, and decrypted in your browser when you return.
-              </p>
-              <p className="mt-3 max-w-xl text-[11px] leading-relaxed text-muted-gray">
-                Entry dates remain visible so your journal can be ordered. Older entries are not automatically migrated.
-              </p>
-            </Reveal>
+    <section id="privacy" className="relative scroll-mt-24 overflow-hidden bg-warm-beige/40 py-20 sm:py-28 md:py-32">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 paper-texture opacity-60" />
+      <div aria-hidden="true" className="pointer-events-none absolute -left-32 top-4 h-80 w-80 rounded-full bg-sage-light/25 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-40 bottom-0 h-96 w-96 rounded-full bg-sage-subtle/45 blur-3xl" />
 
-            <Reveal variant="fade" delay={0.26} y={10} blur={false}>
-              <Link to="/auth?mode=register" className="btn-primary group mt-7">
-                <span>Start a private journal</span>
-                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
-            </Reveal>
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.25 }}
+        className="relative mx-auto max-w-5xl px-6 text-center sm:px-10 lg:px-16"
+      >
+        <motion.div variants={rise} custom={0.04} className="flex items-center justify-center gap-3">
+          <span aria-hidden="true" className="h-px w-8 bg-sage/60 sm:w-12" />
+          <span className="eyebrow inline-flex items-center gap-2">
+            <ShieldCheck aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={1.5} />
+            A private journal, by design
+          </span>
+          <span aria-hidden="true" className="h-px w-8 bg-sage/60 sm:w-12" />
+        </motion.div>
+
+        <motion.h2 variants={rise} custom={0.16} className="mx-auto mt-8 max-w-4xl font-serif text-[38px] leading-[1.08] tracking-tight text-charcoal sm:text-6xl lg:text-[72px]">
+          <span className="block">Your words are</span>
+          <span className="block italic text-sage-deep">yours alone.</span>
+        </motion.h2>
+
+        <motion.p variants={rise} custom={0.4} className="mx-auto mt-7 max-w-2xl text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
+          Every new entry is encrypted on your device before it&apos;s saved. Only you can unlock it again.
+        </motion.p>
+
+        <div
+          role="img"
+          aria-label="Your entry is written by you, protected end-to-end, and read only by you"
+          className="mt-11 flex flex-col items-center sm:mt-14"
+        >
+          <div className="flex w-full items-center justify-center gap-3 sm:gap-5">
+            <motion.div variants={rise} custom={0.85} className="flex items-center gap-2 text-[9px] font-medium uppercase tracking-wide2 text-muted-gray sm:text-[10px]">
+              <span aria-hidden="true" className="h-px w-6 bg-sage/30 sm:w-10" />
+              Written by you
+            </motion.div>
+
+            <motion.div variants={seal} className="relative grid h-14 w-14 shrink-0 place-items-center rounded-full bg-sage-subtle/60 text-sage-deep sm:h-16 sm:w-16">
+              <motion.span aria-hidden="true" variants={ring} className="absolute inset-0 rounded-full border border-sage/40" />
+              <motion.span aria-hidden="true" variants={ring} className="absolute inset-1.5 rounded-full border border-sage/20" />
+              <LockKeyhole aria-hidden="true" className="relative h-5 w-5" strokeWidth={1.4} />
+            </motion.div>
+
+            <motion.div variants={rise} custom={0.85} className="flex items-center gap-2 text-[9px] font-medium uppercase tracking-wide2 text-muted-gray sm:text-[10px]">
+              Read by you
+              <span aria-hidden="true" className="h-px w-6 bg-sage/30 sm:w-10" />
+            </motion.div>
           </div>
 
-          <div className="lg:col-span-6">
-            <Reveal variant="scale" y={16} blur={false}>
-              <div className="relative overflow-hidden rounded-3xl border border-hairline bg-paper p-5 shadow-paper-lg sm:p-7">
-                <div className="flex items-center justify-between gap-4 border-b border-hairline pb-4">
-                  <div>
-                    <p className="text-[9px] uppercase tracking-wide2 text-muted-gray">Your writing, protected</p>
-                    <p className="mt-1 font-serif text-lg text-charcoal">Private by design</p>
-                  </div>
-                  <span className="grid h-11 w-11 place-items-center rounded-full bg-sage-subtle text-sage-deep">
-                    <ShieldCheck className="h-5 w-5" />
-                  </span>
-                </div>
-
-                <div className="my-5 hidden grid-cols-[1fr_auto_1fr] items-center gap-2 sm:grid sm:gap-4">
-                  <div className="rounded-2xl border border-sage/20 bg-sage-subtle/50 p-3 text-center sm:p-4">
-                    <span className="mx-auto grid h-9 w-9 place-items-center rounded-full bg-paper text-sage-deep shadow-sm"><KeyRound className="h-4 w-4" /></span>
-                    <p className="mt-2 text-[10px] font-medium text-charcoal">Your browser</p>
-                    <p className="mt-1 text-[9px] leading-relaxed text-muted-gray">Encrypts &amp; decrypts</p>
-                  </div>
-                  <motion.div
-                    aria-hidden="true"
-                    animate={reduce ? undefined : { opacity: [0.35, 1, 0.35] }}
-                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-                    className="flex flex-col items-center gap-1 text-sage-deep"
-                  >
-                    <span className="h-px w-7 bg-sage sm:w-12" />
-                    <span className="text-[8px] uppercase tracking-wider">ciphertext</span>
-                    <span className="h-px w-7 bg-sage sm:w-12" />
-                  </motion.div>
-                  <div className="rounded-2xl border border-hairline bg-ivory/80 p-3 text-center sm:p-4">
-                    <span className="mx-auto grid h-9 w-9 place-items-center rounded-full bg-paper text-charcoal-muted shadow-sm"><LockKeyhole className="h-4 w-4" /></span>
-                    <p className="mt-2 text-[10px] font-medium text-charcoal">Chronicle storage</p>
-                    <p className="mt-1 text-[9px] leading-relaxed text-muted-gray">Keeps encrypted entries</p>
-                  </div>
-                </div>
-
-                <div className="my-4 flex items-center gap-2 rounded-xl border border-sage/20 bg-sage-subtle/40 px-3 py-2 text-[10px] text-charcoal-muted sm:hidden">
-                  <LockKeyhole className="h-3.5 w-3.5 shrink-0 text-sage-deep" />
-                  <span>Encrypted in your browser <span className="mx-1 text-sage-deep">→</span> stored as ciphertext</span>
-                </div>
-
-                <div className="rounded-2xl border border-hairline bg-ivory/60 px-4 py-3">
-                  <div className="flex items-center justify-between text-[9px] uppercase tracking-wider text-muted-gray">
-                    <span>Encryption</span><span>AES-256-GCM</span>
-                  </div>
-                  <div className="mt-2 flex gap-1" aria-hidden="true">
-                    {Array.from({ length: 28 }, (_, index) => (
-                      <span key={index} className={`h-1.5 flex-1 rounded-full ${index % 5 === 0 ? "bg-sage/45" : "bg-sage-deep/15"}`} />
-                    ))}
-                  </div>
-                </div>
-
-                <RevealGroup className="mt-4 grid gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3" delay={0.12} stagger={0.07}>
-                  {protections.map(({ icon: Icon, title, body }) => (
-                    <RevealItem key={title} variant="up" y={10}>
-                      <article className="flex items-start gap-3 rounded-xl border border-hairline bg-paper p-3 sm:h-full sm:block sm:rounded-2xl sm:p-3.5">
-                        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-sage-deep" />
-                        <div>
-                          <h3 className="font-serif text-[13px] leading-snug text-charcoal sm:mt-2">{title}</h3>
-                          <p className="mt-1 text-[10px] leading-relaxed text-charcoal-muted sm:mt-1.5 sm:text-[9px]">{body}</p>
-                        </div>
-                      </article>
-                    </RevealItem>
-                  ))}
-                </RevealGroup>
-              </div>
-            </Reveal>
-          </div>
+          <motion.div variants={sealLabel} className="mt-5 flex items-center gap-3 text-[10px] font-medium uppercase tracking-wide2 text-sage-deep sm:mt-6 sm:text-[11px]">
+            <span aria-hidden="true" className="h-px w-8 bg-sage/40" />
+            End-to-end encrypted
+            <span aria-hidden="true" className="h-px w-8 bg-sage/40" />
+          </motion.div>
         </div>
-      </div>
+
+        <motion.p variants={rise} custom={1.6} className="mx-auto mt-4 max-w-md font-serif text-sm italic leading-relaxed text-charcoal-muted sm:text-base">
+          A quiet seal around every entry.
+        </motion.p>
+
+        <motion.div variants={rise} custom={1.85} className="mt-10 flex justify-center sm:mt-12">
+          <Link to="/auth?mode=register" className="btn-primary group">
+            <span>Start writing privately</span>
+            <ArrowRight aria-hidden="true" className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

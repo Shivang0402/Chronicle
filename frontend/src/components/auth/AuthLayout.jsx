@@ -77,7 +77,7 @@ export default function AuthLayout({ children }) {
                 <span className="h-1 w-1 rounded-full bg-hairline" />
                 <span className="flex items-center gap-1.5">
                   <ShieldCheck className="h-3 w-3 text-sage" />
-                  JWT sessions
+                  Encrypted journals
                 </span>
                 <span className="h-1 w-1 rounded-full bg-hairline" />
                 <span>No trackers</span>

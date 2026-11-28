@@ -58,7 +58,7 @@ export default function Preservation() {
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-charcoal/15 pt-4 text-[9px] uppercase tracking-wider text-muted-gray sm:mt-7 sm:pt-5 sm:text-[10px]">
               <span className="flex items-center gap-1.5">
                 <Lock className="h-3.5 w-3.5 text-sage-deep" />
-                Private by design
+                Only you can unlock
               </span>
               <span className="flex items-center gap-1.5">
                 <Download className="h-3.5 w-3.5 text-sage-deep" />

@@ -73,8 +73,8 @@ export default function Hero() {
               className="mt-8 max-w-2xl"
             >
               <p className="text-base font-light leading-relaxed text-charcoal-muted sm:text-lg">
-                Give the day a place in your story. Find room to reflect, notice
-                what matters, and return to the moments you want to keep.
+                Give the day a place in your story. Reflect on what matters, and
+                return to it knowing only you can read it.
               </p>
             </Reveal>
 
@@ -96,7 +96,7 @@ export default function Hero() {
                 href="#privacy"
                 className="group inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-charcoal-muted transition-colors hover:text-charcoal"
               >
-                <span>Explore Chronicle</span>
+                <span>See how privacy works</span>
                 <ArrowDown className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5" />
               </a>
             </motion.div>

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { CalendarDays, ChevronDown, ChevronUp, Feather } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronUp, LockKeyhole } from "lucide-react";
 import { useState } from "react";
 
 const pages = [
@@ -125,7 +125,7 @@ export default function WritingCanvas() {
                     </div>
 
                     <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-hairline pt-3 text-[8px] uppercase tracking-wider text-muted-gray sm:mt-6 sm:pt-4 sm:text-[9px]">
-                      <span className="inline-flex items-center gap-2"><Feather className="h-3 w-3 text-sage" />Written slowly, kept here</span>
+                      <span className="inline-flex items-center gap-2"><LockKeyhole className="h-3 w-3 text-sage-deep" />Encrypted on this device</span>
                       <span>{page.reading} <span aria-hidden="true">·</span> Kept in your journal</span>
                     </div>
                   </div>

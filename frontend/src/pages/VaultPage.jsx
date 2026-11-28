@@ -322,7 +322,7 @@ export default function VaultPage() {
               >
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-sage" />
-                  All entries encrypted in transit via JWT/HTTPS
+                  Your entries are encrypted in transit and at rest
                 </span>
                 <div className="flex items-center gap-3">
                   <Link

@@ -393,7 +393,7 @@ export default function AuthPage() {
                   Keep me signed in on this device
                 </label>
                 <span className="hidden text-[9px] uppercase tracking-wider text-muted-gray sm:block">
-                  JWT • 7 days
+                  Session • 7 days
                 </span>
               </div>
 
@@ -581,7 +581,7 @@ export default function AuthPage() {
         </p>
         <span className="flex items-center gap-1.5 text-[10px] text-muted-gray">
           <ShieldCheck className="h-3.5 w-3.5 text-sage" />
-          Secure JWT session
+          Secure session
         </span>
       </div>
     </AuthLayout>
